@@ -1,0 +1,35 @@
+---
+pagetitle: "Goettingen Ovulatory Cycle Diaries 2"
+---
+
+# Goettingen Ovulatory Cycle Diaries 2 (GOCD2)
+
+```{r message=FALSE, warning=FALSE}
+source("0_helpers.R")
+```
+
+- [Data import](0_import_data.html): Here, we import the data and metadata from https://formr.org, the data collection study framework
+- [Wrangle data](0_wrangle_data.html): Here, we wrangle the data into shape, estimate the fertile window, merge data from different sources, add human codings for freetext questions, etc.
+- [Codebook](2_codebook.html): The codebook contains metadata, means, missingness, and further information on all variables collected in the study.
+- [Exclusion criteria](1_exclusion.html): We defined several criteria for women to be excluded in our analyses of ovulatory changes, these are computed here.
+- [Descriptives](1_descriptives.html): Here, we summarise some of the descriptive information on this study on a higher-level than in the codebook.
+- [Data anonymisation](3_anonymise_data.html): Our procedure to generate anonymised datasets.
+
+We used these [helper functions](0_helpers.html). These are the [.Rprofile settings](.Rprofile.html).
+
+See here for the documentation of [GOCD1](https://rubenarslan.github.io/ovulatory_shifts)
+
+## Authors & Acknowledgements
+
+### Authors
+Julie Driebe & Ruben Arslan
+
+### Acknowledgements
+
+
+## Session info
+```{r}
+# Turn the .R files into .Rmd files, turn those into .html, remove the .Rmd files
+# spin_R_files_to_site_html()
+sessionInfo()
+```

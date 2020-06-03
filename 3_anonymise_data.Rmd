@@ -1,0 +1,365 @@
+# Anonymising the data {.tab-content}
+```{r}
+# source("0_helpers.R")
+# opts_chunk$set(warning = F, message = F)
+# load("cleaned_selected.rdata")
+# library(dplyr)
+# surveys <- all_surveys %>% select(-lab_code, -starts_with("soi"), 
+#             -starts_with("pvd"),  -starts_with("ecr"), -starts_with("fling"), 
+#             -(created:change_contraception),
+#             -contains("contra"), -starts_with("first_time"),
+#             -starts_with("psycho"),
+#             -contains("child"),
+#             -contains("preg"),
+#             -contains("breast_feeding"),
+#             -contains("hormo"),
+#             -contains("meno"),
+#             -contains("menst"),
+#             -contains("alternatives"),
+#             -contains("commitment"),
+#             -contains("investment"),
+#             -contains("communal_strength"),
+#             -contains("spms"),
+#             -contains("income"),
+#             -contains("feel_safe"),
+#             -contains("session"),
+#             -contains("sex")
+# ) %>% rename(created = created_demo,
+#              modified = modified_initial,
+#              expired = expired_demo,
+#              ended = ended_initial)
+# 
+# 
+# 
+# surveys$number_sexual_partner = rpois(nrow(surveys), mean(all_surveys$number_sexual_partner, na.rm = T))
+# names(surveys)
+# qplot(surveys$number_sexual_partner)
+# 
+# saveRDS(surveys, "~/privacy_workshop_files/survey.rds")
+# 
+# library(synthpop)
+# surveys %>% filter(!is.na(ended)) %>% 
+#   select(-occupation, -study_major, 
+#                    -postal_code, -abode_flat_share_description, -sport_kinds,
+#                    -free_not_covered_demo,
+#                    -characteristics_potential_partner,
+#                    -partner_gender,
+#                    -free_not_covered_initial,
+#                    -starts_with("created"),
+#                    -starts_with("modified"),
+#                    -starts_with("expired"),
+#                    -starts_with("ended"),
+#                    -contains("other"),
+#                    -abode_special_case_description,
+#                    -family_description_optional,
+#                    -meet_potential_partner
+#                    -relationship_details,
+#                    -education_level_special) %>% haven::zap_labels() %>% skimr::skim()
+# synth_surveys = synthpop::syn(surveys %>% filter(!is.na(ended)) %>% 
+#                                 select(-occupation, -study_major, 
+#                                        -postal_code, -abode_flat_share_description, -sport_kinds,
+#                                        -free_not_covered_demo,
+#                                        -characteristics_potential_partner,
+#                                        -partner_gender,
+#                                        -free_not_covered_initial,
+#                                        -starts_with("created"),
+#                                        -starts_with("modified"),
+#                                        -starts_with("expired"),
+#                                        -starts_with("ended"),
+#                                        -contains("other"),
+#                                        -abode_special_case_description,
+#                                        -family_description_optional,
+#                                        -meet_potential_partner
+#                                        -relationship_details,
+#                                        -education_level_special) %>% haven::zap_labels())
+# 
+# cor.test(synth_surveys$syn$menarche, synth_surveys$syn$bfi_open)
+# cor.test(surveys$menarche, surveys$bfi_open)
+# cor.test(surveys$age, surveys$bfi_open)
+# qplot(surveys$age, surveys$bfi_open) + geom_smooth()
+# cor.test(synth_surveys$syn$age, synth_surveys$syn$bfi_open)
+# qplot(synth_surveys$syn$age, synth_surveys$syn$bfi_open) + geom_smooth()
+# 
+# cor.test(surveys$weight, surveys$height)
+# cor.test(synth_surveys$syn$weight, synth_surveys$syn$height)
+#   
+# 
+# saveRDS(synth_surveys, "~/privacy_workshop_files/synth_survey.rds")
+
+```
+
+## Load data
+
+```{r setup,cache = F}
+library(knitr)
+opts_chunk$set(fig.width = 12, fig.height = 12, cache = F, warning = F, message = F)
+source("0_helpers.R")
+surveys <- readRDS("~/privacy_workshop_files/survey.rds")
+surveys <- tibble::as.tibble(surveys)
+```
+
+
+## cleaning
+
+
+
+## remove free-text fields
+Free text fields often have unique values and can contain things like IDs, addresses, free-text responses to questions, etc.
+
+```{r}
+med_per_cat = function(x) {
+  median(table(x))[1]
+}
+# first I look only at character columns (they tend to have most unique values)
+# surveys %>% select_if(is.character) %>% View()
+surveys %>% select_if(is.character) %>% 
+  gather(variable, value) %>%  # putting this in long format allows me to easily 
+  group_by(variable) %>% 
+  summarise(n = n_nonmissing(value), n_dist = n_distinct(value),
+            med_per_cat = med_per_cat(value)) %>% # summarise frequencies of values
+  arrange(n_dist) %>% 
+  pander() # and display them
+# of course manual inspection (for me, using View() ) is important too
+
+# These fields were stored as text, but can be factors
+surveys = surveys %>% mutate(
+  timeperiod_potential_partner = factor(timeperiod_potential_partner),
+  meat_eating = factor(meat_eating),
+  meet_potential_partner_other = factor(meet_potential_partner_other),
+  education_level = factor(education_level),
+  religion = factor(religion),
+  occupational_status = factor(occupational_status)
+)
+
+# occupation: could recode occupation into ISEI categories
+# could count number of men/women in flatshare
+# sport_kinds: could categorise into no/team/individual
+
+# same thing for factors shows no rare unique values 
+surveys %>% select_if(is.factor) %>% 
+  gather(variable, value) %>% 
+  group_by(variable) %>% 
+  summarise(n = n_nonmissing(value), n_dist = n_distinct(value), med_per_cat = med_per_cat(value)) %>%
+  arrange(n_dist) %>% 
+  pander()
+
+# surveys %>% select_if(is.character) %>% names() %>% cat(sep=", -")
+
+# here I remove all columns that have text fields which might betray someone's identity
+surveys = surveys %>% select(-expired, -info_study, -gender_other, -education_level_special, -occupation, -study_major, -postal_code, -relationship_details, -partner_gender_other, -abode_flat_share_description, -abode_special_case_description, -family_description_optional, -other_pill_name, -sport_kinds, -free_not_covered_demo, -expired_initial, -free_not_covered_initial, -meet_potential_partner_other)
+```
+
+## Dates and times
+```{r}
+surveys %>% select_if(is.instant) %>% 
+  gather(variable, value) %>% 
+  group_by(variable) %>% 
+  summarise(n = n_nonmissing(value), n_dist = n_distinct(value)) %>%
+  arrange(n_dist) %>% 
+  pander()
+
+surveys = surveys %>% 
+  # remove all datetime we don't need
+  select(-starts_with("created"), -ended_date,
+         -starts_with("modified"),
+         -starts_with("expired")) %>% 
+  mutate( # we do want to know whether they finished a survey, but can't know when
+    ended = !is.na(ended),
+    ended_demo = !is.na(ended_demo)
+  )
+```
+
+a similar problem exists for intervals, but we might need these and I can easily round them. Here I unfortunately didn't store them as type interval, so I have to look through all numeric types
+```{r}
+# surveys %>% select_if(is.interval) %>% 
+#   gather(variable, value) %>% 
+#   group_by(variable) %>% 
+#   summarise(n = n_nonmissing(value), n_dist = n_distinct(value)) %>%
+#   arrange(n_dist) %>% 
+#   pander()
+```
+
+
+## finding rare values
+Although rare values won't allow anyone to identify many participants, it is important to protect privacy for all participants. In our case especially, a potential attacker might know that e.g. his girlfriend uses a pill with a rare gestagen and identify her like this.
+
+To this end, I wrote the function below. It gives (depending on the last argument) the rarest value and how frequent it is. I included the group variable, because a lot of demographic data is duplicated in my surveys data.
+
+```{r}
+commonness_rarest_value = function(x, give_value = FALSE) {
+  counts = table(x)
+  ret = counts[which.min(counts)]
+  if (give_value) names(ret) else ret
+}
+
+surveys %>% gather(variable, value) %>% 
+  group_by(variable) %>% 
+  summarise(n = n_nonmissing(value), 
+            n_dist = n_distinct(value), 
+            lc_val = commonness_rarest_value(value, T), 
+            lc_freq = commonness_rarest_value(value, F)) %>% 
+  arrange(desc(lc_freq/(n_dist+lc_freq))) %>% 
+  pander()
+```
+
+
+The `Hmisc::cut2` function allows me to group variables into `g` groups and try to make no group contain fewer than `m` values.
+
+```{r}
+surveys = surveys %>% 
+  mutate(
+    duration_relationship = Hmisc::cut2(as.numeric(duration_relationship_years + duration_relationship_month/12), g = 10, m = 50),
+    age_partner = Hmisc::cut2(as.numeric(age_partner), g = 10, m = 50),
+    age = Hmisc::cut2(as.numeric(age), cuts = c(18,23,27,31,36,71), m = 50),
+    partner_weight = Hmisc::cut2(as.numeric(partner_weight), g = 5, m = 50),
+    weight = Hmisc::cut2(as.numeric(weight), g = 5, m = 50),
+    partner_height = Hmisc::cut2(as.numeric(partner_height), g = 7, m = 50),
+    height = Hmisc::cut2(as.numeric(height), g = 7, m = 50),
+) %>% select(-duration_relationship_years, -duration_relationship_month)
+
+table(surveys$duration_relationship)
+```
+
+```{r}
+## round/group
+# surveys = surveys %>% mutate(
+  # height = round_any(height, 5), # rounding would be easy but leaves extreme values out there
+  # weight = round_any(weight, 5),
+  # BMI = round_any(BMI, 2),
+  # duration_relationship_total = round_any(duration_relationship_total/12, 0.3)
+  # first_time = round_any(first_time, 3)
+# )
+
+## cap
+na_if_lt = function(x, lt) {
+  x = as.numeric(x)
+  if_else(x < lt, NA_real_, x)
+}
+na_if_gt = function(x, gt) {
+  x = as.numeric(x)
+  if_else(x > gt, NA_real_, x)
+}
+surveys = surveys %>% mutate(
+  number_sexual_partner = na_if_gt(number_sexual_partner, 30)
+)
+```
+
+## check if we did a good job
+```{r}
+surveys %>% gather(variable, value) %>% 
+  group_by(variable) %>% 
+  summarise(n = n_nonmissing(value), n_dist = n_distinct(value), lc_val = commonness_rarest_value(value, T), lc_freq = commonness_rarest_value(value, F)) %>% 
+  arrange(desc(lc_freq/(n_dist+lc_freq))) %>% 
+  pander()
+
+skimr::skim(surveys)
+```
+
+
+## finding rare combinations
+Ideally, no participant should be uniquely identified, but this is not realistic. Instead, I look for unique combinations of demographic variables.
+
+```{r}
+cut_to_number = function(x, m = 40) { 
+  as.numeric(as.character(Hmisc::cut2(x, m = m, levels.mean = T)))
+}
+
+
+unique_combos = surveys %>% 
+  group_by(age, height, weight, religion, duration_relationship) %>% 
+  summarise(n = n()) %>% 
+  ungroup() %>% 
+  arrange(desc(n)) %>% 
+  filter(n < 2)
+
+unique_combos
+
+nrow(unique_combos)
+
+# recode rare categories into "other"
+surveys = surveys %>% 
+  mutate(
+    religion = recode(religion, "Agnostikerin" = "nicht gläubig", "atheist" = "nicht gläubig", 
+                      "Atheismus" = "nicht gläubig",
+                      "Christentum " = "Christentum",
+                      "katholisch" = "Christentum",
+                      "Katholisch" = "Christentum",
+                      "andere " = "other",
+                      "Hinduismus" = "other",
+                      "Judentum " = "other", "Islam" = "other", "Buddhismus" = "other")
+  )
+table(surveys$religion)
+
+unique_combos = surveys %>% 
+  group_by(age, height, weight, religion, duration_relationship) %>% 
+  summarise(n = n()) %>% 
+  ungroup() %>% 
+  arrange(desc(n)) %>% 
+  filter(n == 1)
+
+nrow(unique_combos)
+
+unique_combos
+
+
+surveys = surveys %>% left_join(unique_combos %>% select(-n) %>% mutate(too_unique = T))
+
+surveys = surveys %>% mutate(
+  too_unique = if_else(is.na(too_unique), F, too_unique),
+  # age = if_else(!too_unique, age, NA_integer_),
+  # height = if_else(too_unique, NA_real_, height),
+  weight = if_else(!too_unique, weight, NA_integer_),
+  religion = if_else(!too_unique, religion, NA_integer_)
+  # duration_relationship = if_else(too_unique, NA_real_, duration_relationship)
+)
+
+unique_combos = surveys %>% 
+  group_by(age, height, weight, religion, duration_relationship) %>% 
+  summarise(n = n()) %>% 
+  ungroup() %>% 
+  arrange(desc(n)) %>% 
+  filter(n == 1)
+
+nrow(unique_combos)
+
+
+surveys = surveys %>% select(-too_unique) %>% left_join(unique_combos %>% select(-n) %>% mutate(too_unique = T))
+
+surveys = surveys %>% mutate(
+  too_unique = if_else(is.na(too_unique), F, too_unique),
+  height = if_else(!too_unique, height, NA_integer_)
+  # duration_relationship = if_else(too_unique, NA_real_, duration_relationship)
+)
+
+
+unique_combos = surveys %>% 
+  group_by(age, height, weight, religion, duration_relationship) %>% 
+  summarise(n = n()) %>% 
+  ungroup() %>% 
+  arrange(desc(n)) %>% 
+  filter(n == 1)
+
+nrow(unique_combos)
+
+surveys = surveys %>% select(-too_unique) %>% left_join(unique_combos %>% select(-n) %>% mutate(too_unique = T))
+
+surveys = surveys %>% mutate(
+  too_unique = if_else(is.na(too_unique), F, too_unique),
+  age = if_else(!too_unique, age, NA_integer_)
+  # duration_relationship = if_else(too_unique, NA_real_, duration_relationship)
+)
+```
+
+## Make one version with the less sensitive data
+```{r}
+surveys_nosex = surveys %>% select(-number_sexual_partner)
+```
+
+
+## Save
+```{r}
+any_nans = function(x) { any(is.nan(x)) }
+surveys = surveys %>% mutate_if(any_nans, funs(ifelse(!is.nan(.),., NA))) 
+saveRDS(surveys_nosex, file = "surveys_nosex.rds")
+saveRDS(surveys, file = "surveys_anon.rds")
+```

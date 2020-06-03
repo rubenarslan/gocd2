@@ -1,0 +1,114 @@
+---
+title: "Import data"
+output: 
+  html_document:
+    toc: yes
+    toc_depth: 5
+    code_folding: "show"
+---
+
+```{r results='hide',message=F,warning=F}
+source("0_helpers.R")
+knitr::opts_chunk$set(error = TRUE)
+```
+
+## Load data
+
+### Demographics
+```{r}
+formr_connect(keyring::key_list(service = 'gocd2')[, "username"], keyring::key_get("gocd2"))
+
+s1_demo = formr_results("s1_demo", plot_likert = F, compute_alphas = F, quiet = T)
+s1_filter = formr_results("s1_filter", plot_likert = F, compute_alphas = F, quiet = T)
+```
+
+### Personality
+```{r}
+s2_initial = formr_recognise("s2_initial")
+s2_initial = s2_initial %>% rename(
+  communal_strength_2R = communal_strength_2,
+  ecr_avo_1R = ecr_avo_33R,
+  ecr_avo_2 = ecr_avo_11,
+  ecr_avo_3R = ecr_avo_35R,
+  ecr_avo_4 = ecr_avo_17,
+  ecr_avo_5R = ecr_avo_27R,
+  ecr_avo_6 = ecr_avo_13,
+  ecr_anx_1 = ecr_anx_18,
+  ecr_anx_2 = ecr_anx_16,
+  ecr_anx_3 = ecr_anx_26,
+  ecr_anx_4R = ecr_anx_22R,
+  ecr_anx_5 = ecr_anx_32,
+  ecr_anx_6 = ecr_anx_6
+  )
+
+s2_initial_id = formr_item_displays("s2_initial")
+s2_initial = formr_post_process_results(item_list = items(s2_initial), results = s2_initial, plot_likert = F, compute_alphas = F, quiet = T, tag_missings = TRUE, item_displays = s2_initial_id)
+```
+
+### Diary
+```{r}
+s3_daily = formr_recognise(results = jsonlite::fromJSON("data/s3_daily.json"), item_list = formr_items("s3_daily"))
+
+s3_daily = s3_daily %>% rename(extra_pair_desire_5R = extra_pair_desire_15,
+                               in_pair_desire_5R = in_pair_desire_15,
+                               extra_pair_went_out = extra_pair_desire_5,
+                               in_pair_went_out = in_pair_desire_5)
+s3_daily = formr_post_process_results(item_list = items(s3_daily), results = s3_daily, plot_likert = F, compute_alphas = F, quiet = T, tag_missings = FALSE, item_displays = NULL) #item_displays = jsonlite::fromJSON("data/s3_daily_itemdisplay.json"))
+```
+
+### Follow-up
+```{r}
+s4_timespent = formr_results("s4_timespent", plot_likert = F, compute_alphas = F, quiet = T)
+s4_followup = formr_results("s4_followup", plot_likert = F, compute_alphas = F, quiet = T)
+s4_followup = s4_followup %>% mutate(medication_name = stringr::str_trim(medication_name))
+s5_hadmenstruation = formr_results("s5_hadmenstruation", plot_likert = F, compute_alphas = F, quiet = T)
+```
+
+## Post-process
+Test sessions (animal names) contain XXX, we filter them and two erroneous dupes.
+
+```{r abbrev}
+s1_demo = s1_demo %>% 
+    filter(!session %contains% "XXX")
+s3_daily = s3_daily %>% 
+    filter(!session %contains% "XXX") %>% 
+    arrange(session, created, modified) %>% 
+    filter(!duplicated(cbind(session, created))) # one dupe mishap
+
+twice_a_days <- s3_daily %>% 
+  mutate(created_date = as.Date(created - hours(6))) %>% 
+  group_by(session, created_date) %>% 
+  filter(n() > 1) %>% 
+  arrange(session, is.na(ended), created_date, ended) %>% 
+  select(session, created_date, created, ended) %>% 
+  filter(row_number() > 1) %>% 
+  ungroup() %>% 
+  select(session, created)
+
+s3_daily = s3_daily %>% 
+  anti_join(twice_a_days, by = c("session", "created"))
+
+s1_filter = s1_filter %>% 
+    filter(!session %contains% "XXX")
+s2_initial = s2_initial %>% 
+    filter(!session %contains% "XXX") %>% 
+    filter(!duplicated(session)) # one dupe mishap with empty data
+s4_followup = s4_followup %>% 
+  filter(!session %contains% 'XXX')
+
+
+# short names reichen auch aus um nutzer zu unterscheiden
+s2_initial$short = stringr::str_sub(s2_initial$session, 1, 7)
+s1_filter$short = stringr::str_sub(s1_filter$session, 1, 7)
+s1_demo$short = stringr::str_sub(s1_demo$session, 1, 7)
+s3_daily$short = stringr::str_sub(s3_daily$session, 1, 7)
+s4_followup$short = stringr::str_sub(s4_followup$session, 1, 7)
+s4_timespent$short = stringr::str_sub(s4_timespent$session, 1, 7)
+s5_hadmenstruation$short = stringr::str_sub(s5_hadmenstruation$session, 1, 7)
+```
+
+## Save
+
+```{r}
+save(s1_demo, s1_filter, s2_initial, s3_daily, s4_followup, s4_timespent, s5_hadmenstruation, file = "data/pretty_raw.rdata")
+```

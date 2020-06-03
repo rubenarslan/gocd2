@@ -1,0 +1,130 @@
+---
+title: "Codebook Routine and Sex"
+output:
+  html_document:
+    toc: true
+    toc_depth: 4
+    toc_float: true
+    code_folding: 'hide'
+    self_contained: false
+---
+  
+```{r results='hide',message=F,warning=F}
+source("0_helpers.R")
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+pander::panderOptions("table.split.table", Inf)
+pander::panderOptions('round',2)
+pander::panderOptions('digits',2)
+pander::panderOptions('keep.trailing.zeros',TRUE)
+
+load("data/cleaned.rdata")
+
+knitr::opts_chunk$set(echo = FALSE, error = TRUE, dev = "CairoPNG")
+library(ggplot2)
+theme_set(theme_bw())
+
+library(codebook)
+
+attributes(s3_daily$grooming_broad)$scale_item_names <- NULL
+s3_daily <- s3_daily %>% filter(!is.na(session), !is.na(created))
+# s3_daily <- s3_daily %>% select(-!!names(lab))
+s3_daily <- s3_daily %>% ungroup()
+
+library(future)
+if (file.exists("reliabilities_new.rdata")) {
+  load("reliabilities_new.rdata")
+  } else {
+    library(future.batchtools)
+  # plan(tweak(multicore, workers = 3))
+  login <- tweak(remote, workers = "arslan@arc-lin-cpt10.mpib-berlin.mpg.de") # Your username goes before the @
+  plan(list(login, tweak(multicore, workers = 10))) # this tells the future package that we want to use a remote server for running our future operations
+  
+  # login <- tweak(remote, workers = "arslan@tardis.mpib-berlin.mpg.de")
+  # qsub <- tweak(batchtools_torque, template = 'torque-lido.tmpl', 
+  #             # workers = "export LSF_ENVDIR=/opt/lsf/conf",
+  #                 resources = list(job.name = 'multilevel_reliability',
+  #                                 queue = 'default',
+  #                                 walltime = "5:0:0",
+  #                                 memory = 32, #gb
+  #                                 ncpus = 1))
+  # ## Specify future topology
+  # ## login node -> { cluster node (compile brms model) } -> { run chains on multiple cores }
+  # plan(list(
+  #   login,
+  #   qsub
+  # ))
+  
+  reliabilities_diary = future::value(future({
+      reliabilities_diary <- codebook::compute_reliabilities(s3_daily, 'repeated_many')
+      save(reliabilities_diary, file = "reliabilities_new.rdata")
+      reliabilities_diary
+  }))
+  save(reliabilities_diary, file = "reliabilities_new.rdata")
+}
+
+plan(multicore)
+```
+
+## Demographics
+
+Participants filled out these surveys before being invited to the daily diary. After finishing them, they were invited to fill out the diary on the next day.
+
+```{r pre_survey, results='asis'}
+codebook(s1_demo,  missingness_report = FALSE, indent = "##")
+```
+
+## Personality
+```{r initial}
+codebook(s2_initial, missingness_report = FALSE, indent = "##")
+```
+
+## Diary
+Participants received invitations to fill out the diary daily over a period of 70 days.
+
+```{r diary}
+metadata(s3_daily)$name <- "Goettigen Ovulatory Cycle Diaries 2"
+metadata(s3_daily)$description <- "A 70-day online diary study focusing on menstrual cycles, sexuality, mood, and behaviour"
+metadata(s3_daily)$identifier <- "https://doi.org/10.17605/OSF.IO/XXXX"
+metadata(s3_daily)$creator <- "Ruben C. Arslan"
+metadata(s3_daily)$citation <- "Arslan, R.C., Driebe, XXXX"
+metadata(s3_daily)$url <- "https://rubenarslan.github.io/gocd2"
+metadata(s3_daily)$datePublished <- "2020-06-02"
+metadata(s3_daily)$temporalCoverage <- "2014-2015" 
+metadata(s3_daily)$spatialCoverage <- "German-speaking countries, online" 
+
+codebook(s3_daily, reliabilities_diary, missingness_report = FALSE, indent = "##")
+```
+
+## Time spent
+
+Single participants answered questions about who they spent time with and/or thought about during the diary. We asked them questions about commonly mentioned names after the end of the diary.
+
+```{r time_spent}
+codebook(s4_timespent, indent = "##")
+```
+
+## Follow-up survey
+
+At the end of the diary, participants were debriefed and answered these follow-up questions.
+
+```{r follow_up}
+codebook(s4_followup, indent = "##")
+```
+
+## Menstruation follow-up
+
+To be able to backward-count from the onset of the next menstruation, we followed up with women who had not menstruated in the last 5 days of the diary, until the next menstrual onset for up to 40 days.
+
+```{r menstruation_follow_up}
+codebook(s5_hadmenstruation, indent = "##")
+```
+
+
+## Lab Study
+
+A subset of the diary participants also participated in a lab study, in which hormones where collected. Participation dates were intended to overlap, but scheduling did not always permit this.
+
+```{r lab}
+codebook(lab, indent = "##")
+```
+

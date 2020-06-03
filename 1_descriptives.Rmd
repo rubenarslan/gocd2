@@ -1,0 +1,1325 @@
+# Alltag und Sex - Descriptives {.tabset .tabset-sticky}
+
+```{r}
+source("0_helpers.R")
+load("data/cleaned.rdata")
+opts_chunk$set(warning = F, message = F, error = T)
+
+library(knitr)
+opts_chunk$set(fig.width = 9, fig.height = 7, cache = T, warning = F, message = F, cache = F, error = T)
+```
+
+## Who completed what? {.tabset .tabset-sticky}
+
+### Participant funnel
+
+```{r}
+began_s1_demo = sum(!is.na(s1_demo$created))
+ended_s1_demo = sum(!is.na(s1_demo$ended))
+diary <- s1_filter %>% left_join(diary, by = c('session', 'short'), suffix = c("_filter", ""))
+ended_pre = diary %>% filter(!is.na(ended_initial)) %>% ungroup() %>% summarise(n = n_distinct(session)) %>% pull(n)
+diary %>% group_by(gets_paid) %>% summarise(n = sum(!is.na(ended_initial[!duplicated(session)]), n = n_distinct(session)))
+at_least_one_diary_entry = diary %>% group_by(session) %>% summarise(n = n_nonmissing(ended_diary)) %>% filter(n >= 1) %>% nrow()
+at_least_20_diary_entries = diary %>% group_by(session) %>% summarise(n = n_nonmissing(ended_diary)) %>% filter(n >= 20) %>% nrow()
+at_least_50_diary_entries = diary %>% group_by(session) %>% summarise(n = n_nonmissing(ended_diary)) %>% filter(n >= 50) %>% nrow()
+
+in_relationship = sum(s1_demo$hetero_relationship, na.rm = T)
+singles = sum(! s1_demo$hetero_relationship, na.rm = T)
+
+at_least_one_diary_entry = s3_daily %>% group_by(session) %>% summarise(n = n_nonmissing(ended)) %>% filter(n >= 1) %>% nrow()
+at_least_20_diary_entries = s3_daily %>% group_by(session) %>% summarise(n = n_nonmissing(ended)) %>% filter(n >= 20) %>% nrow()
+at_least_50_diary_entries = s3_daily %>% group_by(session) %>% summarise(n = n_nonmissing(ended)) %>% filter(n >= 50) %>% nrow()
+
+mean_diary_entries <- s3_daily %>% group_by(session) %>% summarise(n = n_nonmissing(ended)) %>% summarise(mean(n))
+
+mean_diary_entries_by_payment <- s1_filter %>% 
+  select(-ended) %>% left_join(s3_daily, by = 'session') %>% 
+  group_by(gets_paid, session) %>%
+  summarise(n = n_nonmissing(ended)) %>% 
+  filter(n > 0) %>% 
+  group_by(gets_paid) %>% 
+  summarise(responses = mean(n), n = n_distinct(session))
+
+response_rate_over_time <- diary %>% filter(day_number > 0, day_number < 70) %>% 
+    left_join(s1_filter, by = 'session', suffix = c("", "_filter")) %>% 
+  left_join(mean_diary_entries_by_payment) %>% 
+  group_by(gets_paid, day_number) %>% 
+  summarise(entries = n_nonmissing(ended_diary),
+            rr = entries / unique(n))
+ggplot(response_rate_over_time, aes(day_number, rr, colour = gets_paid)) + geom_point() +
+    ggtitle("Response rate over time", "for people who started the diary") + ylim(0,1)
+
+mean_diary_entries_finishers <- s4_followup %>% select(-ended) %>% left_join(s3_daily, by = 'session') %>% group_by(session) %>% summarise(n = n_nonmissing(ended)) %>% summarise(mean(n))
+
+response_rate_over_time <- s4_followup %>% select(-ended) %>% 
+  left_join(diary %>% select(session, day_number, created_diary, ended_diary)) %>% filter(day_number > 0, day_number < 70) %>% 
+  left_join(s1_filter, by = 'session', suffix = c("", "_filter")) %>% 
+  left_join(mean_diary_entries_by_payment) %>% 
+  group_by(gets_paid, day_number) %>% 
+  summarise(entries = n_nonmissing(ended_diary),
+            rr = entries / unique(n))
+ggplot(response_rate_over_time, aes(day_number, rr, colour = gets_paid)) + 
+  geom_point() +
+    ggtitle("Response rate over time", "for people who finished the diary") + ylim(0,1)
+
+nsmt2d_over_time <- s4_followup %>% select(-ended) %>% 
+  left_join(diary %>% select(session, day_number, never_skipped_more_than_2, created_diary, ended_diary)) %>% 
+  left_join(s1_filter, by = 'session', suffix = c("", "_filter")) %>% 
+  left_join(mean_diary_entries_by_payment) %>% 
+  group_by(gets_paid, day_number) %>% 
+  summarise(entries = sum(as.numeric(never_skipped_more_than_2), na.rm = T),
+            rr = entries / unique(n))
+
+ggplot(nsmt2d_over_time, aes(day_number, rr, colour = gets_paid)) + 
+  geom_point() +
+    ggtitle("Percentage who never skipped more than two days over time", "for people who finished the diary") + ylim(0,1)
+
+
+mean_finishing_personality_by_payment <- s1_demo %>% 
+  left_join(s1_filter, by = 'session', suffix = c("_demo", "")) %>% 
+  left_join(s2_initial,by ='session', suffix = c("", "_initial")) %>% 
+  group_by(gets_paid) %>% 
+  summarise(finish_demo = n_nonmissing(ended_demo), 
+            finish_initial = n_nonmissing(ended_initial), n = n(),
+            prc_ini_over_demo = round(100*finish_initial/finish_demo),
+            consc = mean(bfi_consc,na.rm=T))
+kable(mean_finishing_personality_by_payment)
+
+mean_finishing_follow_up_by_payment <- s1_filter %>% select(-ended) %>% right_join(s2_initial,by ='session') %>% left_join(s4_followup, by = 'session', suffix = c("_initial", "_followup")) %>% group_by(gets_paid) %>% summarise(followup = n_nonmissing(ended_followup), initial = n_nonmissing(ended_initial), n(), prc_fu_over_initial = round(100*followup/initial))
+kable(mean_finishing_follow_up_by_payment)
+
+fertile_known_man_known = diary_social %>% group_by(session, created) %>% 
+  summarise(n = n_nonmissing(person_attractiveness_short_term)) %>% 
+  group_by(session) %>% summarise(n = sum(n)) # fertility known, man known
+fertile_known_man_known$n %>% qplot() + xlim(1,NA)
+
+fertile_known_person_known = diary_social %>% group_by(session, created) %>% 
+  summarise(n = n_nonmissing(person_sex)) %>% 
+  group_by(session) %>% summarise(n = sum(n)) # fertility known, man known
+
+finished_timespent = s4_timespent %>% group_by(session) %>% summarise(n = n_nonmissing(ended)) %>% filter(n >= 1) %>% nrow()
+timespent_gt3 = s4_timespent %>% group_by(session) %>% summarise(n = n_nonmissing(ended)) %>% filter(n > 3) %>% nrow()
+timespent_men = network %>% group_by(session) %>% filter(person_sex == 2, person_relationship_to_anchor != "biological_relative") %>% summarise(n = n_nonmissing(ended)) %>% filter(n > 0) %>% nrow()
+timespent_3men = network %>% group_by(session) %>% filter(person_sex == 2, person_relationship_to_anchor != "biological_relative") %>% summarise(n = n_nonmissing(ended)) %>% filter(n > 2) %>% nrow()
+
+fertile_known_man_known_participants = fertile_known_man_known %>% filter(n > 0) %>% nrow()
+fertile_known_person_known_participants = fertile_known_person_known %>% filter(n > 0) %>% nrow()
+
+finished_followup = sum(!is.na(s4_followup$ended))
+
+# all_surveys %>% mutate(
+#   should_be_done = created_demo + days(70) < today()
+# ) %>% filter(should_be_done == T) %>% xtabs(~ is.na(ended), .)
+
+# all_surveys %>% mutate(
+# should_be_done = created_demo + days(70) < today()
+# ) %>% left_join(s3_daily %>% group_by(session) %>% summarise(n = n_nonmissing(ended))) %>% 
+#  filter(should_be_done == T, n > 40) %>% xtabs(~ is.na(ended), .)
+
+all_surveys %>% mutate(should_be_done = created_demo + days(70) < today()) %>%
+ left_join( s4_timespent %>% group_by(session) %>% summarise(n_timespent = n_nonmissing(ended)), by = 'session') %>% 
+ filter(hetero_relationship == 0, should_be_done == T, n_timespent > 0, !is.na(n_timespent)) %>% nrow()
+
+all_surveys %>% mutate(should_be_done = created_demo + days(70) < today()) %>%
+ left_join( s4_timespent %>% group_by(session) %>% summarise(n_timespent =  n_nonmissing(ended)), by = 'session') %>% 
+ filter(hetero_relationship == 0 & should_be_done == T & (is.na(n_timespent) | n_timespent == 0)) %>% nrow()
+```
+
+1. __`r began_s1_demo`__ signed up for the study.
+2. __`r ended_s1_demo`__ finished the demographics (`r singles` singles, `r in_relationship` in relationship).
+2. __`r ended_pre`__ finished the demographic and personality questionnaires.
+3. __`r at_least_one_diary_entry`__ submitted at least one diary entry (>= 20: `r at_least_20_diary_entries`, >= 50 `r at_least_50_diary_entries`). On average participants completed `r mean_diary_entries` diary entries.
+4. `r finished_timespent` singles reported information on least one person mentioned during the diary (>3: `r timespent_gt3`, at least one man who wasn't biologically related: `r timespent_men`, >2men: `r timespent_3men`). 
+5. __`r finished_followup`__ (`r round(100*finished_followup/ended_pre)`% of those who finished the intake survey) finished the follow-up survey. Finishers completed on average `r mean_diary_entries_finishers` diary entries.
+
+
+## Exclusion {.tabset .tabset-sticky}
+
+```{r}
+all_surveys$included <- TRUE
+diary$included_d = TRUE
+
+pipeline = list()
+excluded_old = NULL
+all_surveys = all_surveys %>% mutate(included = if_else(included, 
+                    !is.na(ended_demo) , F))
+newly_excluded = sum( !all_surveys$included)
+
+diary$included_d <- TRUE
+
+pipeline_days = list()
+excluded_old_days = NULL
+
+diary_social$included_s <- TRUE
+
+pipeline_social= list()
+excluded_old_social = NULL
+
+
+pipeline$not_finished_demo = n_excluded(all_surveys$included)
+
+sum(all_surveys$included)
+```
+
+```{r}
+sum(diary$included_d)
+
+diary = diary %>% mutate(included_d = if_else(included_d, 
+                    !is.na(ended_demo) , F))
+newly_excluded_days = sum( !diary$included_d)
+
+
+pipeline$demo_days = n_excluded_days(diary$included_d)
+sum(diary$included_d)
+
+```
+
+```{r}
+sum(diary_social$included_s)
+
+diary_social = diary_social %>% mutate(included_s = if_else(included_s, 
+                     !is.na(ended_demo) , F))
+newly_excluded_social = sum( !diary_social$included_s)
+
+pipeline_social$days_social_not_single = n_excluded_social(diary_social$included_s)
+
+sum(diary_social$included_s)
+
+```
+
+#### ended initial 
+
+```{r}
+all_surveys = all_surveys %>% mutate(included = if_else(included, 
+                    !is.na(ended_initial) , F))
+newly_excluded = sum( !all_surveys$included)
+
+
+pipeline$initial = n_excluded(all_surveys$included)
+
+sum(all_surveys$included)
+``` 
+
+```{r}
+
+diary = diary %>% mutate(included_d = if_else(included_d, 
+                    !is.na(ended_initial) , F))
+newly_excluded_days = sum( !diary$included_d)
+
+
+pipeline$initial_days = n_excluded_days(diary$included_d)
+sum(diary$included_d)
+
+``` 
+
+```{r}
+diary_social = diary_social %>% mutate(included_s = if_else(included_s, 
+                     !is.na(ended_initial), F))
+newly_excluded_social = sum( !diary_social$included_s)
+
+      
+pipeline_social$initial_social = n_excluded_social(diary_social$included_s)
+
+sum(diary_social$included_s)
+```
+
+### regular cycle 
+regular = 1 
+irregular = 0
+```{r}
+crosstabs(~ menstruation_regular + hormonal_contraception, data = all_surveys)
+irregular = count(all_surveys %>% filter(menstruation_regular == 0 & !is.na(ended_initial)  ))
+
+
+irregular_missing = count(all_surveys %>% filter(menstruation_regular == 0 | is.na(menstruation_regular & !is.na(ended_initial))))
+
+```
+
+3. __`r irregular`__ women with irregular cycle.
+4. __`r irregular_missing`__ women with irregular cycle and missings.
+
+```{r}
+
+all_surveys = all_surveys %>% mutate(included = if_else(included,
+                                                        if_else(menstruation_regular != 0, T,F,F),F))
+newly_excluded = sum( !all_surveys$included)
+
+pipeline$irregular_cycle = n_excluded(all_surveys$included)
+
+sum(all_surveys$included)
+
+# xtabs(~ hetero_relationship + included, data = all_surveys)
+```
+
+#### exlcuded days 
+
+```{r}
+diary <- diary %>% ungroup()
+d_irregular = count(diary %>% filter(menstruation_regular == 0 & !is.na(ended_initial) ))
+
+
+d_irregular_missing = count(diary %>% filter(menstruation_regular == 0 | is.na(menstruation_regular & !is.na(ended_initial))))
+
+```
+3.1 __`r d_irregular`__ days of women with irregular cycle.
+4.1 __`r d_irregular_missing`__ days of women with irregular cycle and missings.
+
+```{r}
+diary = diary %>% mutate(included_d = if_else(included_d, 
+                    if_else( menstruation_regular != 0, T, F, F), F))
+newly_excluded_days = sum( !diary$included_d)
+
+      
+pipeline_days$days_with_irregular_cycle = n_excluded_days(diary$included_d)
+sum(diary$included_d)
+```
+
+#### exlcusion social diary 
+
+```{r}
+s_irregular = count(diary_social %>% filter(menstruation_regular == 0  & !is.na(ended)))
+
+
+s_irregular_missing = count(diary_social %>% filter(menstruation_regular == 0 | is.na(menstruation_regular & !is.na(ended_initial))))
+
+```
+3.2 __`r s_irregular`__ days of women with irregular cycle.
+4.2 __`r s_irregular_missing`__ days of women with irregular cycle and missings.
+
+```{r}
+diary_social = diary_social %>% mutate(included_s = if_else(included_s, 
+                    if_else( menstruation_regular != 0, T, F, F), F))
+newly_excluded_social = sum( !diary_social$included_s)
+
+pipeline_social$days_social_irregular_cycle = n_excluded_social(diary_social$included_s)
+
+sum(diary_social$included_s)
+```
+
+### cycle length 
+```{r}
+# all_surveys %>% filter(hetero_relationship == 0 & !is.na(ended_initial) & is.na(menstruation_length)) %>% View()
+
+too_short_cycle = count(all_surveys %>% filter(menstruation_length_groups == 'short' & !is.na(ended_initial)))
+
+too_short_and_missing = count(all_surveys %>%  filter(menstruation_length_groups == 'short' | is.na(menstruation_length_groups) & !is.na(ended_initial)))
+
+```
+1. __`r too_short_cycle`__ women with too short cycle.
+2. __`r too_short_and_missing`__ women with too short cycle and missings. 
+
+
+
+```{r}
+all_surveys = all_surveys %>% mutate(included = if_else(included, 
+                    menstruation_length > 19, F))
+newly_excluded = sum( !all_surveys$included)
+
+      
+pipeline$too_short_cycles = n_excluded(all_surveys$included)
+sum(all_surveys$included)
+```
+
+#### days excluded
+```{r}
+d_too_short = count(diary %>% filter(menstruation_length > 19 & !is.na(ended_initial)))
+d_too_short_missing = count(diary %>% filter(menstruation_length > 19 & !is.na(ended_initial) | is.na(menstruation_length)))
+
+```
+
+1.1 __`r d_too_short`__ days of women with too short cycle.
+2.1 __`r d_too_short_missing`__ days of women with too short cycle and missing.
+
+
+```{r}
+diary = diary %>% mutate(included_d = if_else(included_d, 
+                    menstruation_length > 19, F))
+newly_excluded_days = sum( !diary$included_d)
+
+      
+pipeline_days$days_with_too_short_cycles = n_excluded_days(diary$included_d)
+
+sum(diary$included_d)
+```
+
+#### exclusion social diary
+```{r}
+ds_too_short = count(diary_social %>% filter(menstruation_length > 19 & !is.na(ended_initial) ))
+ds_too_short_m = count(diary_social %>%
+                         filter(menstruation_length > 19 | 
+                                  is.na(menstruation_length) & 
+                                          !is.na(ended_initial)))
+```
+
+1.2 __`r ds_too_short`__ days of women with too short cycle.
+2.2 __`r ds_too_short_m`__ days of women with too short cycle and missings.
+
+
+```{r}
+diary_social = diary_social %>% mutate(included_s = if_else(included_s, 
+                    menstruation_length > 19, F))
+newly_excluded_social = sum( !diary_social$included_s)
+
+      
+pipeline_social$days_social_short_cycles = n_excluded_social(diary_social$included_s)
+
+sum(diary_social$included_s)
+```
+
+
+### age 
+
+```{r}
+older_than_50 = count(all_surveys %>% filter(age >= 50  & !is.na(ended_initial)))
+
+too_old_missing = count(all_surveys %>% filter(age >= 50 | is.na(age) & !is.na(ended_initial)))
+
+```
+
+5. __`r older_than_50`__ women older than 50.
+6. __`r too_old_missing`__ women older than 50 and missings.
+
+
+```{r}
+all_surveys = all_surveys %>% mutate(included = if_else(included, 
+                                                          age < 50, F))
+
+newly_excluded = sum( !all_surveys$included)
+
+
+pipeline$older_than_50 = n_excluded(all_surveys$included)
+
+sum(all_surveys$included)
+```
+
+#### excluded days 
+
+```{r}
+d_older_than_50 = count(diary %>% filter(age >= 50 & !is.na(ended_initial)))
+
+d_too_old_missing = count(diary %>% filter(age >= 50 | is.na(age) & !is.na(ended_initial)))
+```
+
+5.1 __`r d_older_than_50`__ days of women older than 50.
+6.1 __`r d_too_old_missing`__ days of women older than 50 and missings.
+
+```{r}
+diary = diary %>% mutate(included_d = if_else(included_d, 
+                    age < 50, F))
+newly_excluded_days = sum( !diary$included_d)
+
+      
+pipeline_days$days_age = n_excluded_days(diary$included_d)
+
+sum(diary$included_d)
+```
+
+#### exclusion social diary
+
+```{r}
+s_older_than_50 = count(diary_social %>% filter(age >= 50 & !is.na(ended_initial)))
+
+s_too_old_missing = count(diary_social %>% filter(age >= 50 | is.na(age) & !is.na(ended_initial)))
+
+```
+
+5.2 __`s d_older_than_50`__ days of women older than 50.
+6.2 __`s d_too_old_missing`__ days of women older than 50 and missings.
+
+```{r}
+diary_social = diary_social %>% mutate(included_s = if_else(included_s, 
+                   age < 50, F))
+newly_excluded_social = sum( !diary_social$included_s)
+
+pipeline_social$days_social_age = n_excluded_social(diary_social$included_s)
+
+sum(diary_social$included_s)
+
+```
+
+### menopausal 
+only asked women older than 43
+1 = menopausal 
+2 = menopause
+
+```{r}
+menopause = count(all_surveys %>% filter(menopause_yes == 1 | menopause_yes == 2 & !is.na(ended_initial)))
+
+non_menopausal = count(all_surveys %>% filter(menopause_yes == 3 | is.na(menopause_yes) & !is.na(ended_initial)))
+```
+
+7. __`r menopause`__ menopausal women and women in their menopause.
+8. __`r non_menopausal`__ non-menopausal women and women younger than 43. 
+
+```{r}
+all_surveys = all_surveys %>% mutate(included = if_else(included, 
+                                                        menopause_yes ==3 |
+                                                      is.na(menopause_yes), F))
+newly_excluded = sum( !all_surveys$included)
+
+pipeline$menopausal = n_excluded(all_surveys$included)
+
+sum(all_surveys$included)
+```
+
+#### excluded days 
+
+```{r}
+d_menopause = count(diary %>% filter(menopause_yes == 1 | menopause_yes == 2 & !is.na(ended_initial) ))
+
+d_non_menopausal = count(diary %>% filter(menopause_yes == 3 | is.na(menopause_yes) & !is.na(ended_initial)))
+```
+
+7.1 __`r d_menopause`__ days of menopausal women and women in their menopause.
+8.1 __`r d_non_menopausal`__ days of non-menopausal women and women younger than 43. 
+
+```{r}
+diary = diary %>% mutate(included_d = if_else(included_d, 
+                    menopause_yes == 3 |
+                      is.na(menopause_yes), F))
+newly_excluded_days = sum( !diary$included_d)
+
+      
+pipeline_days$days_menopause = n_excluded_days(diary$included_d)
+sum(diary$included_d)
+```
+
+#### exclusion social diary 
+```{r}
+s_menopause = count(diary_social %>% filter(menopause_yes == 1 | menopause_yes == 2 & !is.na(ended_initial) ))
+
+s_non_menopausal = count(diary_social %>% filter(menopause_yes == 3 | is.na(menopause_yes) & !is.na(ended_initial)))
+```
+
+7.2 __`r s_menopause`__ days of menopausal women and women in their menopause.
+8.2 __`r s_non_menopausal`__ days of non-menopausal women and women younger than 43. 
+
+```{r}
+diary_social = diary_social %>% mutate(included_s = if_else(included_s, 
+                     menopause_yes == 3 |
+                      is.na(menopause_yes), F))
+newly_excluded_social = sum( !diary_social$included_s)
+
+pipeline_social$days_social_menopause = n_excluded_social(diary_social$included_s)
+
+sum(diary_social$included_s)
+```
+
+### pregnant
+
+```{r}
+pregnant = count(all_surveys %>% filter(pregnant == 1  & !is.na(ended_initial)))
+pregnant_missing = count(all_surveys %>% filter(pregnant == 1 | is.na(pregnant) & !is.na(ended_initial)))
+```
+9. __`r pregnant`__ pregnant women.
+10. __`r pregnant_missing`__ pregnant women and missings. 
+
+
+```{r}
+all_surveys = all_surveys %>% mutate(included = if_else(included, 
+                                                        pregnant != 1, F))
+
+newly_excluded = sum( !all_surveys$included)
+
+pipeline$pregnant = n_excluded(all_surveys$included)
+
+sum(all_surveys$included)
+```
+
+#### excluded days 
+
+```{r}
+d_pregnant = count(diary %>% filter(pregnant == 1 & !is.na(ended_initial) ))
+d_pregnant_missing = count(diary %>% filter(pregnant == 1 | is.na(pregnant) & !is.na(ended_initial)))
+```
+
+9.1 __`r d_pregnant`__ days of pregnant women.
+10.1 __`r d_pregnant_missing`__ days of pregnant women and missings.  
+
+```{r}
+diary = diary %>% mutate(included_d = if_else(included_d, 
+                    pregnant != 1, F))
+newly_excluded_days = sum( !diary$included_d)
+
+pipeline_days$days_pregnant = n_excluded_days(diary$included_d)
+sum(diary$included_d)
+```
+
+#### exclusion social diary
+```{r}
+s_pregnant = count(diary_social %>% filter(pregnant == 1 &!is.na(ended_initial) ))
+s_pregnant_missing = count(diary_social %>% filter(pregnant == 1 | is.na(pregnant) & !is.na(ended_initial)))
+```
+
+9.2 __`r s_pregnant`__ days of pregnant women.
+10.2 __`r s_pregnant_missing`__ days of pregnant women and missings. 
+
+```{r}
+diary_social = diary_social %>% mutate(included_s = if_else(included_s, 
+                     pregnant != 1, F))
+newly_excluded_social = sum( !diary_social$included_s)
+
+pipeline_social$days_social_pregnant = n_excluded_social(diary_social$included_s)
+sum(diary_social$included_s)
+```
+
+### breast-feeding
+```{r}
+breast_feeding = count(all_surveys %>% filter(breast_feeding == 1 & !is.na(ended_initial) ))
+
+breast_feeding_missing = count(all_surveys %>% filter(breast_feeding == 1| is.na(breast_feeding) & !is.na(ended_initial)))
+
+```
+
+11. __`r breast_feeding`__ women breast-feeding.
+12. __`r breast_feeding_missing`__ women breast-feeding and missings. 
+
+```{r}
+all_surveys = all_surveys %>% mutate(included = if_else(included, 
+                                                        breast_feeding != 1, F))
+
+newly_excluded = sum( !all_surveys$included)
+
+pipeline$breastfeeding = n_excluded(all_surveys$included)
+
+sum(all_surveys$included)
+```
+
+#### excluded days 
+
+```{r}
+d_breast_feeding = count(diary %>% filter(breast_feeding == 1 & !is.na(ended_initial) ))
+
+d_breast_feeding_missing = count(diary %>% filter(breast_feeding == 1| is.na(breast_feeding) & !is.na(ended_initial)))
+```
+
+11.1 __`r d_breast_feeding`__ days of breast-feeding women.
+12.1 __`r d_breast_feeding_missing`__ days of breast-feeding women and missings. 
+
+```{r}
+diary = diary %>% mutate(included_d = if_else(included_d, 
+                    breast_feeding != 1, F))
+newly_excluded_days = sum( !diary$included_d)
+
+pipeline_days$days_breast_feeding = n_excluded_days(diary$included_d)
+
+sum(diary$included_d)
+```
+
+#### exclusion social diary 
+
+```{r}
+s_breast_feeding = count(diary_social %>% filter(breast_feeding == 1 & !is.na(ended_initial) ))
+
+s_breast_feeding_missing = count(diary_social %>% filter(breast_feeding == 1| is.na(breast_feeding) & !is.na(ended_initial)))
+```
+
+11.2 __`r s_breast_feeding`__ days of breast-feeding women.
+12.2 __`r s_breast_feeding_missing`__ days of breast-feeding women and missings.
+
+```{r}
+diary_social = diary_social %>% mutate(included_s = if_else(included_s, 
+                     breast_feeding != 1, F))
+newly_excluded_social = sum( !diary_social$included_s)
+
+pipeline_social$days_social_breast_feeding = n_excluded_social(diary_social$included_s)
+sum(diary_social$included_s)
+```
+
+
+### homosexual
+
+```{r}
+homosexual = count(all_surveys %>% filter(sex_orientation >= 4 & !is.na(ended_initial) ))
+
+homosexual_missing = count(all_surveys %>% filter(sex_orientation >= 4 |is.na(sex_orientation) & !is.na(ended_initial)))
+
+```
+
+13. __`r homosexual`__ heterosexual women.
+14. __`r homosexual_missing`__ heterosexual women and missings. 
+
+
+```{r}
+all_surveys = all_surveys %>% mutate(included = if_else(included, 
+                    sex_orientation < 4, F))
+newly_excluded = sum( !all_surveys$included)
+
+
+pipeline$heterosexual = n_excluded(all_surveys$included)
+sum(all_surveys$included)
+```
+
+#### excluded days 
+
+```{r}
+d_heterosexual = count(diary %>% filter(sex_orientation >= 4 & !is.na(ended_initial) ))
+
+d_heterosexual_missing = count(diary %>% filter(sex_orientation >= 4 |is.na(sex_orientation) & !is.na(ended_initial)))
+``` 
+
+13.1 __`r d_heterosexual`__ days of heterosexual women.
+14.1 __`r d_heterosexual_missing`__ days of heterosexual women and missings. 
+
+```{r}
+diary = diary %>% mutate(included_d = if_else(included_d, 
+                    sex_orientation < 4, F))
+newly_excluded_days = sum( !diary$included_d)
+
+pipeline_days$days_heterosexual = n_excluded_days(diary$included_d)
+sum(diary$included_d)
+```
+
+#### exclusion social diary
+```{r}
+s_heterosexual = count(diary_social %>% filter(sex_orientation >= 4 & !is.na(ended_initial) ))
+
+s_heterosexual_missing = count(diary_social %>% filter(sex_orientation >= 4 |is.na(sex_orientation) & !is.na(ended_initial)))
+``` 
+
+13.2 __`r s_heterosexual`__ days of heterosexual women.
+14.2 __`r s_heterosexual_missing`__ days of heterosexual women and missings.
+
+```{r}
+diary_social = diary_social %>% mutate(included_s = if_else(included_s, 
+                     sex_orientation < 4, F))
+newly_excluded_social = sum( !diary_social$included_s)
+
+pipeline_social$days_social_heterosexual = n_excluded_social(diary_social$included_s)
+sum(diary_social$included_s)
+```
+
+### change contraception
+
+```{r}
+
+# all_surveys %>% filter(!is.na(ended_initial) ) %>% crosstabs(~ change_to_nonhormonal + change_to_hormonal_contraception, data = .)
+```
+
+```{r}
+#crosstabs(~ change_contraception, data = all_surveys)
+#crosstabs(~ change_to_nonhormonal, data = all_surveys)
+#crosstabs(~ change_to_hormonal_contraception, data = all_surveys)
+#crosstabs(~ no_relevant_change + change_to_hormonal_contraception, data = all_surveys)
+
+all_surveys = all_surveys %>% mutate(included = if_else(
+  condition = included,
+  true = if_else(condition = change_to_nonhormonal == 0 & change_to_hormonal_contraception == 0, T, F, T),
+  false = F))
+
+newly_excluded = sum( !all_surveys$included, na.rm = T)
+
+pipeline$changed_contraception = n_excluded(all_surveys$included)
+sum(all_surveys$included)
+```
+
+#### excluded days 
+```{r}
+# diary %>% filter(!is.na(ended_initial) ) %>% crosstabs(~ change_to_nonhormonal + change_to_hormonal_contraception, data = .)
+```
+
+```{r}
+diary = diary %>% mutate(included_d = if_else(
+  condition = included_d,
+  true = if_else(condition = change_to_nonhormonal == 0 & change_to_hormonal_contraception == 0, T, F, T),
+  false = F))
+
+newly_excluded_days = sum( !diary$included_d)
+
+pipeline$days_changed_contraception = n_excluded_days(diary$included_d)
+sum(diary$included_d)
+```
+
+#### exclusion social diary
+```{r}
+# diary_social %>% filter(!is.na(ended_initial) ) %>% crosstabs(~ change_to_nonhormonal + change_to_hormonal_contraception, data = .)
+```
+
+```{r}
+diary_social = diary_social %>% mutate(included_s = if_else(
+  condition = included_s,
+  true = if_else(condition = change_to_nonhormonal == 0 & change_to_hormonal_contraception == 0, T, F, T),
+  false = F))
+
+newly_excluded_social = sum( !diary_social$included_s)
+
+pipeline_social$days_social_contraception = n_excluded_social(diary_social$included_s)
+sum(diary_social$included_s)
+```
+
+### dishonest
+
+```{r}
+# crosstabs(~ dishonest_discard, data = diary)
+d_dishonest = count(diary %>% filter(dishonest_discard == 1 & !is.na(ended_initial)  ))
+```
+
+17. __`r d_dishonest`__ dishonest days.
+
+```{r}
+diary = diary %>% mutate(included_d = if_else(included_d, 
+                    dishonest_discard != 1, F))
+newly_excluded_days = sum( !diary$included_d)
+
+pipeline$dishonest_days = n_excluded_days(diary$included_d)
+sum(diary$included_d)
+```
+
+
+#### exclusion social diary 
+```{r}
+s_dishonest = count(diary_social %>% filter(dishonest_discard == 1 & !is.na(ended_initial)  ))
+```
+
+17. __`r s_dishonest`__ dishonest days.
+
+```{r}
+diary_social = diary_social %>% mutate(included_s = if_else(included_s, 
+                    dishonest_discard != 1, F))
+newly_excluded_social = sum( !diary_social$included_s)
+
+pipeline_social$days_social_dishonest = n_excluded_social(diary_social$included_s)
+sum(diary_social$included_s)
+```
+
+
+
+### hormonal contraception last three month for nc 
+
+```{r}
+nrow(all_surveys %>% filter(included == T & hormonal_contraception == F & hormonal_contraception_last3m == 1))
+
+nrow(diary %>% filter(included_d == T & hormonal_contraception == F & hormonal_contraception_last3m == 1))
+
+nrow(diary_social %>% filter(included_s == T & hormonal_contraception == F & hormonal_contraception_last3m == 1))
+
+```
+
+```{r}
+final_sample= nrow(all_surveys %>% filter(included == T))
+
+single_nc = nrow(all_surveys %>% filter(included == T & hormonal_contraception == F))
+single_hc = nrow(all_surveys %>% filter(included == T & hormonal_contraception == T))
+```
+
+1. __`r final_sample`__ number of final sample size 
+2. __`r single_nc`__ number of singles not taking hormonal contraceptives. 
+3. __`r single_hc`__ number of singles taking hormonal contraceptives. 
+
+
+### no estimated fertility  
+```{r}
+diary_fertility = nrow(diary %>% filter(included_d == T & !is.na(fertile_fab)))
+
+diary_fertility_hc = nrow(diary %>% filter(included_d == T & !is.na(fertile_fab) & hormonal_contraception == T))
+diary_fertility_nc = nrow(diary %>% filter(included_d == T & !is.na(fertile_fab) & hormonal_contraception == F))
+
+social_fertility = nrow(diary_social %>% filter(included_s == T & !is.na(fertile_fab)))
+social_fertility_hc = nrow(diary_social %>% filter(included_s == T & !is.na(fertile_fab) & hormonal_contraception == T))
+social_fertiliy_nc= nrow(diary_social %>% filter(included_s == T & !is.na(fertile_fab) & hormonal_contraception == F))
+```
+
+
+```{r}
+diary = diary %>% mutate(included_d = if_else(included_d, 
+                    !is.na(fertile_fab) , F))
+newly_excluded_days = sum( !diary$included_d)
+
+pipeline$fertility = n_excluded_days(diary$included_d)
+sum(diary$included_d)
+```
+
+```{r}
+diary_social = diary_social %>% mutate(included_s = if_else(included_s, 
+                    !is.na(fertile_fab), F))
+newly_excluded_social = sum( !diary_social$included_s)
+
+pipeline_social$fertile = n_excluded_social(diary_social$included_s)
+sum(diary_social$included_s)
+```
+
+
+
+```{r}
+final_days= nrow(diary %>% filter(included_d == T))
+
+days_nc= nrow(diary %>% filter(included_d == T & hormonal_contraception == F))
+days_hc= nrow(diary %>% filter(included_d == T & hormonal_contraception == T))
+
+
+
+social_final = nrow(diary_social %>% filter(included_s ==T))
+
+social_nc= nrow(diary_social %>% filter(included_s == T & hormonal_contraception == F))
+social_hc = nrow(diary_social %>% filter(included_s == T & hormonal_contraception == T))
+
+
+diary_social = diary_social %>% left_join(diary %>% select(session, created_diary, included_d) %>% rename(included_diary = included_d), by = c("session", "created_diary"))
+# crosstabs(~ included_diary + included_s, data = diary_social)
+diary_social$included_s = diary_social$included_diary
+```
+4. __`r final_days`__ final number of days we can analyse.
+5. __`r days_nc`__ final number of days we can analyse for singles _not_ taking hormonal contraceptives.
+6. __`r days_hc`__ final number of days we can analyse for singles taking hormonal contraceptives.
+7. __`r social_final`__ final number of days in social diary we can analyse.
+8. __`r social_nc`__ final number of days in social diary we can analyse for singles _not_ taking hormonal contraceptives.
+9. __`r social_hc`__ final number of days in social diary we can analyse for singles taking hormonal contraceptives.
+
+
+## Diary days
+```{r}
+finished_diary_entry = sum(!is.na(s3_daily$ended))
+fertility_estimated = sum(!is.na(s3_daily$fertile_fab))
+fertility_backwards = sum(!is.na(s3_daily$prc_stirn_b))
+fertility_forwards = sum(!is.na(s3_daily$prc_stirn_b_forward_counted))
+
+fertile_known_man_known_days = fertile_known_man_known %>% ungroup() %>% summarise(n = sum(n)) %>% .[["n"]]
+fertile_known_person_known_days = fertile_known_person_known %>% ungroup() %>% summarise(n = sum(n)) %>% .[["n"]]
+```
+
+
+1. Number of diary entries total: __`r finished_diary_entry`__.
+2. Number of entries where fertility could be estimated: __`r fertility_estimated`__.
+    - forward-counted: `r fertility_forwards`.
+    - backward-counted: `r fertility_backwards`.
+3. We can estimate fertility and know about an interaction with a man (unrelated): `r fertile_known_man_known_days` days.
+
+
+# exclusion criteria in diary merged with diary_social_exclusion
+```{r}
+
+# for now, we don't care whether people were seen or thought about
+diary_social_exclusion = diary %>%
+  mutate(person = 
+           if_else(is.na(social_life_saw_people),
+                   if_else(is.na(social_life_thought_about), NA_character_, as.character(social_life_thought_about)),
+                   if_else(is.na(social_life_thought_about), as.character(social_life_saw_people), 
+                           paste0(social_life_saw_people, ",", social_life_thought_about))
+                   )
+           ) %>%
+  separate_rows(person, sep = ",") %>%
+  mutate(person = stringr::str_trim(person)) %>% 
+  ungroup() %>%
+  distinct() # brute way of ensu
+
+# but we want to make a variable saying whether that person was seen or thought about or both
+# dummy dataset seen
+seen_exclusion = diary %>% select(session, social_life_saw_people, created_diary) %>%
+  mutate(person = social_life_saw_people, person_seen = TRUE) %>%
+  separate_rows(person, sep = ",") %>%
+  mutate(person = stringr::str_trim(person)) %>% 
+  ungroup() %>%
+  select(session, person, created_diary, person_seen) %>%
+  na.omit() %>% 
+  distinct()
+
+# dummy dataset thought about
+thought_about_exclusion = diary %>% select(session, social_life_thought_about, created_diary, included_d) %>%
+  mutate(person = social_life_thought_about, person_thought_about = TRUE) %>%
+  separate_rows(person, sep = ",") %>%
+  mutate(person = stringr::str_trim(person)) %>% 
+  ungroup() %>%
+  select(session, person, created_diary, person_thought_about) %>%
+  na.omit() %>% 
+  distinct()
+
+# merge in
+diary_social_exclusion = diary_social_exclusion %>% left_join(seen_exclusion, by = c("session", "person", "created_diary"))
+diary_social_exclusion = diary_social_exclusion %>% left_join(thought_about_exclusion, by = c("session", "person", "created_diary"))
+# crosstabs(~ person_seen + person_thought_about, diary_social_exclusion)
+
+diary_social_exclusion %>% group_by(session, created_diary, person) %>% filter(n()>1) %>% nrow()
+
+diary_social_exclusion = diary_social_exclusion %>% left_join(network, by = c("session", "short", "person")) %>% mutate(interaction_partner = paste0(short, "_", person))
+
+nrow(diary_social_exclusion %>% filter(included_d == T & !is.na(fertile_fab)))
+nrow(diary_social %>% filter(included_s == T & !is.na(fertile_fab)))
+```
+
+# Contraception
+```{r}
+library(UpSetR)
+comma_separated_to_columns <- function(df, col) {
+  colname <- deparse(substitute(col))
+  df$splitcol <- df %>% pull(colname)
+  separate_rows(df, splitcol, convert = TRUE, sep = ", ") %>% 
+    mutate(splitcol = if_else(is.na(splitcol), "no", 
+                        if_else(splitcol == "" | 
+                                  splitcol %in% c(), "other", as.character(splitcol)))) %>% 
+    mutate(#splitcol = stringr::str_c(colname, "_", splitcol), 
+           value = 1) %>% 
+    spread(splitcol, value, fill = 0) %>% 
+    select(-colname)
+}
+library(UpSetR)
+all_surveys %>% select(session, contraception_method) %>% 
+  comma_separated_to_columns(contraception_method) %>% 
+  select(-session) %>% 
+  {
+  upset(., ncol(.), 20, show.numbers = TRUE, order.by = "freq",
+      main.bar.color = "#6E8691",
+      matrix.color = "#6E8691",
+      sets.bar.color = "#53AC9B")
+  }
+
+```
+
+## social network 
+```{r}
+summary(as.factor(network$person_sex))
+by_sex = s4_timespent %>% 
+    group_by(session) %>% 
+    summarise(female = sum(person_sex == 1, na.rm=T), male = sum(person_sex == 2, na.rm=T), n= n()) %>% select(female, male,n)
+```
+
+
+```{r}
+total_network = nrow(network)
+persons= nrow(network %>% filter(person_remember == 1 & !is.na(ended)))
+
+```
+__`r total_network`__ number of persons who were mentioned in diary
+__`r persons`__ number of nicknames/names women remembered.
+
+
+## Exclusion network
+
+```{r}
+source("0_helpers.R") 
+network$included <- TRUE
+excluded_old_network = 0
+
+
+pipeline_network = list()
+excluded_old_network = NULL
+network = network %>% mutate(included = if_else(included, 
+                                                !is.na(ended), F))
+
+newly_excluded_network = sum( !network$included)
+
+      
+pipeline_network$not_remembered = n_excluded_network(network$included)
+
+
+
+```
+
+```{r}
+network = network %>% mutate(included = if_else(included, 
+                                                person_remember ==1, F))
+
+newly_excluded_network = sum( !network$included)
+
+      
+pipeline_network$not_finished = n_excluded_network(network$included)
+
+```
+### strict exclusion 
+
+```{r}
+unique(network$person_sex_other)
+
+``` 
+
+
+```{r}
+
+
+network$included_strict <- TRUE
+
+pipeline_network_strict = list()
+excluded_old_network_strict = NULL
+network = network %>% mutate(included_strict = if_else(included_strict, 
+                                                !is.na(ended), F))
+
+newly_excluded_network_strict = sum( !network$included_strict)
+
+      
+pipeline_network$not_finished_strict = n_excluded_network_strict(network$included_strict)
+
+```
+
+```{r}
+
+network = network %>% mutate(included_strict = if_else(included_strict, 
+                                                person_remember == 1, F))
+
+newly_excluded_network_strict = sum( !network$included_strict)
+
+      
+pipeline_network$not_remembered_strict = n_excluded_network_strict(network$included_strict)
+
+```
+
+```{r}
+
+network = network %>% mutate(included_strict = if_else(included_strict, 
+                                                person_age > 0, F))
+
+newly_excluded_network_strict = sum( !network$included_strict)
+
+      
+pipeline_network$several_persons_strict = n_excluded_network_strict(network$included_strict)
+
+
+```
+
+```{r}
+network = network %>% mutate(included_strict = if_else(included_strict, 
+                                                person_sex != 3, F))
+
+newly_excluded_network_strict = sum( !network$included_strict)
+
+      
+pipeline_network$several_persons_strict = n_excluded_network_strict(network$included_strict)
+
+
+```
+
+
+```{r}
+
+person_excluded = nrow(network %>% filter(included == T))
+person_excluded_strict = nrow(network %>% filter(included_strict == T))
+
+``` 
+
+__`r person_excluded`__ number of persons included after excluding incorrect information 
+__`r person_excluded_strict`__ number of persons included after excluding incorrect information (strict)
+
+# Save
+```{r}
+save(diary_social, diary, network_nominations, network, s1_demo, s1_filter, s2_initial, s3_daily, s4_followup, s4_timespent, withfollowup, all_surveys, file = "cleaned_selected.rdata")
+``` 
+
+## demographics final sample
+
+
+```{r}
+
+options(digits = 4)
+
+
+all_surveys %>% 
+  filter(included == T & hormonal_contraception == T) %>%
+  select(age, religiosity, first_time, menstruation_length, number_sexual_partner, menarche, education_years) %>%
+  gather(variable, value) %>%
+  group_by(variable) %>%
+  filter(!is.na(value)) %>%
+  summarise(mean = mean(value), sd = sd(value), 
+            median = median(value),
+            min = min(value), max  = max(value)) %>%
+  data.frame() %>% 
+  pander()
+
+
+```
+
+```{r}
+all_surveys %>% 
+  filter(included == T & hormonal_contraception == F) %>%
+  select(age, religiosity, first_time, menstruation_length, number_sexual_partner, menarche, education_years) %>%
+  gather(variable, value) %>%
+  group_by(variable) %>%
+  filter(!is.na(value)) %>%
+  summarise(mean = mean(value), sd = sd(value), 
+            median = median(value),
+            min = min(value), max  = max(value)) %>%
+  pander()
+
+
+```
+
+age distribution
+```{r}
+ggplot(diary %>% filter(included_d==T & hormonal_contraception == T), aes(x = age), ) + geom_histogram(binwidth = 1) + xlab("Age")
+```
+
+```{r}
+
+ggplot(diary %>% filter(included_d==T & hormonal_contraception == F), aes(x = age), ) + geom_histogram(binwidth = 1) + xlab("Age")
+```
+
+
+occupation
+
+```{r}
+
+bar_count(all_surveys %>% filter(included == T), occupational_status)
+
+```
+
+income
+```{r}
+bar_count(all_surveys %>% filter(included == T), net_income)
+```
+
+
+
+religion
+
+```{r}
+bar_count(all_surveys %>% filter(included == T), religion)
+```
+
+
+religiosity
+```{r}
+
+bar_count(all_surveys %>% filter(included == T), religiosity)
+```
+
+education
+```{r}
+bar_count(all_surveys %>% filter(included == T), education_level)
+
+```
+
+
+
+age at menarche
+```{r}
+
+ggplot(all_surveys %>% filter(included == T), aes(x = menarche), ) + geom_histogram(binwidth = 1) + xlab("Age at menarche")
+
+```
+
+children? 1=yes, 0 = no
+```{r}
+bar_count(all_surveys %>% filter(included == T), has_children)
+
+```
+pregnant trying 
+1= trying to avoid it 
+6= trying to get pregnant 
+```{r}
+bar_count(all_surveys %>% filter(included == T), pregnant_trying)
+
+```
+
+flat sharing? 
+1= no 
+2= with parents/grand-parents 
+3= yes 
+```{r}
+
+bar_count(all_surveys %>% filter(included == T), abode_flat_share)
+
+```
+
+
+```{r}
+ggplot(all_surveys %>% filter(included == T), aes(x = first_time), ) + geom_histogram(binwidth = 1) + xlab("Age at first time (sex)")
+
+```
+
+contraception at all
+1 = yes 
+2 = usually
+3 = risk it 
+4 = no 
+5 = no sex 
+6 = other reason
+
+```{r}
+bar_count(all_surveys %>% filter(included == T), contraception_at_all)
+
+```
+
+number sexual partner 
+```{r}
+ggplot(all_surveys %>% filter(included == T), aes(x = number_sexual_partner)) + geom_histogram(binwidth = 1) + xlab("Anzahl Sexualpartner")
+```
+
+### social network - demographics 
+
+```{r}
+
+options(digits = 4)
+
+
+network %>%
+  filter(included ==T) %>%
+  select(person_age) %>%
+  gather(variable, value) %>%
+  group_by(variable) %>%
+  filter(!is.na(value)) %>%
+  summarise(mean = mean(value), sd = sd(value), 
+            median = median(value),
+            min = min(value), max  = max(value)) %>%
+  data.frame() %>% 
+  pander()
+
+
+```
+
+```{r}
+options(digits = 4)
+
+
+network %>%
+  filter(included_strict ==T) %>%
+  select(person_age) %>%
+  gather(variable, value) %>%
+  group_by(variable) %>%
+  filter(!is.na(value)) %>%
+  summarise(mean = mean(value), sd = sd(value), 
+            median = median(value),
+            min = min(value), max  = max(value)) %>%
+  data.frame() %>% 
+  pander()
+```
+
+```{r}
+by_sex = network %>% 
+    group_by(session) %>% 
+    summarise(female = sum(person_sex == 1, na.rm=T), male = sum(person_sex == 2, na.rm=T), n= n()) %>% select(female, male,n)
+```
+
+```{r}
+
+network %>% filter(included == T) %>% select(person_sex) %>% mutate(person_sex = factor(person_sex, levels=c(1,2,3))) %>% summary()
+network %>% filter(included_strict == T) %>% select(person_sex) %>% mutate(person_sex = factor(person_sex, levels=c(1,2,3))) %>% summary()
+
+
+# network %>% filter(included == T & is.na(person_sex)) %>% View()
+```
+
+
+```{r}
+
+bar_count(network %>% filter (included == T), person_relationship_to_anchor)
+
+bar_count(network %>% filter (included_strict == T), person_relationship_to_anchor)
+
+```
+
+```{r}
+
+bar_count(network %>% filter(included == T), person_relationship_status)
+bar_count(network %>% filter(included_strict == T), person_relationship_status)
+```
+
+```{r}
+bar_count(network %>% filter(included == T & !is.na(kinship_cleaned)), kinship_cleaned)
+
+```
+
+romantic experience? only asked if person is not related and male 
+```{r}
+
+bar_count(network %>% filter(included == T & person_sex==2 & person_relationship_to_anchor !='biological_relative'), person_romantic_experience)
+
+``` 
+
+
+## No missings in included variables?
+```{r}
+crosstabs(~ all_surveys$included)
+crosstabs(~ diary$included_d)
+crosstabs(~ diary_social$included_s)
+crosstabs(~ network$included)
+```
+
+
+

@@ -1,0 +1,1735 @@
+---
+title: "Data Wrangling"
+output: 
+  html_document:
+    toc: yes
+    toc_depth: 5
+    code_folding: "show"
+---
+
+
+```{r message=F,warning=F}
+source("0_helpers.R")
+library(tidylog)
+knitr::opts_chunk$set(error = FALSE)
+load("data/pretty_raw.rdata")
+knit_print.alpha <- knitr:::knit_print.default
+registerS3method("knit_print", "alpha", knit_print.alpha)
+```
+
+```{r nicer}
+opts_chunk$set(message=T, warning = F)
+```
+
+
+## Weekdays
+```{r weekdays, error=FALSE}
+s3_daily$weekday = format(as.POSIXct(s3_daily$created), format = "%w")
+s3_daily$weekend <- ifelse(s3_daily$weekday %in% c(0,5,6), 1, 0)
+s3_daily$weekday <- car::Recode(s3_daily$weekday,												"0='Sunday';1='Monday';2='Tuesday';3='Wednesday';4='Thursday';5='Friday';6='Saturday'",as.factor =T, levels = 	c('Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'))
+
+hour_string_to_period = function(hour_string) {
+	duration(as.numeric(stringr::str_sub(hour_string, 1,2)), units = "hours") + duration(as.numeric(stringr::str_sub(hour_string, 4,5)), units = "minutes") 
+}
+s3_daily$sleep_awoke_time = hour_string_to_period(s3_daily$sleep_awoke_time)
+s3_daily$sleep_fell_asleep_time = hour_string_to_period(s3_daily$sleep_fell_asleep_time)
+
+s3_daily$sleep_duration = ifelse(
+	s3_daily$sleep_awoke_time >= s3_daily$sleep_fell_asleep_time, 
+	s3_daily$sleep_awoke_time - s3_daily$sleep_fell_asleep_time, 
+	dhours(24) - s3_daily$sleep_fell_asleep_time + s3_daily$sleep_awoke_time
+) / 60 / 60
+
+s3_daily = s3_daily %>% 
+    mutate(created_date = as.Date(created - hours(10))) %>%  # don't count night time as next day
+  group_by(session) %>% 
+  mutate(first_diary_day = min(created_date)) %>% 
+  ungroup()
+
+stopifnot(s3_daily %>% drop_na(session, created_date) %>%  
+            group_by(session, created_date) %>% filter(n()>1) %>% nrow() == 0)
+```
+
+## Menstrual phase
+```{r menstrual.phase.calcs}
+s1_demo = s1_demo %>% mutate(ended_date = as.Date(ended))
+
+# s1_demo %>% 
+#   filter(menstruation_last < ended_date - days(40)) %>%
+#   select(menstruation_last, ended_date, menstruation_last_certainty, contraception_method)
+
+s1_menstruation_start = s1_demo %>% filter(!is.na(menstruation_last)) %>% 
+  filter(menstruation_last >= ended_date - days(40)) %>% # only last menstruation that weren't ages ago
+  mutate(created_date = as.Date(created)) %>%
+  select(session, created_date, menstruation_last) %>% rename(menstrual_onset_date_inferred = menstruation_last)
+
+s5_hadmenstruation = s5_hadmenstruation %>% 
+  filter(!is.na(last_menstrual_onset_date)) %>% 
+  mutate(created_date = as.Date(created)) %>%
+  select(session, created_date, last_menstrual_onset_date) %>% rename(menstrual_onset_date_inferred = last_menstrual_onset_date) %>% 
+  filter(!duplicated(session))
+table(duplicated(s5_hadmenstruation$session))
+```
+
+## Fertility estimation
+
+### LH surges and sex hormones
+
+```{r}
+lab = readxl::read_xlsx("data/Datensatz_Zyklusstudie_Labor.xlsx")
+
+lab = lab %>% 
+  rename(created_date = `Datum Lab Session`) %>% 
+  filter(!is.na(`VPN-CODE`), !is.na(created_date)) %>% 
+  mutate(short = str_sub(Tagebuchcode, 1, 7),
+         lab_only_no_diary = is.na(short),
+         short = if_else(is.na(short), `VPN-CODE`, short),
+         created_date = as.Date(created_date),
+         `Date LH surge` = as.Date(if_else(`Date LH surge` == "xxx", NA_real_, as.numeric(`Date LH surge`)), origin = "1899-12-30")) # some excel problem, where nrs are repeated at end, so we shorten it
+
+lab %>% mutate(n_women = n_distinct(`VPN-CODE`),
+               n_diary_participants = n_distinct(str_sub(Tagebuchcode, 1, 7), na.rm = T)) %>% 
+  group_by(n_women,n_diary_participants, `VPN-CODE`) %>% 
+  summarise(days = n(), surges = n_nonmissing(`Date LH surge`)) %>% 
+  select(-`VPN-CODE`) %>% 
+  summarise_all(mean)
+
+
+
+setdiff(lab$short, s1_demo$short) %>% unique() %>% length() # 7 didnt enter online study at all
+setdiff(lab$short, s3_daily$short) %>% unique() %>% length() # 18 didnt do diary
+setdiff(s3_daily$short, lab$short) %>% unique() %>% length() # 1235 didnt do lab
+# setdiff(lab$short, s1_demo$short_demo) %>% unique() # all codes found
+
+lab <- lab %>% filter(!lab_only_no_diary) %>% select(-lab_only_no_diary)
+get_long_sess = s3_daily %>% select(session, short) %>% na.omit() %>% unique()
+
+testthat::expect_equal(lab %>% filter(is.na(created_date)) %>% nrow(), 0)
+lab <- get_long_sess %>% inner_join(lab, by = "short")
+testthat::expect_equal(lab %>% filter(is.na(created_date)) %>% nrow(), 0)
+testthat::expect_equal(s3_daily %>% filter(is.na(created_date)) %>% nrow(), 0)
+
+s3_daily <- s3_daily %>% full_join(lab %>% select(-`Date LH surge`, -`Menstrual Onset`), by = c("session", "short", "created_date"), suffixes = c("_diary", "_lab"))
+s3_daily %>% select(ends_with("_lab")) %>% ncol()
+
+s3_daily %>% select(`IBL_Estradiol pg/ml`, ended) %>% codebook::md_pattern(min_freq = 0)
+
+s3_daily <- s3_daily %>% 
+  full_join(
+    lab %>% 
+      filter(!is.na(`Date LH surge`), exclude_luteal_too_long == 0) %>% 
+      mutate(created_date = `Date LH surge`) %>% 
+      select(session, short, created_date, `Date LH surge`), 
+    by = c("session", "short", "created_date"), suffixes = c("_diary", "_lab"))
+
+testthat::expect_equal(s3_daily %>% filter(is.na(created_date)) %>% nrow(), 0)
+
+# because of the typos in the lab session codes, we have to merge the long ones back on
+xtabs(~ is.na(session) + is.na(`VPN-CODE`), data = s3_daily)
+xtabs(~ is.na(short) + is.na(`VPN-CODE`), data = s3_daily)
+xtabs(~ is.na(ended) + is.na(`VPN-CODE`), data = s3_daily)
+xtabs(~ is.na(ended) + is.na(`Progesterone pg/ml`), data = s3_daily)
+# 
+# diary %>% filter(!is.na(Age)) %>% 
+#   select(short, Age, age, relationship_status, Relationship_status, `MEAN Größe`, `MEAN Gewicht`, height, weight) %>%
+#   group_by(short) %>% 
+#   summarise_all(first) %>% 
+#   distinct() %>% 
+#   mutate(age_diff = abs(Age - age), 
+#          height_diff = abs(height- `MEAN Größe`), 
+#          weight_diff = abs(weight - `MEAN Gewicht`),
+#          rel_diff = abs(relationship_status - Relationship_status)) %>% 
+#   arrange(age_diff) %>% View
+```
+
+#### Center sex hormones
+
+We remove outliers that are more than 3 SD from the mean and center within groups
+(logged and non-logged).
+
+```{r}
+outliers_to_missing <- function(x, sd_multiplier = 3) {
+  if_else(x > (mean(x, na.rm = T) + sd_multiplier * sd(x, na.rm = T)) |
+                                   x < (mean(x, na.rm = T) - sd_multiplier * sd(x, na.rm = T)),
+                                   NA_real_, x)
+}
+s3_daily <- s3_daily %>% 
+  ungroup() %>% 
+  mutate(
+    `Progesterone pg/ml` = outliers_to_missing(`Progesterone pg/ml`),
+    `Estradiol pg/ml` = outliers_to_missing(`Estradiol pg/ml`),
+    `IBL_Estradiol pg/ml` = outliers_to_missing(`IBL_Estradiol pg/ml`),
+    `Testosterone pg/ml` = outliers_to_missing(`Testosterone pg/ml`),
+    `Cortisol nmol/l` = outliers_to_missing(`Cortisol nmol/l`)
+  ) %>% 
+  group_by(session) %>% 
+  mutate(
+    progesterone_mean = mean(`Progesterone pg/ml`, na.rm = T),
+    `progesterone_diff` = `Progesterone pg/ml` - progesterone_mean,
+    progesterone_log_mean = mean(log(`Progesterone pg/ml`), na.rm = T),
+    progesterone_log_diff = log(`Progesterone pg/ml`) - progesterone_log_mean,
+    
+    estradiol_mean = mean(`Estradiol pg/ml`, na.rm = T),
+    estradiol_diff = `Estradiol pg/ml` - estradiol_mean,
+    estradiol_log_mean = mean(log(`Estradiol pg/ml`), na.rm = T),
+    estradiol_log_diff = log(`Estradiol pg/ml`) - estradiol_log_mean,
+
+    ibl_estradiol_mean = mean(`IBL_Estradiol pg/ml`, na.rm = T),
+    ibl_estradiol_diff = `IBL_Estradiol pg/ml` - ibl_estradiol_mean,
+    ibl_estradiol_log_mean = mean(log(`IBL_Estradiol pg/ml`), na.rm = T),
+    ibl_estradiol_log_diff = log(`IBL_Estradiol pg/ml`) - ibl_estradiol_log_mean,
+    
+    testosterone_mean = mean(`Testosterone pg/ml`, na.rm = T),
+    testosterone_diff = `Testosterone pg/ml` - testosterone_mean,
+    testosterone_log_mean = mean(log(`Testosterone pg/ml`), na.rm = T),
+    testosterone_log_diff = log(`Testosterone pg/ml`) - testosterone_log_mean,
+    
+    cortisol_mean = mean(`Cortisol nmol/l`, na.rm = T),
+    cortisol_diff = `Cortisol nmol/l` - cortisol_mean,
+    cortisol_log_mean = mean(log(`Cortisol nmol/l`), na.rm = T),
+    cortisol_log_diff = log(`Cortisol nmol/l`) - cortisol_log_mean
+  ) %>% 
+  ungroup()
+```
+
+### Fertility awareness
+```{r}
+tracked_windows <-  s4_followup %>% select(short, starts_with("aware_fertile"), -ends_with("block"), -aware_fertile_reason_unusual, -aware_fertile_effects) %>% 
+  filter(aware_fertile_phases_number > 0) %>% 
+  mutate_all(as.character) %>% 
+  gather(cycle, date, -short, -aware_fertile_phases_number) %>% 
+  tbl_df() %>% 
+  mutate(cycle = str_sub(cycle, str_length("aware_fertile_") + 1)) %>% 
+  separate(cycle, c("cycle", "startend")) %>% 
+  mutate(date = as.Date(date)) %>% 
+  spread(startend, date) %>% 
+  mutate(window_length = end - start,
+         date_of_ovulation_awareness = end - days(1))
+
+s3_daily <- s3_daily %>% left_join( tracked_windows %>% 
+                              select(short, window_length, date_of_ovulation_awareness) %>% 
+    mutate(created_date = date_of_ovulation_awareness), by = c("short", "created_date"))
+```
+
+
+### Compute menstrual onsets
+
+To compute menstrual onsets from the diary data, we have to clear a few hurdles:
+
+- diaries could be filled out until 3 am (and later in special cases), but participants will tend to count backwards from the preceding day when asked when the last menstruation occurred
+- we asked women only every ~3 days about menstruation (-> interpolate)
+- women could report the same menstrual onset several times (-> use the report closest to the onset, more accurate)
+- women reported a last menstrual onset in the demographic questionnaire preceding the diary and in the follow-up survey following the diary
+- we need to count backward and forward from each menstrual onset
+- we need to include the dates from the demographic and the follow-up questionnaire without overwriting more pertinent dates from the diary
+- we want to "bridge gaps" between reports of menstruation that are at most 40 days wide (because wider gaps probably mean that there was something going on with the menstrual cycle such as a miscarriage, menopause, etc.)
+
+Therefore we use a multi-step procedure:
+
+1. Collect unique menstrual onsets reported by each woman from pre-survey, diary, and post-survey
+2. Expand the onsets into time-series by participant.
+3. "Merge"/prefer reports closer to the onset when several different reports were made
+4. Count forward & backward.
+5. Assign cycle numbers.
+6. Merge on participant & created_date.
+
+```{r menstrual_onsets}
+# step 1
+menstrual_onsets = s3_daily %>% 
+  group_by(session) %>%
+  arrange(created) %>% 
+  mutate(
+    menstrual_onset_date = as.Date(menstrual_onset_date),
+    menstrual_onset_date_inferred = as.Date(ifelse(!is.na(menstrual_onset_date), 
+    menstrual_onset_date, # if date was given, take it
+     ifelse(!is.na(menstrual_onset), # if days ago was given
+            created_date - days(menstrual_onset - 1), # subtract them from current date
+            as.Date(NA)) 
+     ), origin = "1970-01-01")
+  ) %>% 
+  select(session, created_date, menstrual_onset_date_inferred) %>% 
+  filter(!is.na(menstrual_onset_date_inferred)) %>% 
+  unique()
+
+## add in the menstrual onsets we got from the pre and post survey and the lab
+lab_onsets <- lab %>% select(session, created_date, menstrual_onset_date_inferred = `Menstrual Onset`) %>% 
+  mutate(menstrual_onset_date_inferred = as.Date(menstrual_onset_date_inferred)) %>% 
+  filter(!is.na(menstrual_onset_date_inferred))
+
+mons = menstrual_onsets %>% 
+  select(session, created_date, menstrual_onset_date_inferred) %>% 
+  mutate(date_origin = "diary") %>% 
+   bind_rows(
+      s1_menstruation_start %>% mutate(date_origin = "demo"), 
+      s5_hadmenstruation %>% mutate(date_origin = "followup"),
+      lab_onsets %>% mutate(date_origin = "lab")
+     ) %>% 
+  filter( !is.na(menstrual_onset_date_inferred)) %>%
+  arrange(session, menstrual_onset_date_inferred, created_date) %>%
+  unique() %>%
+  group_by(session) %>%
+      # step 3: prefer reports closer to event if they conflict
+  mutate(
+    onset_diff = abs( as.double( lag(menstrual_onset_date_inferred) - menstrual_onset_date_inferred, units = "days")), # was there a change compared to the last reported menstrual onset (first one gets NA)
+    menstrual_onset_date_inferred = if_else(onset_diff < 7, # if last date is known, but is slightly different from current date 
+                 as.Date(NA), # attribute it to memory, not extremely short cycle, use fresher date
+                 menstrual_onset_date_inferred, # if it's a big difference, use the current date 
+                 menstrual_onset_date_inferred # use current date if last date not known/first onset
+                 ) # if no date is assigned today, keep it like that
+  ) %>% # carry the last MO forward
+  # mutate(created_date = menstrual_onset_date_inferred) %>%
+  filter(!is.na(menstrual_onset_date_inferred))
+
+nrow(mons)
+# mons %>% filter(created_date < menstrual_onset_date_inferred) %>% View
+mons %>% group_by(session, created_date) %>% filter(n()> 1)
+mons %>% distinct(session, created_date) %>% nrow()
+
+mons %>% group_by(session) %>% filter("lab" %in% date_origin)
+
+# mons %>% filter(session %starts_with% "2x-juq") %>% View()
+
+
+# now turn our dataset of menstrual onsets into full time series
+menstrual_days = mons %>% distinct(session, created_date) %>% 
+  arrange(session, created_date) %>%
+  # step 2 expand into time-series for participant
+  full_join(s3_daily %>% select(session, created_date), by = c("session", "created_date")) %>%
+  full_join(mons %>% mutate(created_date = menstrual_onset_date_inferred), by = c("session", "created_date")) %>%
+  mutate(date_origin = if_else(is.na(date_origin), "not_onset", date_origin)) %>% 
+  group_by(session) %>%
+  complete(created_date = full_seq(created_date, period = 1)) %>%
+  mutate(date_origin = if_else(is.na(date_origin), "unobserved_day", date_origin)) %>% 
+  arrange(created_date) %>%
+  distinct(session, created_date, menstrual_onset_date_inferred, .keep_all = TRUE) %>% 
+  arrange(session, created_date, menstrual_onset_date_inferred) %>% 
+  distinct(session, created_date, .keep_all = TRUE)
+
+table(menstrual_days$date_origin, exclude = NULL)
+
+menstrual_days %>% filter(date_origin != "filledin") %>% group_by(session) %>% summarise(n = n()) %>% summarise(mean(n))
+menstrual_days %>% group_by(session) %>% summarise(n = n()) %>% summarise(mean(n))
+menstrual_days %>% group_by(session) %>% summarise(n = n()) %>% pull(n) %>% qplot()
+
+
+menstrual_days %>% drop_na(session, created_date) %>%  
+            group_by(session, created_date) %>% filter(n()>1) %>% nrow() %>% { . == 0} %>% stopifnot()
+
+# menstrual_onsets %>% filter(session == "_2efChMgmsXAYmalYlRY9epxS_wse0ytWYttV6tLi6FUd2FRENkr9JgVnmtzaMCs")
+# mons %>% filter(session %starts_with% "_2sufSUfIWjNXg6xfRzJaCid9jzkY") %>% View()
+# menstrual_onsets %>% filter(session %starts_with% "_2sufSUfIWjNXg6xfRzJaCid9jzkY") %>% View()
+
+menstrual_days = menstrual_days %>%
+  group_by(session) %>% 
+  mutate(
+    # carry the last observation (the last observed menstrual onset) backward/forward (within person), but we don't do this if we'd bridge more than 40 days this way
+    # first we carry it backward (because reporting is retrospective)
+    next_menstrual_onset = rcamisc::repeat_last(menstrual_onset_date_inferred, forward = FALSE),
+    # then we carry it forward
+    last_menstrual_onset = rcamisc::repeat_last(menstrual_onset_date_inferred),
+    # in the next cycle, count to the next onset, not the last
+    next_menstrual_onset = if_else(next_menstrual_onset == last_menstrual_onset,
+                                   lead(next_menstrual_onset),
+                                   next_menstrual_onset),
+    # calculate the diff to current date
+    menstrual_onset_days_until = as.numeric(created_date - next_menstrual_onset),
+    menstrual_onset_days_since = as.numeric(created_date - last_menstrual_onset)
+    )
+
+menstrual_days %>% drop_na(session, created_date) %>%  
+            group_by(session, created_date) %>% filter(n()>1) %>% nrow() %>% { . == 0} %>% stopifnot()
+
+
+
+avg_cycle_lengths = menstrual_days %>% 
+  select(session, last_menstrual_onset, next_menstrual_onset) %>%
+  mutate(next_menstrual_onset_if_no_last = if_else(is.na(last_menstrual_onset), next_menstrual_onset, as.Date(NA_character_))) %>% 
+  arrange(session, next_menstrual_onset_if_no_last, last_menstrual_onset) %>% 
+  select(-next_menstrual_onset) %>% 
+  distinct(session, last_menstrual_onset, next_menstrual_onset_if_no_last, .keep_all = TRUE) %>% 
+  group_by(session) %>% 
+  mutate(
+    number_of_cycles = n(),
+    cycle_nr = row_number(),
+    cycle_length = as.double(lead(last_menstrual_onset) - last_menstrual_onset, units = "days"),
+    cycle_nr_fully_observed = sum(!is.na(cycle_length)),
+    mean_cycle_length_diary = mean(cycle_length, na.rm = TRUE),
+    median_cycle_length_diary = median(cycle_length, na.rm = TRUE)) %>% 
+  filter(!is.na(last_menstrual_onset) | !is.na(next_menstrual_onset_if_no_last))
+
+# avg_cycle_lengths %>% filter(session %starts_with% "_sqtMf5") %>% View("cycles")
+
+table(is.na(avg_cycle_lengths$cycle_nr))
+
+# menstrual_onsets %>% filter(session %starts_with% "_2sufSUfIWjNXg6xfRzJaCid9jzkY") %>% View()
+
+gaps <- s3_daily %>% filter(session %starts_with% "--_MgFd") %>% tbl_df() %>% pull(created_date) %>% diff() %>% as.numeric(.)
+stopifnot(!all(gaps == 1))
+
+s3_daily <- s3_daily %>% 
+  group_by(session) %>% 
+  complete(created_date = full_seq(created_date, period = 1)) %>% # include the gap days in the diary (happens by default in formr, this just to ensure)
+  ungroup() %>% 
+  mutate(diary_day_observation = case_when(
+    is.na(created) ~ "interpolated",
+    is.na(modified) ~ "not_answered",
+    !is.na(expired) ~ "started_not_finished",
+    is.na(ended) ~ "not_finished",
+    !is.na(ended) ~ "finished"
+  )) %>% 
+  left_join(menstrual_days %>% 
+    select(session, created_date, next_menstrual_onset, last_menstrual_onset, menstrual_onset_days_until, menstrual_onset_days_since, date_origin),
+    by = c("session", "created_date")
+  ) %>% 
+  mutate(
+  menstruation_today = if_else(menstruation_since_last_entry == 1, menstruation_today, 0),
+    menstruation_labelled = factor(if_else(! is.na(menstruation_today),
+       if_else(menstruation_today == 1, "yes", "no"),
+       if_else(menstrual_onset_days_since <= 5, 
+              if_else(menstrual_onset_days_since == 0, "yes", "probably", "no"), 
+                "no", "no")),
+ 				 levels = c('yes', 'probably', 'no'))
+  ) %>% 
+    mutate(next_menstrual_onset_if_no_last = if_else(is.na(last_menstrual_onset), next_menstrual_onset, as.Date(NA_character_)))
+
+gaps <- s3_daily %>% filter(session %starts_with% "--_MgFd") %>% tbl_df() %>% pull(created_date) %>% diff() %>% as.numeric(.)
+stopifnot(all(gaps == 1))
+
+s3_daily <- s3_daily %>% 
+  group_by(session) %>% 
+  mutate(first_diary_day = first(na.omit(first_diary_day)),
+         day_number = round(as.numeric(as.Date(created_date) - first_diary_day, unit = 'days'))) %>% 
+  ungroup()
+
+# s3_daily %>% filter(is.na(day_number)) %>% select(session, short, created_date, ended, first_diary_day) %>% arrange(short, created_date) %>% View
+table(s3_daily$day_number, exclude = NULL)
+table(s3_daily %>% drop_na(ended) %>% pull(day_number), exclude = NULL)
+testthat::expect_true(all(s3_daily %>% drop_na(ended) %>% pull(day_number) %in% 0:70))
+
+
+stopifnot(s3_daily %>% drop_na(session, day_number) %>% group_by(session, day_number) %>% filter(n() > 1) %>% nrow() == 0)
+
+gaps <- s3_daily %>% 
+  drop_na(session) %>% 
+  group_by(session) %>% 
+  summarise(no_gaps = all(as.numeric(diff(created_date)) == 1),
+            n = n(),
+            range = paste(range(day_number), collapse = '-'))
+
+stopifnot(all(gaps$no_gaps))
+# sort(table(gaps$range))
+```
+
+### Estimate day of ovulation
+```{r}
+# s3_daily %>% filter(short == "_sqtMf5") %>% select(short, created_date, ended, menstruation_labelled, next_menstrual_onset_if_no_last, last_menstrual_onset) %>% View("days")
+
+  
+s3_daily <- s3_daily %>% 
+    left_join(avg_cycle_lengths, by = c("session", "last_menstrual_onset", "next_menstrual_onset_if_no_last")) %>% 
+  left_join(s1_demo %>% select(session, menstruation_length), by = 'session') %>% 
+  mutate(
+    	next_menstrual_onset_inferred = last_menstrual_onset + days(menstruation_length),
+    	RCD_inferred = as.numeric(created_date - next_menstrual_onset_inferred)
+  )
+
+s3_daily %>% filter(short == "_sqtMf5", created_date == "2016-08-25") %>% pull(cycle_nr) %>% is.na() %>% isFALSE() %>% stopifnot()
+
+xtabs(~ s3_daily$diary_day_observation + is.na(s3_daily$cycle_nr))
+
+s3_daily <- s3_daily %>% 
+  group_by(session, cycle_nr) %>% 
+  mutate(
+         luteal_BC = if_else(menstrual_onset_days_until >= -15, 1, 0),
+         follicular_FC = if_else(menstrual_onset_days_since <= 15, 1, 0)
+         ) %>% 
+  mutate(
+    day_lh_surge = if_else(created_date == `Date LH surge`, 1, 0),
+    day_of_ovulation = if_else(menstrual_onset_days_until == -15, 1, 0),
+    day_of_ovulation_inferred = if_else(RCD_inferred == -15, 1, 0),
+    day_of_ovulation_forward_counted = if_else(menstrual_onset_days_since == 14, 1, 0),
+    date_of_ovulation_BC = min(if_else(day_of_ovulation == 1, created_date, structure(NA_real_, class="Date")), na.rm = TRUE),
+    date_of_ovulation_inferred = min(if_else(day_of_ovulation_inferred == 1, created_date, structure(NA_real_, class="Date")), na.rm = TRUE),
+    date_of_ovulation_forward_counted = min(if_else(day_of_ovulation_forward_counted == 1, created_date, structure(NA_real_, class="Date")), na.rm = TRUE),
+    date_of_ovulation_LH = min(`Date LH surge` + days(1), na.rm = T),
+    DRLH = as.numeric(created_date - date_of_ovulation_LH),
+    DRLH = if_else(between(DRLH, -15, 15), DRLH, NA_real_)
+  ) %>% 
+  ungroup() %>% 
+  mutate_at(vars(starts_with("date_of_ovulation_")), funs(if_else(is.infinite(.), as.Date(NA_character_),.)))
+
+
+
+s3_daily <- s3_daily %>% 
+  group_by(short, cycle_nr) %>% 
+  mutate(date_of_ovulation_awareness_nr = n_nonmissing(date_of_ovulation_awareness),
+         date_of_ovulation_awareness = if_else(date_of_ovulation_awareness_nr == 1 &
+                                                 window_length > 3 & window_length < 9,
+                                     first(na.omit(date_of_ovulation_awareness)), as.Date(NA_character_))) %>% 
+  mutate(fertile_awareness = case_when(
+    is.na(date_of_ovulation_awareness) ~ NA_real_,
+    created_date < (date_of_ovulation_awareness + 1 - window_length) ~ 0,
+    created_date > (date_of_ovulation_awareness + 1) ~ 0,
+    TRUE ~ 1
+  )) %>% 
+  ungroup()
+
+table(!is.na(s3_daily$date_of_ovulation_awareness))
+table(tracked_windows$window_length > 8)
+qplot(tracked_windows$window_length)
+
+
+
+s3_daily <- s3_daily %>% 
+  left_join(s4_followup %>% select(session, follicular_phase_length, luteal_phase_length), by = 'session') %>% 
+mutate(
+  date_of_ovulation_avg_follicular = last_menstrual_onset + days(follicular_phase_length),
+  date_of_ovulation_avg_luteal = next_menstrual_onset - days(luteal_phase_length + 1),
+  date_of_ovulation_avg_luteal_inferred = next_menstrual_onset_inferred - days(luteal_phase_length)
+) %>% select(
+  -luteal_phase_length, -follicular_phase_length
+)
+
+s3_daily %>% 
+  group_by(short) %>% 
+  summarise(surges = n_distinct(`Date LH surge`, na.rm = T)) %>% 
+  filter(surges > 0) %>% 
+  pull(surges) %>% 
+  table()
+
+# s3_daily %>%
+#   drop_na(session, cycle_nr) %>%
+#   group_by(short) %>%
+#   filter(4 == n_distinct(`Date LH surge`, na.rm = T)) %>% select(short, ended, DRLH, day_number, cycle_nr, created_date,menstrual_onset_days_until, menstrual_onset_days_since, `Date LH surge`) %>% View()
+
+# s3_daily %>% 
+#   drop_na(session, cycle_nr) %>% 
+#   group_by(short, cycle_nr) %>% 
+#   filter(2 == n_distinct(`Date LH surge`, na.rm = T)) %>% select(short, ended, day_number, DRLH, cycle_nr, created_date,menstrual_onset_days_until, menstrual_onset_days_since, `Date LH surge`) %>% View()
+
+# one case of a woman who reported two surges (close together in one cycle, we use the first surge)
+s3_daily %>% 
+  group_by(short, cycle_nr) %>% 
+  summarise(surges = n_distinct(`Date LH surge`, na.rm = T)) %>% 
+  filter(surges > 0) %>% 
+  pull(surges) %>% 
+  table()
+  
+stopifnot(s3_daily %>% drop_na(session, created) %>%  
+            group_by(session, created) %>% filter(n()>1) %>% nrow() == 0)
+
+# s3_daily %>% filter(session %starts_with% "_2sufSUfIWjNXg6xfRzJaCid9jzkY") %>% select(created_date, menstrual_onset, menstrual_onset_date, menstrual_onset_days_until, menstrual_onset_days_since) %>% View()
+# s3_daily %>% filter(session %starts_with% "2x-juq") %>% select(created_date, menstrual_onset, menstrual_onset_date, menstrual_onset_days_until, menstrual_onset_days_since) %>% View()
+
+s3_daily %>% filter(is.na(cycle_nr), !is.na(next_menstrual_onset)) %>% select(short, cycle_nr, last_menstrual_onset, next_menstrual_onset) %>% nrow() %>% { . == 0 } %>% stopifnot()
+s3_daily %>% filter(is.na(cycle_nr), !is.na(last_menstrual_onset)) %>% select(short, cycle_nr, last_menstrual_onset, next_menstrual_onset) %>% nrow() %>% { . == 0 } %>% stopifnot()
+
+
+# There are some 56 days across women for whom we have a last menstrual onset, but no cycle info. This happens when a last menstrual onset was reported that was more than 40 days before the beginning of the diary
+crosstabs(~ is.na(cycle_nr) + is.na(menstruation_length), s3_daily)
+crosstabs(~ is.na(cycle_nr) + is.na(menstruation_length), s3_daily %>% filter(diary_day_observation == "finished"))
+# 
+# s3_daily %>% filter(is.na(cycle_nr), !is.na(menstruation_length)) %>% select(short, created_date, ended, cycle_nr, last_menstrual_onset, next_menstrual_onset) %>% View
+# s1_demo %>% filter(short=="-ontLSS") %>% select(ended, contains("menst"))
+```
+
+### Estimate fertile window probability
+
+```{r fertility_estimation}
+s3_daily = s3_daily %>%
+  mutate(
+        FCD = menstrual_onset_days_since + 1,
+        RCD = menstrual_onset_days_until,
+        DAL = created_date - date_of_ovulation_avg_luteal,
+        RCD_squished = if_else(
+          cycle_length - FCD < 14,
+          29 - (cycle_length - FCD),
+          ((FCD/ (cycle_length - 14) ) * 15)),
+        RCD_squished = if_else(RCD_squished < 1, 1, RCD_squished),
+        RCD_squished = if_else(RCD < -40, NA_real_, RCD_squished) - 30,
+        RCD_squished_rounded = round(RCD_squished),
+        RCD_inferred_squished = if_else(
+          FCD > menstruation_length,
+            NA_real_,
+            as.numeric(if_else(
+              menstruation_length - FCD < 14,
+              29 - (menstruation_length - FCD),
+              round((FCD/ (menstruation_length - 14) ) * 15))
+            )),
+        RCD_inferred_squished = if_else(RCD_inferred_squished < 1, 1, RCD_inferred_squished),
+        RCD_inferred_squished = if_else(RCD_inferred < -40, NA_real_, RCD_inferred_squished) - 30,
+# add 15 days to the reverse cycle days to arrive at the estimated day of ovulation
+        RCD_rel_to_ovulation = RCD + 15,
+        RCD_fab = RCD_squished
+  )
+
+table(s3_daily$RCD_inferred_squished)
+table(s3_daily$RCD_squished)
+table(s3_daily$RCD)
+table(s3_daily$RCD_inferred)
+table(s3_daily$RCD_inferred_squished)
+table(s3_daily$RCD_inferred > -1)
+crosstabs(s3_daily$RCD_inferred[is.na(s3_daily$RCD_inferred_squished)]) %>% sort()
+crosstabs(s3_daily$RCD[is.na(s3_daily$RCD_squished)]) %>% sort()
+crosstabs(s3_daily$RCD_inferred_squished)
+table(s3_daily$FCD)
+
+days <- data.frame(
+	RCD = c(-28:-1, -29:-40),
+	FCD = c(1:40),
+	prc_stirn_b = c(.01, .01, .02, .03, .05, .09, .16, .27, .38, .48, .56, .58, .55, .48, .38, .28, .20, .14, .10, .07, .06, .04, .03, .02, .01, .01, .01, .01, rep(.01, times = 12)),
+# 	                rep(.01, times = 70)), # gangestad uses .01 here, but I think such cases are better thrown than kept, since we might simply have missed a mens
+	prc_wcx_b = c(.000, .000, .001, .002, .004, .009, .018, .032, .050, .069, .085, .094, .093, .085, .073, .059, .047, .036, .028, .021, .016, .013, .010, .008, .007, .006, .005, .005, rep(.005, times = 12))
+)
+	              # rep(NA_real_, times = 70))  # gangestad uses .005 here, but I think such cases are better thrown than kept, since we might simply have missed a mens
+days = days %>% mutate(
+ fertile_narrow = if_else(between(RCD,-18, -14), mean(prc_stirn_b[between(RCD, -18, -14)], na.rm = T), 
+                     if_else(between(RCD, -11, -3), mean(prc_stirn_b[between(RCD,-11, -3)], na.rm = T), NA_real_)), # these days are likely infertile
+ 
+  fertile_broad = if_else(between(RCD,-21,-13), mean(prc_stirn_b[between(RCD,-21,-13)], na.rm = T), 
+                     if_else(between(RCD,-11,-3), mean(prc_stirn_b[between(RCD,-11,-3)], na.rm = T), NA_real_)), # these days are likely infertile
+ fertile_window = factor(if_else(fertile_broad > 0.1, if_else(!is.na(fertile_narrow), "narrow", "broad"),"infertile"), levels = c("infertile","broad", "narrow")),
+ premenstrual_phase = ifelse(between(RCD,  -6, -1), TRUE, FALSE)
+)
+
+# lh_days = days %>% mutate(
+#   DRLH = 
+#     FCD 
+#   - 1 # because FCD starts counting at 1
+#   - 15 # because ovulation happens on ~14.6 days after menstrual onset
+#   # + 1 # we already added 1 to the date of the LH surge above, as it happens 24-48 hours before ovulation
+#   ) %>% select(-FCD, -RCD_for_merge) 
+
+# from Jünger et al. 2018 Supplementary Material
+# Day relative to ovulation	Schwartz et al., (1980)	Wilcox et al., (1998)	Colombo & Masarotto (2000)	Weighted average
+lh_days <- tibble(
+  conception_risk_lh = c(0.00, 0.01, 0.02, 0.06, 0.16, 0.20, 0.25, 0.24, 0.10, 0.02, 0.02 ),
+  DRLH = c(-8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2)
+) %>% 
+  mutate(fertile_lh = conception_risk_lh/max(conception_risk_lh))
+
+# from blake et al. supplement (unweighted)  
+blake_meta <- tibble::tibble(DRLH = -10:6, CR = c(0,0,0.00267,
+0.00998,
+0.02600,
+0.06180,
+0.11600,
+0.15917,
+0.20717,
+0.21633,
+0.15667,
+0.06540,
+0.05250,
+0.01550,
+0.00300,
+0.00000, 0)) 
+blake_meta %>% left_join(lh_days) %>% 
+  mutate(conception_risk_lh = na_if(conception_risk_lh, 0)) %>% 
+  summarise(cor(conception_risk_lh, CR, use = 'pairwise.complete.obs'))
+
+# blake and juenger values are basically the same, so I'll use Juenger
+
+s3_daily = s3_daily %>% left_join(lh_days, by = "DRLH") %>% 
+  mutate(fertile_lh = if_else(is.na(fertile_lh) &
+                                between(DRLH, -15, 15), 0, fertile_lh))
+
+rcd_days = days %>% select(-FCD)
+s3_daily = left_join(s3_daily, rcd_days, by = "RCD")
+
+rcd_squished = days %>% select(-FCD)
+names(rcd_squished) = paste0(names(rcd_squished), "_squished")
+s3_daily = left_join(s3_daily, rcd_squished, by = c("RCD_squished_rounded" = "RCD_squished"))
+
+rcd_inferred_squished = days %>% select(-FCD)
+names(rcd_inferred_squished) = paste0(names(rcd_inferred_squished), "_inferred_squished")
+s3_daily = left_join(s3_daily, rcd_inferred_squished, by = "RCD_inferred_squished")
+
+
+fcd_days = days %>% select(-RCD)
+names(fcd_days) = paste0(names(fcd_days), "_forward_counted")
+fcd_days = fcd_days %>% rename(FCD = FCD_forward_counted)
+s3_daily = left_join(s3_daily, fcd_days, by = "FCD")
+
+aware_luteal_squished = days %>% select(-FCD) %>% mutate(RCD = RCD + 15)
+names(aware_luteal_squished) = paste0(names(aware_luteal_squished), "_aware_luteal")
+s3_daily = left_join(s3_daily, aware_luteal_squished, by = c("DAL" = "RCD_aware_luteal"))
+
+
+rcd_inferred_days = days %>% select(-FCD)
+names(rcd_inferred_days) = paste0(names(rcd_inferred_days), "_inferred")
+s3_daily = left_join(s3_daily, rcd_inferred_days, by = "RCD_inferred")
+table(s3_daily$prc_stirn_b_inferred)
+
+# s3_daily %>% filter(is.na(prc_stirn_b_inferred_squished), !is.na(prc_stirn_b_inferred)) %>% select(short, menstruation_length, cycle_nr, cycle_length, day_number, created_date, last_menstrual_onset, next_menstrual_onset, next_menstrual_onset_inferred, FCD, RCD, RCD_squished, RCD_inferred, RCD_inferred_squished, RCD_inferred, prc_stirn_b_inferred_squished, prc_stirn_b) %>% rcamisc::view_in_excel()
+xtabs(~ is.na(prc_stirn_b_inferred_squished) + is.na(prc_stirn_b_inferred), data = s3_daily)
+xtabs(~ is.na(prc_stirn_b_squished) + is.na(prc_stirn_b), data = s3_daily)
+xtabs(~ is.na(prc_stirn_b_squished) + is.na(RCD_squished), data = s3_daily)
+xtabs(~ is.na(prc_stirn_b_inferred_squished) + is.na(prc_stirn_b_squished), data = s3_daily)
+
+s3_daily = s3_daily %>% 
+  mutate(fertile_fab = prc_stirn_b, 
+         premenstrual_phase_fab = premenstrual_phase
+  )
+
+var_label(s3_daily$fertile_fab) <- "Est. fertile window prob. (BC+i)"
+var_label(s3_daily$premenstrual_phase_fab) <- "Est. premenstrual phase (BC+i)"
+
+s3_daily %>% select(fertile_fab, premenstrual_phase_fab, menstruation_labelled) %>% na.omit() %>% nrow()
+s3_daily %>% select(fertile_fab, premenstrual_phase_fab, menstruation_labelled) %>% codebook::md_pattern()
+
+# s3_daily %>% filter(is.na(menstruation_labelled), !is.na(fertile_fab)) %>% select(short, created_date, ended, menstruation_labelled, menstrual_onset, menstrual_onset_date, menstrual_onset_days_until, menstrual_onset_days_since)  %>% View()
+```
+
+test some special corner cases
+```{r}
+# we did correctly infer FCDs from onset reported before the diary
+s3_daily %>% filter(session %starts_with% "_2efChM") %>% slice(1) %>% pull(FCD) %>% is.na() %>% isFALSE %>% stopifnot()
+# we did correctly add cycle nrs even when we didnt observe the cycle's end
+s3_daily %>% filter(short == "_sqtMf5", created_date == "2016-08-25") %>% pull(cycle_nr) %>% is.na() %>% isFALSE() %>% stopifnot()
+```
+
+
+### Infer menstruation
+
+We did not ask about menstruation on every day, so as not to give away the purpose of the study.
+We can estimate the probability of menstruation quite well from other variables.
+
+```{r}
+infer_mens_df <- s3_daily %>% group_by(short) %>% 
+  mutate(
+    premenstrual_phase = if_else(premenstrual_phase_fab == 1, "1", "0", "unknown"),
+    postmenstrual_phase = if_else(menstrual_onset_days_since < 6, "1", "0", "unknown"),
+    cycle_length = if_else(cycle_length > 34, "35+", as.character(cycle_length), "unknown"),
+    menstrual_onset_days_since = if_else(menstrual_onset_days_since > 9, "10+", as.character(menstrual_onset_days_since), "unknown"),
+    menstrual_pain = if_else(menstrual_pain == 1, "1", "0", "0"),
+    menstruation_lag3 = if_else(lag(menstruation_today, 3) == 1, "1", "0", "unknown"),
+    menstruation_lead3 = if_else(lead(menstruation_today, 3) == 1, "1", "0", "unknown")) %>% 
+  ungroup() %>% 
+  mutate_at(vars(menstruation_lag3, menstruation_lead3, menstrual_pain, premenstrual_phase, postmenstrual_phase), funs(factor)) %>% 
+  mutate(menstrual_onset_days_since = factor(menstrual_onset_days_since, levels = c("unknown", 0:9, "10+"))) %>% 
+  select(short, menstruation_today, menstrual_onset_days_since, cycle_length,
+         menstruation_lag3, menstruation_lead3, menstrual_pain, premenstrual_phase, postmenstrual_phase)
+
+infer_mens_df %>% select(-menstruation_today, -short) %>% drop_na %>% nrow()
+
+infer_mens_noran <- glm(menstruation_today ~ premenstrual_phase * menstrual_pain + menstrual_onset_days_since, data = infer_mens_df, family = binomial)
+infer_mens_noran
+DescTools::PseudoR2(infer_mens_noran, which = "Nagelkerke")
+
+infer_mens <- lme4::glmer(menstruation_today ~ premenstrual_phase * menstrual_pain + menstrual_onset_days_since + (1 + menstrual_pain | short), data = infer_mens_df, family = binomial, na.action = na.exclude)
+
+# plot(allEffects(infer_mens))
+menstruation_imputed_noran <- predict(infer_mens_noran, newdata = infer_mens_df %>% select(-menstruation_today), type = "response", allow.new.levels = TRUE)
+s3_daily$menstruation_imputed <- predict(infer_mens, newdata = infer_mens_df %>% select(-menstruation_today), type = "response", allow.new.levels = TRUE)
+cor.test(s3_daily$menstruation_imputed, s3_daily$menstruation_today)
+cor.test(menstruation_imputed_noran, s3_daily$menstruation_today)
+s3_daily$menstruation <- if_else(is.na(s3_daily$menstruation_today), s3_daily$menstruation_imputed, as.double(s3_daily$menstruation_today))
+sum(!is.na(s3_daily$menstruation_imputed))
+qplot(s3_daily$menstruation_imputed, fill = if_else(s3_daily$menstruation_today == 1, "1", "0", "unknown"),) + scale_fill_colorblind("Actual")
+qplot(menstrual_onset_days_since, menstruation, data = s3_daily, geom = "blank") + geom_smooth(stat = 'summary', fun.data = 'mean_se') + xlim(0,15)
+
+
+s3_daily <- s3_daily %>% select(-menstruation_length)
+
+var_label(s3_daily$menstruation) <- "Est. menstruation"
+```
+
+
+## Contraception
+
+### Other hormonal contraception
+For pills and other hormonal contraception that was not in our list.
+
+```{r}
+s1_demo %>% 
+  filter(!is.na(other_pill_name) | !is.na(contraception_hormonal_other) | !is.na(contraception_method_other)) %>% 
+  select(other_pill_name, contraception_hormonal_other, contraception_method_other) %>% 
+  mutate(other_pill_name = str_to_lower(other_pill_name)) %>% 
+  distinct() %>% 
+  mutate(contraception_other_pill_estrogen = NA_real_,
+         contraception_other_pill_gestagen = NA_real_,
+         contraception_other_pill_gestagen_type = NA_real_
+         ) -> 
+  other_pill_name
+
+rcamisc:::view_in_excel(other_pill_name)
+
+
+rio::export(other_pill_name, "codings/other_pill_name.xlsx")
+other_pill_name = readxl::read_xlsx("codings/other_pill_name_coded.xlsx",1)
+
+s1_demo <- s1_demo %>% left_join(
+  other_pill_name %>% distinct())
+```
+
+```{r contraception}
+s1_demo = s1_demo %>% 
+  mutate(hormonal_contraception = if_else(contraception_method %contains% "hormonal", T, F, missing = F),
+  contraception_method_broad = stringr::str_split_fixed(contraception_method, "_", 2)[,1]
+)
+
+
+sort(table(s1_demo$contraception_method))
+unique(s1_demo$contraception_method_other) # todo: code manually
+sort(table(s1_demo$contraception_combi))
+unique(s1_demo$contraception_method_combination_other)
+
+s1_demo = s1_demo %>% mutate(
+  contraception_calendar_abstinence = stringr::str_replace(contraception_calendar_abstinence, "1", "abstinence"),
+  contraception_calendar_abstinence = stringr::str_replace(contraception_calendar_abstinence, "2", "no_penetration"),
+  contraception_calendar_abstinence = stringr::str_replace(contraception_calendar_abstinence, "3", "less_sex"),
+  contraception_calendar_abstinence = stringr::str_replace(contraception_calendar_abstinence, "4", "other_method")
+)
+
+
+choices <- rio::import("https://docs.google.com/spreadsheets/d/1tLQDVyYUAXLBkblTT8BXow_rcg5G6xK9Vi3xTGieN20/edit#gid=1116762580", which = 2)
+pills <- choices %>% 
+  slice(1:182) %>% 
+  filter(!is.na(name), name != "") %>% 
+  mutate(
+    list_name = na_if(list_name, ""),
+    list_name = zoo::na.locf(list_name)
+    ) %>% 
+  filter(list_name == "pills") %>% 
+  select(contraception_hormonal_pill = name, 
+         contraception_hormonal_pill_estrogen = 
+           `Östrogenmikrogramm pro Zyklus`,
+         contraception_hormonal_pill_gestagen_type = 
+           `Art des Gestagens`
+         ) %>% 
+  mutate(contraception_hormonal_pill_estrogen =
+           as.numeric(contraception_hormonal_pill_estrogen)/21)
+
+s1_demo <- s1_demo %>% 
+  left_join(pills, by = "contraception_hormonal_pill")
+
+s1_demo <- s1_demo %>% 
+  mutate(contraception_hormonal_pill_estrogen = if_na(contraception_hormonal_pill_estrogen, contraception_pill_estrogen),
+         contraception_hormonal_pill_gestagen_type = if_na(contraception_hormonal_pill_gestagen_type, contraception_pill_gestagen_type))
+
+s1_demo <- s1_demo %>% 
+  mutate(estrogen_progestogen = case_when(
+      contraception_hormonal_other == "depo_clinovir" ~ "progestogen_only",
+    contraception_hormonal_other == "implanon" ~ "progestogen_only",
+    contraception_hormonal_other_name %contains% "aydess" ~ "progestogen_only",
+    contraception_hormonal_other_name %contains% "Mirena" ~ "progestogen_only",
+    contraception_hormonal_other_name %contains% "Lisvy" ~ "progestogen_and_estrogen",
+    contraception_hormonal_other %contains% "mirena" ~ "progestogen_only",
+    contraception_hormonal_other != "mirena" ~ "progestogen_and_estrogen",
+    contraception_hormonal_pill %in% c("28_mini", "cerazette", 
+                                       "cyprella", "damara",
+                                       "desirett",
+                                       "diamilla", "jubrele", "microlut",
+                                       "seculact") ~ "progestogen_only",
+    contraception_pill_estrogen == 0 & contraception_pill_gestagen > 0 ~ "progestogen_only",
+    contraception_method %contains% "hormonal_pill" ~ "progestogen_and_estrogen",
+    contraception_method %contains% "hormonal_morning_after_pill" ~ NA_character_,
+    TRUE ~ "non_hormonal"
+  )
+  )
+crosstabs(~ estrogen_progestogen + hormonal_contraception, s1_demo)
+# s1_demo %>% drop_na(other_pill_name) %>% select(other_pill_name, contraception_pill_estrogen,
+#                    contraception_pill_gestagen, contraception_pill_gestagen_type) %>% View()
+
+# s1_demo %>% drop_na(contraception_hormonal_other_name) %>% select(contraception_hormonal_other_name, contraception_other_estrogen,
+                   # contraception_other_gestagen, contraception_other_gestagen_type) %>% View()
+sort(table(s1_demo$estrogen_progestogen))
+
+sort(table(s1_demo$contraception_calendar_abstinence))
+sort(table(s1_demo$contraception_hormonal_other))
+sort(table(s1_demo$contraception_hormonal_other_name))
+table(s1_demo$contraception_app)
+common_apps = table(tolower(stringr::str_trim(s1_demo$contraception_app_name)))
+sort(common_apps[common_apps > 3])
+
+table(s1_demo$pregnant_trying)
+sort(table(s1_demo$wish_for_children))
+```
+
+
+## Singles vs couples
+```{r singles}
+s1_demo = s1_demo %>% mutate(hetero_relationship = as.numeric(hetero_relationship))
+s1_demo %>% 
+    count(hetero_relationship)
+    
+s1_demo %>% 
+    left_join(s1_filter %>% select(session, gets_paid)) %>%
+    count(gets_paid, hetero_relationship) %>%
+    na.omit()
+```
+
+### SOI
+```{r}
+old_labels <- s2_initial$soi_r_desire_7 %>% val_labels()
+new_labels <- 1:5
+names(new_labels) <- names(old_labels)
+s2_initial <- s2_initial %>% mutate_at(vars(soi_r_desire_7, soi_r_desire_9, soi_r_desire_8), funs(
+  recode(., "never" = 1, "rarely" = 2, "monthly" = 3, "weekly"  = 4, "daily" = 5)
+)) %>% 
+  labelled::set_value_labels(soi_r_desire_7 = new_labels, soi_r_desire_9 = new_labels, soi_r_desire_8 = new_labels)
+s2_initial$soi_r_desire = s2_initial %>% ungroup() %>% select(soi_r_desire_7, soi_r_desire_9, soi_r_desire_8) %>% aggregate_and_document_scale(fun = robust_rowmeans)
+var_label(s2_initial$soi_r_desire_8) <- "Sociosexual inventory-revised: Desire Subscale"
+
+cutpoints <- c("0" = 1,
+               "1" = 2,
+               "2-3" = 3,
+               "4-7" = 4,
+               "8 or more" = 5)
+s2_initial <- s2_initial %>% mutate_at(vars(soi_r_behavior_1, soi_r_behavior_2, soi_r_behavior_3),
+                                       funs(discrete = case_when(
+                                         . == 0 ~ 1,
+                                         . == 1 ~ 2,
+                                         . %in% 2:3 ~ 3,
+                                         . %in% 4:7 ~ 4,
+                                         . %in% 8:1e4 ~ 5))) %>% 
+  labelled::set_value_labels(soi_r_behavior_1_discrete = cutpoints, soi_r_behavior_2_discrete = cutpoints, soi_r_behavior_3_discrete = cutpoints)
+var_label(s2_initial$soi_r_behavior_1_discrete) <- var_label(s2_initial$soi_r_behavior_1)
+var_label(s2_initial$soi_r_behavior_2_discrete) <- var_label(s2_initial$soi_r_behavior_2)
+var_label(s2_initial$soi_r_behavior_3_discrete) <- var_label(s2_initial$soi_r_behavior_3)
+
+s2_initial$soi_r_behavior = s2_initial %>% ungroup() %>% select(soi_r_behavior_1_discrete, soi_r_behavior_2_discrete, soi_r_behavior_3_discrete) %>% aggregate_and_document_scale(fun = robust_rowmeans)
+var_label(s2_initial$soi_r_behavior) <- "Sociosexual inventory-revised: Behaviour Subscale"
+
+
+s2_initial$soi_r = s2_initial %>% ungroup() %>% select(soi_r_attitude_6r, soi_r_attitude_4, soi_r_attitude_5, soi_r_desire_7, soi_r_desire_9, soi_r_desire_8, soi_r_behavior_1_discrete, soi_r_behavior_2_discrete, soi_r_behavior_3_discrete) %>% aggregate_and_document_scale(fun = robust_rowmeans)
+var_label(s2_initial$soi_r) <- "Sociosexual inventory-revised"
+```
+
+
+### Partner attractiveness items
+```{r}
+s2_initial <- s2_initial %>% 
+  rename(partner_sexiness = attractiveness_sexy,
+         partner_attractiveness_body = attractiveness_body,
+         partner_attractiveness_face = attractiveness_face,
+        partner_attractiveness_shortterm = attractiveness_stp,
+        partner_attractiveness_longterm = attractiveness_ltp,
+        partner_attractiveness_trust = attractiveness_trustworthiness
+        ) %>% 
+  mutate(
+    spms_rel = spms_self - spms_partner
+  )
+
+
+s2_initial$partner_attractiveness_sexual <- s2_initial %>% select(partner_sexiness, partner_attractiveness_shortterm, partner_attractiveness_face, partner_attractiveness_body) %>% aggregate_and_document_scale(fun = robust_rowmeans)
+var_label(s2_initial$partner_attractiveness_sexual) <- "Partner's sexual attractiveness"
+```
+
+### Relationship satisfaction
+```{r}
+s2_initial$relationship_conflict_R = 6 - s2_initial$relationship_conflict
+s2_initial$relationship_problems_R = 6 - s2_initial$relationship_problems
+psych::alpha(s2_initial %>% select(relationship_problems_R, relationship_satisfaction_overall, relationship_conflict_R, relationship_satisfaction_2, relationship_satisfaction_3) %>% data.frame())
+s2_initial$relationship_satisfaction = s2_initial %>% ungroup() %>% select(relationship_problems_R, relationship_satisfaction_overall, relationship_conflict_R, relationship_satisfaction_2, relationship_satisfaction_3) %>% aggregate_and_document_scale(fun = robust_rowmeans)
+var_label(s2_initial$relationship_satisfaction) <- "Relationship satisfaction"
+```
+
+## Living situation
+```{r}
+s1_demo <- s1_demo %>% 
+  mutate(
+    living_situation = case_when(
+      abode_alone == 1 ~ "alone",
+      abode_with_partner == 1 ~ "with partner",
+      abode_flat_share == 3 ~ "flatshare",
+      abode_flat_share == 2 ~ "with family",
+      nr_children > 1 ~ "with children",
+      hetero_relationship == 0 ~ "alone",
+      abode_flat_share == 1 ~ "other",
+      TRUE ~ "missing"
+    )
+  )
+table(s1_demo$living_situation)
+# s1_demo %>% filter(living_situation == "other") %>% select(starts_with("abode")) %>% View
+```
+
+
+
+## Merge surveys
+```{r merge_xsect}
+pre_surveys = s1_demo %>%
+  left_join(s2_initial, by = "session", suffix = c("_demo", "_initial")) # merge demo and personality stuff
+
+all_surveys = pre_surveys %>%
+  left_join(s4_followup, by = "session") # add follow up survey
+stopifnot(!any(duplicated(all_surveys$session)))
+```
+
+
+## Code open answer
+
+### Guessed hypothesis?
+```{r}
+s4_followup %>% filter(!is.na(hypothesis_guess) & stringr::str_trim(hypothesis_guess) != "") %>% select(session, hypothesis_guess) %>% 
+  mutate(
+    # if they mention hormones or menstruation or PMS, but not the cycle, fertile window, ovulation
+        hypothesis_hormones_mentioned = NA_real_,
+    # if they mention cycle/fertile window, but only generally or in combination with generics like "mood"
+        hypothesis_cycle_mentioned = 0,
+    # if they mention the cycle and sex/libido/attractiveness
+         hypothesis_cycle_sex = 0) %>% 
+  data.frame() -> hypothesis_guessed
+
+writexl::write_xlsx(hypothesis_guessed, "codings/hypothesis_guessed.xlsx")
+hypothesis_guessed = readxl::read_xlsx("codings/hypothesis_guessed_coded.xlsx",1)
+
+all_surveys = all_surveys %>% left_join(hypothesis_guessed %>% select(-hypothesis_guess), by = c("session"))
+ 
+
+ 
+all_surveys$hypothesis_guess_topic <- 0
+all_surveys <- all_surveys %>% 
+  mutate(
+  hypothesis_guess_topic = replace(hypothesis_guess_topic, hypothesis_hormones_mentioned == 1, 1),
+  hypothesis_guess_topic = replace(hypothesis_guess_topic, hypothesis_cycle_mentioned == 1, 2),
+  hypothesis_guess_topic = replace(hypothesis_guess_topic, hypothesis_cycle_sex == 1, 3),
+  hypothesis_guess_topic = factor(hypothesis_guess_topic, level=c(0,1,2,3), labels=c('no_guess','hormones', 'cycle', 'cycle_sex'))
+  )
+```
+
+### app awareness
+Did they use a menstrual cycle or pill app and was it one that would foster
+awareness of the menstrual cycle?
+
+```{r}
+awareness <- rio::import("codings/awareness_coded.xlsx") %>% tbl_df()
+rio::export(all_surveys %>% select(session, contraception_app_name, aware_fertile_reason_unusual, feedback_for_us) %>% full_join(awareness %>% select(session, cycle_awareness_app, cycle_awareness_other) %>% 
+    distinct(), by = c("session")) %>% filter(contraception_app_name != "" | aware_fertile_reason_unusual != ""  | feedback_for_us != "") %>% select(session, contraception_app_name, aware_fertile_reason_unusual, feedback_for_us, cycle_awareness_app, cycle_awareness_other), "codings/awareness.xlsx")
+
+all_surveys <- all_surveys %>% left_join(
+  awareness %>% select(session, cycle_awareness_app, cycle_awareness_other) %>% 
+    distinct(), by = "session") %>% 
+  mutate(cycle_awareness_app = recode(cycle_awareness_app,
+            `1` = "cycle_phase_aware",
+            `2` = "symptom_diaries",
+            `3` = "unclear",
+            `0` = "reminder",
+            .missing = "none"))
+
+crosstabs(~ cycle_awareness_app, all_surveys)
+crosstabs(~ cycle_awareness_app + hormonal_contraception, all_surveys)
+crosstabs(~ cycle_awareness_app + hormonal_contraception, all_surveys)
+all_surveys %>% group_by(tolower(str_trim(contraception_app_name)), cycle_awareness_app) %>% 
+  summarise(n = n()) %>% arrange(desc(n))
+```
+
+
+### change contraception
+```{r}
+
+all_surveys %>% select(session, change_contraception, change_contraception_to) %>% filter(change_contraception == 1)-> contraception_change
+
+s1_demo %>% select(session, contraception_method) -> contraception
+
+contraception_change <- merge(contraception_change, contraception, by='session')
+
+
+contraception_change %>% mutate( 
+  # contraception change does not influence group membership
+  no_relevant_change = NA_real_,
+  # nonhormonal to hormonal contraception
+  change_to_hormonal_contraception = 0,
+  # hormonal to nonhormonal contraception 
+  change_to_nonhormonal = 0) %>% 
+  data.frame() -> change_contraception_to
+
+
+writexl::write_xlsx(change_contraception_to, "codings/change_contraception_to.xlsx")
+change_contraception_to = readxl::read_xlsx("codings/change_contraception_to_coded.xlsx",1)
+
+all_surveys = all_surveys %>% left_join(change_contraception_to %>% select(session, no_relevant_change, change_to_hormonal_contraception, change_to_nonhormonal), by = c("session"))
+```
+
+### Medication
+```{r}
+all_surveys %>% filter(!is.na(medication_name) & medication_name != "") %>% select(session, medication_name) %>% distinct() %>% 
+  mutate(
+    # if they mention hormones or menstruation or PMS, but not the cycle, fertile window, ovulation
+        medication_hormonal = NA_real_,
+    # if they mention cycle/fertile window, but only generally or in combination with generics like "mood"
+        medication_psychopharmacological = 0,
+        medication_antibiotics = 0) %>% 
+  data.frame() -> medication
+
+writexl::write_xlsx(medication, "codings/medication.xlsx")
+ medication = readxl::read_xlsx("codings/medication_coded.xlsx",1)
+ 
+
+ 
+all_surveys = all_surveys %>% left_join(medication %>% select(-medication_name), by = c("session"))
+```
+
+## cycle length 
+```{r}
+all_surveys$menstruation_length_groups <- NA 
+
+all_surveys = all_surveys %>% 
+  mutate(menstruation_length_groups = (ifelse(menstruation_length >= 20 & menstruation_length <= 40, 1,
+           ifelse(menstruation_length > 40 , 2,
+                  ifelse(menstruation_length  < 20, 3, NA)))))
+
+all_surveys$menstruation_length_groups <- factor(all_surveys$menstruation_length_groups, level=c(1,2,3), labels=c('normal', 'long', 'short'))
+```
+
+
+## choice of contraception
+
+```{r choice of contraception}
+all_surveys = all_surveys %>% mutate(
+    contraception_method = if_else(is.na(contraception_method), "", as.character(contraception_method)),
+    com = contraception_method,
+    contraception_approach = if_else(
+        condition = com %contains% "hormonal_pill" | com %contains% "hormonal_other", # condition
+        # true
+        true = if_else(
+            condition = com == "hormonal_pill" | com == "hormonal_other" | com == "hormonal_morning_after_pill", # condition
+            true = if_else(com == "hormonal_pill", 
+                                            true = "hormonal_pill_only", 
+                                            false = "hormonal_other_only"
+            ),
+                                            false = "hormonal+barrier"
+            ),
+        if_else(
+            condition = ! com %contains% "awareness", 
+            true = if_else(condition = com != "",
+                true = if_else(condition = com %contains% "barrier_intrauterine_pessar", 
+                               true = "barrier_pessar",
+                                if_else(condition = com %contains% "barrier_condoms", true = "condoms", false = "other")),
+                false = "nothing"),
+                false = "awareness")
+        )
+          # false
+    )
+all_surveys$contraception_approach = factor( all_surveys$contraception_approach, levels = c("condoms", "barrier_pessar", "hormonal+barrier", "hormonal_pill_only", "hormonal_other_only", "awareness", "nothing", "other") )
+qplot(all_surveys$contraception_approach) + coord_flip()
+
+all_surveys <- all_surveys %>% 
+        mutate(contraception_awareness_approach = 
+                 case_when(
+                   contraception_approach %contains% "hormonal" ~ estrogen_progestogen,
+                   contraception_approach %contains% "awareness" |  
+                     cycle_awareness_app == "cycle_phase_aware" ~ "awareness",
+                   TRUE ~ as.character(contraception_approach))
+               )
+```
+
+## Fix variables
+
+```{r}
+val_labels(all_surveys$relationship_status) <- c("Single" = 1, "loose relationship" = 2, "steady relationship" = 3, "engaged" = 4, "married" = 5, "other" = 6)
+```
+
+
+### Diary desire scales
+```{r}
+library(codebook)
+
+s3_daily$extra_pair_desire_and_behaviour <- s3_daily %>% ungroup() %>% select(starts_with("extra_pair_desire_")) %>% aggregate_and_document_scale(fun = robust_rowmeans)
+var_label(s3_daily$extra_pair_desire_and_behaviour) <- "Extra-pair desire and behaviour"
+
+s3_daily$extra_pair_desire <- s3_daily %>% ungroup() %>% select( extra_pair_desire_7, extra_pair_desire_8, extra_pair_desire_10, extra_pair_desire_11, extra_pair_desire_13, extra_pair_desire_14, extra_pair_desire_16) %>% aggregate_and_document_scale(fun = robust_rowmeans)
+var_label(s3_daily$extra_pair_desire) <- "Extra-pair desire"
+
+s3_daily$extra_pair_interest <- s3_daily %>% ungroup() %>% select(extra_pair_desire_4, extra_pair_desire_9, extra_pair_desire_12, extra_pair_desire_5R) %>% aggregate_and_document_scale(fun = robust_rowmeans)
+var_label(s3_daily$extra_pair_interest) <- "Extra-pair interest"
+
+
+s3_daily$in_pair_desire_and_behaviour = s3_daily %>% ungroup() %>% select(starts_with("in_pair_desire_")) %>% aggregate_and_document_scale(fun = robust_rowmeans)
+var_label(s3_daily$in_pair_desire_and_behaviour) <- "In-pair desire and behaviour"
+
+s3_daily$in_pair_desire = s3_daily %>% ungroup() %>% select(in_pair_desire_7, in_pair_desire_8, in_pair_desire_10, in_pair_desire_11, in_pair_desire_13, in_pair_desire_14) %>% aggregate_and_document_scale(fun = robust_rowmeans)
+var_label(s3_daily$in_pair_desire) <- "In-pair desire"
+
+s3_daily$in_pair_interest <- s3_daily %>% ungroup() %>% select(in_pair_desire_4, in_pair_desire_9, in_pair_desire_12, in_pair_desire_5R) %>% aggregate_and_document_scale(fun = robust_rowmeans)
+var_label(s3_daily$in_pair_interest) <- "In-pair interest"
+
+s3_daily$grooming = s3_daily %>% ungroup() %>% select(matches("^grooming_\\d$")) %>% aggregate_and_document_scale(fun = robust_rowmeans)
+var_label(s3_daily$grooming) <- "Self-grooming"
+
+# grooming time spent doesn't fit so well with the other items
+grooming_vars <- s3_daily %>% ungroup() %>% select(matches("^grooming_\\d"), grooming_time_spent,
+                                  grooming_activities) %>% mutate(grooming_time_spent = log1p(as.numeric(grooming_time_spent)),
+        grooming_activities = if_else(str_length(grooming_activities) > 0, str_count(grooming_activities, ","), 0L)) %>% mutate_all(funs(scale))
+# grooming_vars %>% psych::alpha()
+s3_daily$grooming_broad = grooming_vars %>% aggregate_and_document_scale(fun = robust_rowmeans)
+var_label(s3_daily$grooming) <- "Self-grooming (broad)"
+
+
+s3_daily$vanity = s3_daily %>% ungroup() %>% select(matches("^vanity_\\d$")) %>% aggregate_and_document_scale(fun = robust_rowmeans)
+var_label(s3_daily$vanity) <- "Satisfied with looks"
+
+
+s3_daily$mate_retention = s3_daily %>% ungroup() %>% select(matches("^mate_retention\\d$")) %>% aggregate_and_document_scale(fun = robust_rowmeans)
+var_label(s3_daily$mate_retention) <- "Partner mate retention"
+```
+
+
+### Separation from partner
+```{r}
+s3_daily <- s3_daily %>% 
+  mutate(saw_partner = if_else(contact_partner < 5, 1, 0)) %>% 
+  group_by(session) %>% 
+  arrange(session, created_date) %>% 
+  mutate(last_saw_partner_date = if_else(saw_partner == 1, created_date, as.Date(NA_character_)),
+         last_saw_partner_date = if_else(is.na(saw_partner_last), last_saw_partner_date,
+                                         created_date - recode(as.numeric(saw_partner_last),
+                                                               `7` = 8,
+                                                               `8` = 15,
+                                                               .default = as.numeric(saw_partner_last))),
+         last_saw_partner_date = zoo::na.locf(last_saw_partner_date, na.rm = FALSE),
+         days_since_seeing_partner = as.numeric(created_date - last_saw_partner_date),
+         time_since_seeing_partner = if_else(!is.na(saw_partner_last),
+                                             as.numeric(saw_partner_last),
+                                             case_when(
+                                               between(days_since_seeing_partner, 0, 1) ~ 1,
+                                               days_since_seeing_partner == 2 ~ 2,
+                                               days_since_seeing_partner == 3 ~ 3,
+                                               days_since_seeing_partner == 4 ~ 4,
+                                               days_since_seeing_partner == 5 ~ 5,
+                                               days_since_seeing_partner == 6 ~ 6,
+                                               between(days_since_seeing_partner, 7, 14) ~ 7,
+                                               days_since_seeing_partner > 14 ~ 8
+                                             )))
+
+#note: days_since_seeing_partner is minimal where inferred, not accurate
+# time_since_seeing_partner is ordinal only
+
+# s3_daily %>% select(short, created_date, last_saw_partner_date, saw_partner,saw_partner_last, days_since_seeing_partner, time_since_seeing_partner) %>% View()
+# crosstabs(~ saw_partner + days_since_seeing_partner, s3_daily)
+# crosstabs(~ saw_partner_last + is.na(days_since_seeing_partner), s3_daily)
+crosstabs(~ saw_partner_last + time_since_seeing_partner, s3_daily)
+```
+
+
+
+### age groups
+
+```{r}
+all_surveys$age_group <- NA
+all_surveys <- all_surveys %>% mutate(age_group = replace(age_group, age >= 18 & age < 25, 1))
+all_surveys <- all_surveys %>% mutate(age_group = replace(age_group, age >= 25, 2))
+all_surveys$age_group <- factor(all_surveys$age_group, levels=c(1,2), labels=c('18-25', '>25'))
+```
+
+## Fertility awareness
+```{r}
+all_surveys <- all_surveys %>% 
+  mutate(
+    aware = if_else(hormonal_contraception == "FALSE" &
+                      (pregnant_trying > 3 |
+                      hypothesis_guess_topic != "no_guess" |
+                      (contraception_approach == "awareness" | 
+                      contraception_app == 1) && 
+                      !(cycle_awareness_other %in% c("fertile_aware_invalid", "fertility_awareness_did_not_use", "not_fertile_aware"))), 1, 0, 0))
+```
+
+## Merge diary
+```{r merge_diary}
+s3_daily = s3_daily %>% mutate(short = stringr::str_sub(session, 1, 7))
+all_surveys = all_surveys %>% mutate(short = stringr::str_sub(session, 1, 7)) %>% select(-short_demo, -short_initial)
+diary = s3_daily %>% full_join(all_surveys, by = c("session","short"), suffix = c("_diary", "_followup"))
+```
+
+
+## Singles 
+```{r}
+s4_timespent = s4_timespent %>% 
+  filter(!session %contains% 'XXX')
+
+Singles = nrow(singles <- filter(s1_demo, relationship_status == 1))
+Paid = nrow(paid <- filter(s1_filter, gets_paid == 1))
+Paid_Single = nrow(paid_singles <- inner_join(singles, paid, by= 'session'))
+with_FU = nrow(withfollowup <- inner_join(paid_singles, s4_followup, by='session'))
+```
+
+1. __`r Singles`__ number of single women.
+2. __`r Paid`__ number of women getting paid for participation. 
+3. __`r Paid_Single`__ number of Singles getting paid for participation. 
+4. __`r with_FU`__ number of single women getting paid and answering follow-up questionnaire.
+
+## network 
+```{r}
+network <- s4_timespent
+
+nrow(network)
+
+summary(as.factor(network$person_relationship_status))
+
+network = network %>% 
+  mutate(
+    person_is_unrelated_man = if_else(person_sex == 2 &     person_relationship_to_anchor != "biological_relative", 1, 0),
+    person_is_related_man = if_else(person_sex == 2 &     person_relationship_to_anchor == "biological_relative", 1, 0)
+    )
+
+summary(as.factor(network$person_sex))
+network %>% 
+    group_by(session) %>% 
+    summarise(female = sum(person_sex == 1, na.rm=T), male = sum(person_sex == 2, na.rm=T), n= n(),
+              unrelated_males = sum(!is.na(person_attractiveness_short_term))) %>% 
+    select(female, male,n, unrelated_males) ->
+  reported_persons
+table(reported_persons$unrelated_males > 0)
+
+# Kontakt zu 280 Männern 
+# qplot(network$person_relationship_to_anchor)
+# was sind die maenner fuer beziehungstypen
+
+# qplot(network[network$person_sex == 2,]$person_relationship_to_anchor , xlab = 'Beziehungsstatus zu Männern')
+summary(network$person_relationship_to_anchor)
+# 425 Verwandte 
+
+sort(table(na.omit(network$person_kinship)))
+# qplot(na.omit(haven::as_factor(network$person_kinship))) + coord_flip()
+# qplot(haven::as_factor(network$person_romantic_experience,"both")) + coord_flip()
+
+
+# xtabs(~ person_relationship_to_anchor + person_sex, network)
+
+
+
+network %>% filter(!is.na(person_kinship)) %>% select(session, created, person_kinship) %>% mutate(kinship_cleaned = 0) %>% data.frame() -> kinship
+
+
+writexl::write_xlsx(kinship, "codings/kinship.xlsx")
+ kinship_cleaned = readxl::read_xlsx("codings/kinship_cleaned.xlsx",1)
+ network = network %>% left_join(kinship_cleaned, by = c("session" , 'created'))
+```
+
+## Code open answers diary
+
+### Answered honestly in diary
+```{r}
+
+diary %>% filter(answered_honestly_today != 1, !is.na(dishonest_answers)) %>% select(session, created_diary, dishonest_answers) %>% mutate(dishonest_discard = NA_real_) %>% data.frame() -> dishonest
+writexl::write_xlsx(dishonest, "codings/dishonest.xlsx")
+
+dishonest = readxl::read_xlsx("codings/dishonest_coded.xlsx",1)
+diary = diary %>% left_join(dishonest %>% select(-dishonest_answers), by = c("session", "created_diary")) %>% 
+mutate(dishonest_discard = if_else( answered_honestly_today != 1, 
+                                    if_else(dishonest_discard == 1, 1, 0, 1), 0, 0 ))
+```
+
+## Social diary
+```{r}
+# for now, we don't care whether people were seen or thought about
+diary_social = diary %>%
+  mutate(
+    social_life_thought_about = as.character(social_life_thought_about),
+    social_life_saw_people = as.character(social_life_saw_people),
+    person = 
+           if_else(is.na(social_life_saw_people),
+                   if_else(is.na(social_life_thought_about), NA_character_, social_life_thought_about),
+                   if_else(is.na(social_life_thought_about), social_life_saw_people, 
+                           paste0(social_life_saw_people, ",", social_life_thought_about))
+                   )
+           ) %>%
+  separate_rows(person, sep = ",") %>%
+  mutate(person = stringr::str_trim(person)) %>% 
+  group_by(session, created_diary, person) %>% 
+  filter(row_number() == 1) %>% 
+  ungroup() # brute way of ensuring that there are no duplicated persons
+
+stopifnot(diary_social %>% drop_na(session, created_diary, person) %>%  
+            group_by(session, created_diary, person) %>% filter(n() > 1) %>% nrow() == 0)
+```
+
+### Genderize
+```{r}
+unique_names_df = diary_social %>% select(person) %>% group_by(person) %>% summarise(freq = n()) %>% arrange(desc(freq)) %>% filter(!is.na(person)) %>% filter(str_length(person) > 2 | str_to_upper(person) != person)
+if (file.exists('codings/coded_genders.rds')) {
+  genders_df = readRDS('codings/coded_genders.rds')
+} else {
+  library(genderizeR)
+  Encoding(diary_social$person) = "UTF-8"
+  Encoding(unique_names_df$person) = "UTF-8"
+  givenNames = findGivenNames(unique_names_df$person, apikey = genderize_apikey) # extract, code possible first names
+  Encoding(givenNames$name) = "UTF-8"
+  genders = genderize(unique_names_df$person, givenNames) # assign genders to strings
+  Encoding(genders$text) = "UTF-8"
+  Encoding(genders$givenName) = "UTF-8"
+  genders_df = full_join(genders, unique_names_df, by = c("text" = "person")) %>% left_join(givenNames %>% data.frame() %>% rename(firstname_gender = gender), by = c("givenName" = 'name'))
+  saveRDS(genders_df, file = 'codings/coded_genders.rds')
+}
+writexl::write_xlsx(genders_df %>% filter(freq > 30, is.na(gender)), "codings/genders_to_code.xlsx")
+genders_hand_coded = readxl::read_xlsx('codings/genders_coded.xlsx', 1)
+genders_df = bind_rows(genders_df %>% filter(freq <= 30 | !is.na(gender)), genders_hand_coded)
+genders_df = genders_df %>% 
+  select(-givenName, -genderIndicators, -firstname_gender) %>% 
+  rename(person = text, person_sex_inferred = gender, person_name_count = count, person_name_freq_in_diary = freq, person_multiple = multiple, person_is_related_inferred = related) %>% 
+  mutate(person_prob_male = if_else(person_sex_inferred == "male", as.numeric(probability), 1 - as.numeric(probability))) %>% 
+  select(-probability)
+
+diary_social = diary_social %>% left_join(genders_df , by = "person")
+
+stopifnot(diary_social %>% drop_na(session, created_diary, person) %>%  
+            group_by(session, created_diary, person) %>% filter(n() > 1) %>% nrow() == 0)
+```
+
+### Seen/thought about
+```{r}
+# but we want to make a variable saying whether that person was seen or thought about or both
+# dummy dataset seen
+seen = diary %>% select(session, social_life_saw_people, created_diary) %>%
+  mutate(person = social_life_saw_people, person_seen = TRUE) %>%
+  separate_rows(person, sep = ",") %>%
+  mutate(person = stringr::str_trim(person)) %>% 
+  ungroup() %>%
+  select(session, person, created_diary, person_seen) %>%
+  na.omit() %>% 
+  distinct()
+
+# dummy dataset thought about
+thought_about = diary %>% select(session, social_life_thought_about, created_diary) %>%
+  mutate(person = social_life_thought_about, person_thought_about = TRUE) %>%
+  separate_rows(person, sep = ",") %>%
+  mutate(person = stringr::str_trim(person)) %>% 
+  ungroup() %>%
+  select(session, person, created_diary, person_thought_about) %>%
+  na.omit() %>% 
+  distinct()
+
+# merge in
+diary_social = diary_social %>% left_join(seen, by = c("session", "person", "created_diary"))
+diary_social = diary_social %>% left_join(thought_about, by = c("session", "person", "created_diary"))
+# xtabs(~ person_seen + person_thought_about, diary_social)
+
+stopifnot(diary_social %>% drop_na(session, created_diary, person) %>%  
+            group_by(session, created_diary, person) %>% filter(n() > 1) %>% nrow() == 0)
+
+network <- network %>% filter(!is.na(person))
+diary_social = diary_social %>% left_join(network, by = c("session", "short", "person")) %>% mutate(interaction_partner = paste0(short, "_", person))
+
+
+diary_social = diary_social %>% mutate(
+  person_is_related_inferred = if_else(person_relationship_to_anchor == "biological_relative", 1, 0, 
+    if_else(is.na(person_is_related_inferred), NA_real_, person_is_related_inferred)),
+  person_is_related_man_inferred = if_else(!is.na(person_is_related_man), person_is_related_man,
+                                           if_else(person_is_related_inferred & person_sex_inferred == "male", 1, 0, NA_real_)),
+  person_is_unrelated_man_inferred = if_else(!is.na(person_is_unrelated_man), person_is_unrelated_man,
+                                           if_else( !person_is_related_inferred & person_sex_inferred == "male", 1, 0, NA_real_))
+)
+
+crosstabs(~ person_is_related_inferred + person_is_related_man_inferred, diary_social)
+
+stopifnot(diary_social %>% drop_na(session, created_diary, person) %>%  
+            group_by(session, created_diary, person) %>% filter(n() > 1) %>% nrow() == 0)
+
+# xtabs(~ person_sex + person_sex_inferred, data = diary_social, exclude = NULL, na.action = na.pass)
+
+diary_social$person_BMI <- (diary_social$person_weight/((diary_social$person_height/100)^2))
+
+
+s4_timespent %>% select(person_attractiveness_short_term, person_funny, person_financial, person_strength) %>% cor(use = "na.or.complete") %>% round(2)
+```
+
+
+### Nominations for conjoint analysis
+```{r}
+diary_social %>% group_by(hormonal_contraception, person, session) %>%
+  summarise(seen_fertile = sum(person_seen & fertile_broad > 0.1, na.rm = T),
+            thought_about_fertile = sum(person_thought_about & fertile_broad > 0.1, na.rm = T),
+            seen_infertile = sum(person_seen & fertile_broad < 0.1, na.rm = T),
+            thought_about_infertile = sum(person_thought_about & fertile_broad < 0.1, na.rm = T)) ->
+  nominations
+
+network_nominations = inner_join(nominations, s4_timespent, by = c("session", "person"))
+
+stopifnot(diary_social %>% drop_na(session, created_diary, person) %>%  
+            group_by(session, created_diary, person) %>% filter(n() > 1) %>% nrow() == 0)
+```
+
+
+## Sex dummy variables
+```{r}
+# get choice labels in english
+choices <- rio::import("https://docs.google.com/spreadsheets/d/1Xo4fRvIzPYbWibVgJ9nm7vES39DSAWQBztnB8j7PdIo/edit#gid=1837266155")
+
+sex_acts_in_diary <- diary %>%  drop_na(short, created_diary) %>% ungroup() %>% summarise(acts = sum(!is.na(sex_1_time)) + sum(!is.na(sex_2_time))) %>% pull(acts)
+
+sex_long <- diary %>% 
+  drop_na(short, created_diary) %>% 
+  group_by(short) %>% 
+  select(short, created_diary, matches("^sex_\\d")) %>% 
+  gather(key, value, matches("^sex_\\d")) %>% 
+  mutate(key = str_sub(key, 5)) %>% 
+  separate(key, into = c("sex_nr", "key"), sep = "_", extra = "merge") %>% 
+  spread(key, value, convert = T) %>% 
+  ungroup() %>% 
+  
+  mutate(sex_active = if_else(is.na(time), 0, 1),
+         sex_active_solo = if_else(withwhom == "alleine", 1, 0),
+         sex_active_partnered = if_else(withwhom != "alleine", 1, 0)) %>% 
+  
+  filter(sex_active == 1)
+
+
+to_code_sex_acts <- sex_long %>% 
+  separate_rows(activity, convert = TRUE, sep = ",") %>% 
+  left_join(choices %>% select(activity = label, activity_en = name) %>% distinct()) %>% 
+  bind_rows(
+    sex_long %>% 
+    select(fantasy_actions) %>% 
+    separate_rows(fantasy_actions, convert = TRUE, sep = ",") %>% 
+    rename(activity = fantasy_actions) %>% 
+    left_join(choices %>% select(activity = label, activity_en = name) %>% distinct())) %>% 
+  drop_na(activity) %>% 
+  group_by(activity) %>% 
+  summarise(n = n(), activity_en = first(activity_en)) %>% 
+  arrange(desc(n)) %>% 
+  select(n, activity, activity_en)
+
+writexl::write_xlsx(to_code_sex_acts, "codings/to_code_sex_acts.xlsx")
+to_code_sex_acts = readxl::read_xlsx("codings/to_code_sex_acts_coded.xlsx",1)
+
+to_code_sex_partners <- sex_long %>% 
+  separate_rows(withwhom, convert = TRUE, sep = ",") %>% 
+  left_join(choices %>% select(withwhom = label_parsed, withwhom_en = name) %>% distinct()) %>% 
+  drop_na(withwhom) %>% 
+  group_by(withwhom) %>% 
+  summarise(n = n(), withwhom_en = first(withwhom_en)) %>% 
+  arrange(desc(n)) %>% 
+  select(n, withwhom, withwhom_en)
+
+writexl::write_xlsx(to_code_sex_partners, "codings/to_code_sex_partners.xlsx")
+to_code_sex_partners = readxl::read_xlsx("codings/to_code_sex_partners_coded.xlsx",1)
+
+sex_long <- sex_long %>% 
+  
+  separate_rows(contraception, convert = TRUE, sep = ", ") %>% 
+  mutate(contraception = str_c("sex_contraception_", if_else(is.na(contraception)
+                                                    & sex_active == 1, "not_necessary", contraception)),
+         dummy = 1) %>% 
+  # distinct() %>% 
+  spread(contraception, dummy, fill = 0) %>% 
+
+  
+  separate_rows(activity, convert = TRUE, sep = ",") %>% 
+  left_join(to_code_sex_acts %>% select(activity, activity_en)) %>% 
+  mutate(activity = str_c("sex_activity_", if_else(is.na(activity_en)
+                                                    & !is.na(activity), "other", activity_en)),
+         dummy = 1) %>% 
+  select(-activity_en) %>% 
+  distinct() %>% 
+  spread(activity, dummy, fill = 0) %>% 
+  
+  
+  separate_rows(withwhom, convert = TRUE, sep = ",") %>% 
+  left_join(to_code_sex_partners %>% select(withwhom, withwhom_en)) %>% 
+  mutate(withwhom = str_c("sex_", if_else(is.na(withwhom_en)
+                                                    & !is.na(withwhom), "other", withwhom_en)),
+         dummy = 1) %>% 
+  select(-withwhom_en) %>% 
+  distinct() %>% 
+  spread(withwhom, dummy, fill = 0) %>% 
+  
+  separate_rows(fantasy_actions, convert = TRUE, sep = ",") %>% 
+  left_join(to_code_sex_acts %>% select(fantasy_actions = activity, fantasy_actions_en = activity_en)) %>% 
+  mutate(fantasy_actions = str_c("sex_fantasy_act_", if_else(is.na(fantasy_actions_en)
+                                                    & !is.na(fantasy_actions), "other", fantasy_actions_en)),
+         dummy = 1) %>% 
+  select(-fantasy_actions_en) %>% 
+  distinct() %>% 
+  spread(fantasy_actions, dummy, fill = 0) %>% 
+  
+  separate_rows(fantasy_partner, convert = TRUE, sep = ", ") %>% 
+  mutate(fantasy_partner = str_c("sex_fantasy_about_", fantasy_partner),
+         dummy = 1) %>% 
+  spread(fantasy_partner, dummy, fill = 0) %>% 
+  
+  select(-`<NA>`)
+
+sex_long$sex_activities <- rowSums(sex_long %>% select(starts_with("sex_activity_")))
+sex_long <- sex_long %>% 
+  mutate(sex_active_sexual = if_else((sex_activities - sex_activity_cuddling - sex_activity_kissing - sex_activity_cybersex - sex_activity_dirty_talk - sex_activity_other - sex_activity_pornography  - sex_activity_touch_other - sex_activity_unclear)  > 0, 1, 0),
+         sex_active_partnered = if_else(sex_active_partnered == 1 & sex_active_sexual == 1, 1, 0))
+
+
+
+
+sex_long <- sex_long %>% 
+  mutate(created_date = if_else(time %in% c("t0_yesterday_evening", "t1_before_falling_asleep", "t2_night_time"),
+           as.Date(created_diary - hours(6)) - days(1),
+           as.Date(created_diary - hours(6)))) %>% 
+  mutate(
+    time_nonmoved = time,
+    time = recode(time, "t0_yesterday_evening" = "t6_evening",
+                       "t1_before_falling_asleep" = "t7_before_falling_asleep",
+                       "t2_night_time" = "t8_night_time"))
+
+
+sex_summary <- sex_long %>% 
+  group_by(short, created_date) %>% 
+  # group_by(short, created_date) %>% 
+  summarise_at(vars(enjoyed:partner_enjoyed), funs(mean(., na.rm = TRUE))) %>% 
+  left_join(
+    sex_long %>% 
+      group_by(short, created_date) %>% 
+      summarise_at(vars(sex_active:sex_active_sexual), funs(max))
+  ) %>% 
+  left_join(
+    sex_long %>% 
+      group_by(short, created_date) %>% 
+      summarise(sex_time = if_else(n() == 1, first(time), "multiple"))
+  )
+# 
+# 
+# sex_summary <- sex_long %>%
+#   group_by(short, created_diary) %>%
+#   # group_by(short, created_date) %>%
+#   summarise_at(vars(enjoyed:partner_enjoyed), funs(mean(., na.rm = TRUE))) %>%
+#   left_join(
+#     sex_long %>%
+#       group_by(short, created_diary) %>%
+#       summarise_at(vars(sex_active:sex_active_sexual), funs(max))
+#   ) %>%
+#   left_join(
+#     sex_long %>%
+#       group_by(short, created_diary) %>%
+#       summarise(sex_time = if_else(n() == 1, first(time), "multiple"))
+#   )
+
+diary <- diary %>% 
+  left_join(sex_summary %>% select(-sex_active), by = c("short", "created_date")) %>% 
+  mutate_at(vars(sex_active_solo:sex_active_sexual), funs(if_na(., 0)))
+
+diary <- diary %>% 
+  rename(sex_happy = happy,
+         sex_enjoyed = enjoyed,
+         sex_partner_enjoyed = partner_enjoyed)
+
+testthat::expect_equal(sex_acts_in_diary, nrow(sex_long))
+
+diary <- diary %>% 
+  mutate(
+    sex_in_pair = if_else(hetero_relationship == 1 & sex_activity_sex == 1 & sex_with_partner == 1, 1, 0),
+    sex_extra_pair_with_male = if_else(hetero_relationship == 1 & sex_activity_sex == 1 & sex_with_partner == 0 & sex_with_other_male == 1, 1, 0),
+    sex_with_female = if_else(sex_activity_sex == 1 & sex_with_other_female == 1, 1, 0),
+    sex_with_male = if_else(sex_activity_sex == 1 & (sex_with_other_male == 1 | sex_with_partner == 1), 1, 0),
+    sex_extra_pair_with_female = if_else(hetero_relationship == 1 & sex_with_partner == 0 & sex_with_other_female == 1, 1, 0),
+    sex_risked_conception = if_else(sex_activity_sex == 1 & (sex_contraception_coitus_interruptus == 1 | sex_contraception_risked_it == 1) & !sex_contraception_not_necessary == 1, 1, 0),
+    sex_had_unprotected_penetrative_sex = if_else(sex_activity_sex == 1 & (sex_contraception_did_not_want == 1 | sex_contraception_coitus_interruptus == 1 | sex_contraception_risked_it == 1) & !sex_contraception_not_necessary == 1, 1, 0)
+  )
+
+
+diary <- diary %>% 
+  group_by(short) %>% 
+  arrange(created_diary) %>% 
+  mutate(
+    sex_active_date = if_else(sex_activity_sex == 1, created_date, as.Date(NA_character_)),
+    sex_last_date = zoo::na.locf(sex_active_date, na.rm = F),
+    sex_days_ago = as.numeric(created_date - sex_last_date),
+    sex_masturbation_active_date = if_else(sex_activity_masturbation == 1 & sex_active_solo == 1, created_date, as.Date(NA_character_)),
+    sex_masturbation_last_date = zoo::na.locf(sex_masturbation_active_date, na.rm = F),
+    sex_masturbation_days_ago = as.numeric(created_date - sex_masturbation_last_date)
+)
+# 
+# table(diary$sex_extra_pair_with_female)
+# table(diary$sex_extra_pair_with_male)
+# table(diary$sex_had_unprotected_penetrative_sex)
+# table(diary$sex_risked_conception)
+# table(diary$sex_in_pair)
+diary <- diary %>% ungroup() %>% 
+  mutate(sex_acts = case_when(
+    sex_active == 0 ~ 0,
+    TRUE ~ sex_acts))
+
+diary <- diary %>% 
+  group_by(short) %>% 
+  arrange(created_diary) %>% 
+  mutate(sex_partnered_freq = mean(sex_active_partnered, na.rm = TRUE),
+         lag_libido = lag(high_libido),
+         lag_sex = lag(sex_activity_sex),
+         lag_sex_active_partnered = lag(sex_active_partnered),
+         lag_sex_active = lag(sex_active),
+         lag_sex_acts = lag(sex_acts),
+         lag_stressed = lag(stressed),
+         lag_mood = lag(good_mood)) %>% 
+  ungroup()
+```
+
+## Final edits
+
+```{r}
+# some women let us know in the comments that they are not really using a fertility awareness app/method
+not_aware <- all_surveys$cycle_awareness_other %in% c("fertile_aware_invalid", "fertility_awareness_did_not_use", "not_fertile_aware")
+all_surveys[not_aware, c("luteal_phase_length", "follicular_phase_length")] <- NA
+
+# some women let us know in the comments that they are not really using a fertility awareness app/method
+not_aware <- diary$cycle_awareness_other %in% c("fertile_aware_invalid", "fertility_awareness_did_not_use", "not_fertile_aware")
+diary[not_aware, c("luteal_phase_length", "follicular_phase_length", "DAL", "date_of_ovulation_avg_luteal_inferred",
+                   "date_of_ovulation_avg_luteal", "date_of_ovulation_avg_follicular", "fertile_awareness",
+                   "date_of_ovulation_awareness", "prc_stirn_b_aware_luteal", "prc_wcx_b_aware_luteal",
+                   "fertile_narrow_aware_luteal", "fertile_broad_aware_luteal", "fertile_window_aware_luteal", 
+                   "premenstrual_phase_aware_luteal")] <- NA
+
+# redo weekdays after expanding timeseries
+s3_daily$weekday = format(s3_daily$created_date, format = "%w")
+s3_daily$weekend <- ifelse(s3_daily$weekday %in% c(0,5,6), 1, 0)
+s3_daily$weekday <- car::Recode(s3_daily$weekday,												"0='Sunday';1='Monday';2='Tuesday';3='Wednesday';4='Thursday';5='Friday';6='Saturday'",as.factor =T, levels = 	c('Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'))
+
+diary$weekday = format(diary$created_date, format = "%w")
+diary$weekend <- ifelse(diary$weekday %in% c(0,5,6), 1, 0)
+diary$weekday <- car::Recode(diary$weekday,	"0='Sunday';1='Monday';2='Tuesday';3='Wednesday';4='Thursday';5='Friday';6='Saturday'",as.factor = T, levels = 	c('Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'))
+
+# omit extrapolated days
+s3_daily <- s3_daily %>% filter(day_number %in% 0:70 | !is.na(ended))
+diary <- diary %>% filter(day_number %in% 0:70 | !is.na(ended_diary))
+
+
+diary$premenstrual_phase_fab = factor(diary$premenstrual_phase_fab)
+diary$hormonal_contraception = factor(diary$hormonal_contraception)
+diary_social$premenstrual_phase_fab = factor(diary_social$premenstrual_phase_fab)
+diary_social$hormonal_contraception = factor(diary_social$hormonal_contraception)
+
+# diary %>% drop_na(day_number) %>% group_by(short, day_number) %>% filter(n() > 1 | day_number < 1 | day_number > 70) %>% select(short, created_demo, created_diary, day_number, ended_diary, notes_to_us) %>% arrange(desc(day_number))
+
+diary = diary %>% 
+  group_by(session, cycle_nr) %>%
+  mutate(minimum_cycle_length_diary = if_else(!is.na(cycle_length), cycle_length,
+                                              max(FCD,na.rm = T)),
+         minimum_cycle_length_diary = if_else(minimum_cycle_length_diary == -Inf, NA_real_, minimum_cycle_length_diary)
+  ) %>%
+  group_by(session)
+
+diary = diary %>% group_by(session) %>% 
+  mutate(relationship_satisfaction_diary_avg = mean(relationship_satisfaction_diary, na.rm = T)) %>% ungroup()
+
+all_surveys$person <- as.numeric(factor(all_surveys$short))
+diary <- all_surveys %>% select(person, short) %>% right_join(diary, by = "short")
+
+diary <- diary %>% ungroup()
+s3_daily <- s3_daily %>% ungroup()
+```
+
+## Sanity checks
+
+```{r}
+library(testthat)
+expect_false(any(names(diary) %contains% ".x"))
+expect_false(any(names(diary) %contains% ".y"))
+expect_false(any(names(all_surveys) %contains% ".y"))
+expect_null(groups(s3_daily))
+expect_null(groups(diary))
+expect_null(groups(all_surveys))
+expect_equal(sum(duplicated(all_surveys$session)), 0)
+expect_equal(sum(duplicated(s1_demo$session)), 0)
+expect_equal(diary %>% drop_na(session, day_number) %>% 
+               group_by(short, day_number) %>% filter(n() > 1) %>% nrow(), 0)
+expect_equal(diary %>% drop_na(session, created_diary) %>%  
+            group_by(session, created_diary) %>% filter(n()>1) %>% nrow(), 0)
+expect_equal(s3_daily %>% drop_na(session, created_date) %>%  
+            group_by(session, created_date) %>% filter(n()>1) %>% nrow(), 0)
+expect_equal(diary %>% drop_na(session, created_date) %>%  
+            group_by(session, created_date) %>% filter(n()>1) %>% nrow(), 0)
+expect_equal(diary_social %>% drop_na(session, created_diary, person) %>%  
+            group_by(session, created_diary, person) %>% filter(n() > 1) %>% nrow(), 0)
+expect_equal(network %>% drop_na(session, person) %>%  
+            group_by(session, person) %>% filter(n()>1) %>% nrow(), 0)
+```
+
+
+## save
+```{r}
+save(diary_social, sex_long, lab, diary, network_nominations, network, s1_demo, s1_filter, s2_initial, s3_daily, s4_followup, s4_timespent, withfollowup, s5_hadmenstruation, all_surveys, file = "data/cleaned.rdata")
+```

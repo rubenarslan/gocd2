@@ -1,0 +1,45 @@
+name: gocd2
+output_dir: docs
+navbar:
+  title: GOCD2
+  left:
+  - text: Overview
+    href: index.html
+  - text: Import data
+    href: 0_import_data.html
+  - text: Wrangle data
+    href: 0_wrangle_data.html
+  - text: Exclusion criteria
+    href: 1_exclusion.html
+  - text: Descriptives
+    href: 1_descriptives.html
+  right:
+  - text: ''
+    icon: fa-github
+    href: https://github.com/rubenarslan/gocd2
+output:
+  html_document:
+    theme: paper
+    code_folding: hide
+    df_print: tibble
+    code_download: yes
+    highlight: zenburn
+    css: styles.css
+    lib_dir: site_libs
+    self_contained: no
+exclude:
+- packrat
+- '*.rda'
+- '*.pdf'
+- '*.dta'
+- '*.csv'
+- geo
+- item_tables
+- '*.csl'
+- '*.bibtex'
+- '*.xlsx'
+- data
+- "renv"
+- '*_files'
+- 'ras'
+- '*.rds'
