@@ -42,10 +42,11 @@ library(codebook)
 library(tidyverse)
 
 #' some packages may be needed without being loaded
-fool_packrat = function() {
+fool_renv = function() {
   # needed to install formr package
   library(devtools)
   library(rmarkdown)
+  library(Cairo)
   # needed to actually run rmarkdown in RStudio, but for some reason not in its dependencies
   library(formatR)
 }
