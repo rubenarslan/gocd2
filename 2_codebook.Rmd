@@ -1,5 +1,5 @@
 ---
-title: "Codebook Routine and Sex"
+title: "Codebook GOCD2"
 output:
   html_document:
     toc: true
@@ -12,14 +12,11 @@ output:
 ```{r results='hide',message=F,warning=F}
 source("0_helpers.R")
 knitr::opts_chunk$set(warning = FALSE, message = FALSE)
-pander::panderOptions("table.split.table", Inf)
-pander::panderOptions('round',2)
-pander::panderOptions('digits',2)
-pander::panderOptions('keep.trailing.zeros',TRUE)
 
 load("data/cleaned.rdata")
 
-knitr::opts_chunk$set(echo = FALSE, error = TRUE, dev = "CairoPNG")
+knitr::opts_chunk$set(echo = FALSE, error = TRUE, dev = "CairoPNG",
+                      cache = FALSE)
 library(ggplot2)
 theme_set(theme_bw())
 
@@ -29,10 +26,18 @@ attributes(s3_daily$grooming_broad)$scale_item_names <- NULL
 s3_daily <- s3_daily %>% filter(!is.na(session), !is.na(created))
 # s3_daily <- s3_daily %>% select(-!!names(lab))
 s3_daily <- s3_daily %>% ungroup()
+s3_daily$sleep_fell_asleep_time <- as.numeric(s3_daily$sleep_fell_asleep_time)
+s3_daily$sleep_awoke_time <- as.numeric(s3_daily$sleep_awoke_time)
+s3_daily$DAL <- as.numeric(s3_daily$DAL)
+s3_daily$window_length <- as.numeric(s3_daily$window_length)
+attributes(s3_daily$menstruation_imputed)$names <- NULL
+attributes(s3_daily$menstruation)$names <- NULL
+vars <- c("session", "short", "created_date", setdiff(names(s3_daily), names(lab)))
+s3_daily <- s3_daily[, vars]
 
 library(future)
-if (file.exists("reliabilities_new.rdata")) {
-  load("reliabilities_new.rdata")
+if (file.exists("codings/reliabilities_new.rdata")) {
+  load("codings/reliabilities_new.rdata")
   } else {
     library(future.batchtools)
   # plan(tweak(multicore, workers = 3))
@@ -56,29 +61,29 @@ if (file.exists("reliabilities_new.rdata")) {
   
   reliabilities_diary = future::value(future({
       reliabilities_diary <- codebook::compute_reliabilities(s3_daily, 'repeated_many')
-      save(reliabilities_diary, file = "reliabilities_new.rdata")
+      save(reliabilities_diary, file = "codings/reliabilities_new.rdata")
       reliabilities_diary
   }))
-  save(reliabilities_diary, file = "reliabilities_new.rdata")
+  save(reliabilities_diary, file = "codings/reliabilities_new.rdata")
 }
 
 plan(multicore)
 ```
 
-## Demographics
+# Demographics
 
 Participants filled out these surveys before being invited to the daily diary. After finishing them, they were invited to fill out the diary on the next day.
 
 ```{r pre_survey, results='asis'}
-codebook(s1_demo,  missingness_report = FALSE, indent = "##")
+codebook(s1_demo,  missingness_report = FALSE, indent = "#")
 ```
 
-## Personality
+# Personality
 ```{r initial}
-codebook(s2_initial, missingness_report = FALSE, indent = "##")
+codebook(s2_initial, reliabilities = reliabilities$s2_initial, missingness_report = FALSE, indent = "#")
 ```
 
-## Diary
+# Diary
 Participants received invitations to fill out the diary daily over a period of 70 days.
 
 ```{r diary}
@@ -92,39 +97,39 @@ metadata(s3_daily)$datePublished <- "2020-06-02"
 metadata(s3_daily)$temporalCoverage <- "2014-2015" 
 metadata(s3_daily)$spatialCoverage <- "German-speaking countries, online" 
 
-codebook(s3_daily, reliabilities_diary, missingness_report = FALSE, indent = "##")
+codebook(s3_daily, reliabilities = reliabilities$diary, missingness_report = FALSE, indent = "#")
 ```
 
-## Time spent
+# Time spent
 
 Single participants answered questions about who they spent time with and/or thought about during the diary. We asked them questions about commonly mentioned names after the end of the diary.
 
 ```{r time_spent}
-codebook(s4_timespent, indent = "##")
+codebook(s4_timespent, indent = "#")
 ```
 
-## Follow-up survey
+# Follow-up survey
 
 At the end of the diary, participants were debriefed and answered these follow-up questions.
 
 ```{r follow_up}
-codebook(s4_followup, indent = "##")
+codebook(s4_followup, reliabilities = reliabilities$s4_followup, indent = "#")
 ```
 
-## Menstruation follow-up
+# Menstruation follow-up
 
 To be able to backward-count from the onset of the next menstruation, we followed up with women who had not menstruated in the last 5 days of the diary, until the next menstrual onset for up to 40 days.
 
 ```{r menstruation_follow_up}
-codebook(s5_hadmenstruation, indent = "##")
+codebook(s5_hadmenstruation, indent = "#")
 ```
 
 
-## Lab Study
+# Lab Study
 
 A subset of the diary participants also participated in a lab study, in which hormones where collected. Participation dates were intended to overlap, but scheduling did not always permit this.
 
 ```{r lab}
-codebook(lab, indent = "##")
+codebook(lab, indent = "#")
 ```
 
