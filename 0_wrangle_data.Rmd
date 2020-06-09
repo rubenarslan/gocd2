@@ -382,8 +382,8 @@ s3_daily <- s3_daily %>%
     by = c("session", "created_date")
   ) %>% 
   mutate(
-  menstruation_today = if_else(menstruation_since_last_entry == 1, menstruation_today, 0),
-    menstruation_labelled = factor(if_else(! is.na(menstruation_today),
+  menstruation_today = if_else(menstruation_since_last_entry == 1, as.numeric(menstruation_today), 0),
+  menstruation_labelled = factor(if_else(! is.na(menstruation_today),
        if_else(menstruation_today == 1, "yes", "no"),
        if_else(menstrual_onset_days_since <= 5, 
               if_else(menstrual_onset_days_since == 0, "yes", "probably", "no"), 
@@ -551,11 +551,11 @@ s3_daily = s3_daily %>%
         RCD_inferred_squished = if_else(
           FCD > menstruation_length,
             NA_real_,
-            as.numeric(if_else(
-              menstruation_length - FCD < 14,
-              29 - (menstruation_length - FCD),
-              round((FCD/ (menstruation_length - 14) ) * 15))
-            )),
+            if_else(
+              as.numeric(menstruation_length) - FCD < 14,
+              29 - (as.numeric(menstruation_length) - FCD),
+              round((FCD/ (as.numeric(menstruation_length) - 14) ) * 15))
+            ),
         RCD_inferred_squished = if_else(RCD_inferred_squished < 1, 1, RCD_inferred_squished),
         RCD_inferred_squished = if_else(RCD_inferred < -40, NA_real_, RCD_inferred_squished) - 30,
 # add 15 days to the reverse cycle days to arrive at the estimated day of ovulation
@@ -627,7 +627,7 @@ blake_meta %>% left_join(lh_days) %>%
   mutate(conception_risk_lh = na_if(conception_risk_lh, 0)) %>% 
   summarise(cor(conception_risk_lh, CR, use = 'pairwise.complete.obs'))
 
-# blake and juenger values are basically the same, so I'll use Juenger
+# blake and juenger values are very close, I'll use Juenger
 
 s3_daily = s3_daily %>% left_join(lh_days, by = "DRLH") %>% 
   mutate(fertile_lh = if_else(is.na(fertile_lh) &
@@ -652,6 +652,7 @@ s3_daily = left_join(s3_daily, fcd_days, by = "FCD")
 
 aware_luteal_squished = days %>% select(-FCD) %>% mutate(RCD = RCD + 15)
 names(aware_luteal_squished) = paste0(names(aware_luteal_squished), "_aware_luteal")
+s3_daily$DAL <- as.numeric(s3_daily$DAL)
 s3_daily = left_join(s3_daily, aware_luteal_squished, by = c("DAL" = "RCD_aware_luteal"))
 
 
@@ -1220,7 +1221,7 @@ all_surveys <- all_surveys %>%
                       (pregnant_trying > 3 |
                       hypothesis_guess_topic != "no_guess" |
                       (contraception_approach == "awareness" | 
-                      contraception_app == 1) && 
+                      contraception_app == 1) & 
                       !(cycle_awareness_other %in% c("fertile_aware_invalid", "fertility_awareness_did_not_use", "not_fertile_aware"))), 1, 0, 0))
 ```
 
@@ -1700,6 +1701,16 @@ diary <- all_surveys %>% select(person, short) %>% right_join(diary, by = "short
 
 diary <- diary %>% ungroup()
 s3_daily <- s3_daily %>% ungroup()
+
+## Duration objects are difficult for skimr
+s3_daily$sleep_fell_asleep_time <- as.numeric(s3_daily$sleep_fell_asleep_time)
+s3_daily$sleep_awoke_time <- as.numeric(s3_daily$sleep_awoke_time)
+s3_daily$DAL <- as.numeric(s3_daily$DAL)
+s3_daily$window_length <- as.numeric(s3_daily$window_length)
+
+## leftover names attribute cause trouble for codebook:::attribute_summary
+attributes(s3_daily$menstruation_imputed)$names <- NULL
+attributes(s3_daily$menstruation)$names <- NULL
 ```
 
 ## Sanity checks
@@ -1709,9 +1720,9 @@ library(testthat)
 expect_false(any(names(diary) %contains% ".x"))
 expect_false(any(names(diary) %contains% ".y"))
 expect_false(any(names(all_surveys) %contains% ".y"))
-expect_null(groups(s3_daily))
-expect_null(groups(diary))
-expect_null(groups(all_surveys))
+expect_equal(groups(s3_daily), list())
+expect_equal(groups(diary), list())
+expect_equal(groups(all_surveys), list())
 expect_equal(sum(duplicated(all_surveys$session)), 0)
 expect_equal(sum(duplicated(s1_demo$session)), 0)
 expect_equal(diary %>% drop_na(session, day_number) %>% 
