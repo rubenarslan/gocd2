@@ -600,7 +600,7 @@ days = days %>% mutate(
 #   # + 1 # we already added 1 to the date of the LH surge above, as it happens 24-48 hours before ovulation
 #   ) %>% select(-FCD, -RCD_for_merge) 
 
-# from Jünger et al. 2018 Supplementary Material
+# from Jünger/Stern et al. 2018 Supplementary Material
 # Day relative to ovulation	Schwartz et al., (1980)	Wilcox et al., (1998)	Colombo & Masarotto (2000)	Weighted average
 lh_days <- tibble(
   conception_risk_lh = c(0.00, 0.01, 0.02, 0.06, 0.16, 0.20, 0.25, 0.24, 0.10, 0.02, 0.02 ),

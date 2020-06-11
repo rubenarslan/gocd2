@@ -9,6 +9,10 @@ navbar:
     href: 0_import_data.html
   - text: Wrangle data
     href: 0_wrangle_data.html
+  - text: Codebook (DE)
+    href: 2_codebook.html
+  - text: Codebook (EN)
+    href: 2_codebook_en.html
   - text: Exclusion criteria
     href: 1_exclusion.html
   - text: Descriptives
