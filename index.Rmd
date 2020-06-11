@@ -8,30 +8,65 @@ pagetitle: "Goettingen Ovulatory Cycle Diaries 2"
 source("0_helpers.R")
 ```
 
-
+### Documented here
 - [Data import](0_import_data.html): Here, we import the data and metadata from https://formr.org, the data collection study framework
 - [Wrangle data](0_wrangle_data.html): Here, we wrangle the data into shape, estimate the fertile window, merge data from different sources, add human codings for freetext questions, etc.
 - [Codebook](2_codebook.html): The codebook contains metadata, means, missingness, and further information on all variables collected in the study.
-- [English codebook](2_codebook.html): Translated codebook. These translations are only there to help non-Germans read the codebook. They are not translated/backtranslated, nor heavily vetted. Be sure to use proper translation/back-translation if your goal is to reuse some of our items in an English setting.
+- [English codebook](2_codebook.html): Translated codebook. These translations are only there to help non-Germans read the codebook. They are not translated/back-translated, nor heavily vetted. Be sure to use proper translation/back-translation if your goal is to reuse some of our items in an English setting.
 - [Exclusion criteria](1_exclusion.html): We defined several criteria for women to be excluded in our analyses of ovulatory changes, these are computed here.
 - [Descriptives](1_descriptives.html): Here, we summarise some of the descriptive information on this study on a higher-level than in the codebook.
-- [Data anonymisation](3_anonymise_data.html): Our procedure to generate anonymised datasets.
+- [Data anonymisation](3_anonymise_data.html): Our procedure to generate anonymised datasets (unfinished).
 
 We used these [helper functions](0_helpers.html). These are the [.Rprofile settings](.Rprofile.html).
 
-See here for the documentation of [GOCD1](https://rubenarslan.github.io/ovulatory_shifts)
+###  Documented elsewhere
 
-## Authors & Acknowledgements
+- A blog post about how we [measured contraception](https://rubenarslan.github.io/posts/2019-04-02-measuring-contraception/)
+- A blog post about how we [gave intraindividual feedback](https://rubenarslan.github.io/posts/2019-03-13-intra-individual-feedback/)
+- A blog post with quick analyses on [sexual activity by time of day](https://rubenarslan.github.io/posts/2019-04-08-sex-by-day-and-by-night/)
+- A blog post with quick analyses on [who initiates sex](https://rubenarslan.github.io/posts/2019-04-21-who-initiates/)
+- A paper on our planned missingness approach and how we can use it to learn about [measurement reactivity](https://psyarxiv.com/va8bx/)
 
-### Authors
-Julie Driebe & Ruben Arslan
+
+See here for the documentation of [GOCD1](https://rubenarslan.github.io/ovulatory_shifts).
+
+### Authors & Acknowledgements
+
+#### Authors
+The Leibniz ScienceCampus Primate Cognition Göttingen partially funded the study. The study was planned by Ruben C. Arslan, Julie C. Driebe, Julia J. Jünger, Tanja M. Gerlach, Julia Ostner, and Lars Penke. Ruben C. Arslan and Julie C. Driebe collected the online data and did the majority of the data cleaning and management documented here.
 
 ### Acknowledgements
+Kim Gloystein and Tessa Cappelle helped translating items from German to English.
+Dorle Schaper and Laura J. Botzet helped with the contraception data.
 
+### Reproducibility
+This repository uses the [renv](https://rstudio.github.io/renv/) package to make
+it easier to rerun analyses using the same setup and package versions that were
+used to create them.
 
-## Session info
+<details><summary>Here's a classical session info.</summary>
+
+```{r}
+library(codebook)
+library(tidylog)
+library(testthat)
+library(genderizeR)
+library(UpSetR)
+sessionInfo()
+```
+
+</details>
+
+<details><summary>Here's our renv lockfile.</summary>
+
+```{r}
+cat(readLines("renv.lock"), sep = "\n")
+```
+
+</details>
+
 ```{r}
 # Turn the .R files into .Rmd files, turn those into .html, remove the .Rmd files
 # spin_R_files_to_site_html()
-sessionInfo()
 ```
+

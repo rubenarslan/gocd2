@@ -1213,6 +1213,13 @@ all_surveys <- all_surveys %>% mutate(age_group = replace(age_group, age >= 25, 
 all_surveys$age_group <- factor(all_surveys$age_group, levels=c(1,2), labels=c('18-25', '>25'))
 ```
 
+### relationship duration
+```{r}
+all_surveys <- all_surveys %>% 
+  mutate(relationship_duration = duration_relationship_years + duration_relationship_month/12)
+```
+
+
 ## Fertility awareness
 ```{r}
 all_surveys <- all_surveys %>% 
