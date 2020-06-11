@@ -1,0 +1,1322 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Descriptives</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/paper.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<script src="site_libs/navigation-1.1/sourceembed.js"></script>
+<script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css" data-origin="pandoc">
+code.sourceCode > span { display: inline-block; line-height: 1.25; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  { color: #cccccc; background-color: #303030; }
+@media screen {
+code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ffcfaf; } /* Alert */
+code span.an { color: #7f9f7f; font-weight: bold; } /* Annotation */
+code span.at { } /* Attribute */
+code span.bn { color: #dca3a3; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #f0dfaf; } /* ControlFlow */
+code span.ch { color: #dca3a3; } /* Char */
+code span.cn { color: #dca3a3; font-weight: bold; } /* Constant */
+code span.co { color: #7f9f7f; } /* Comment */
+code span.cv { color: #7f9f7f; font-weight: bold; } /* CommentVar */
+code span.do { color: #7f9f7f; } /* Documentation */
+code span.dt { color: #dfdfbf; } /* DataType */
+code span.dv { color: #dcdccc; } /* DecVal */
+code span.er { color: #c3bf9f; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #c0bed1; } /* Float */
+code span.fu { color: #efef8f; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #7f9f7f; font-weight: bold; } /* Information */
+code span.kw { color: #f0dfaf; } /* Keyword */
+code span.op { color: #f0efd0; } /* Operator */
+code span.ot { color: #efef8f; } /* Other */
+code span.pp { color: #ffcfaf; font-weight: bold; } /* Preprocessor */
+code span.sc { color: #dca3a3; } /* SpecialChar */
+code span.ss { color: #cc9393; } /* SpecialString */
+code span.st { color: #cc9393; } /* String */
+code span.va { } /* Variable */
+code span.vs { color: #cc9393; } /* VerbatimString */
+code span.wa { color: #7f9f7f; font-weight: bold; } /* Warning */
+
+.sourceCode .row {
+  width: 100%;
+}
+.sourceCode {
+  overflow-x: auto;
+}
+.code-folding-btn {
+  margin-right: -30px;
+}
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+#rmd-source-code {
+  display: none;
+}
+</style>
+
+<link rel="stylesheet" href="styles.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 64px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h2 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h3 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h4 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h5 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h6 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">GOCD2</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Overview</a>
+</li>
+<li>
+  <a href="0_import_data.html">Import data</a>
+</li>
+<li>
+  <a href="0_wrangle_data.html">Wrangle data</a>
+</li>
+<li>
+  <a href="1_exclusion.html">Exclusion criteria</a>
+</li>
+<li>
+  <a href="1_descriptives.html">Descriptives</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/rubenarslan/gocd2">
+    <span class="fa fa-github"></span>
+     
+    
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+<div class="btn-group pull-right">
+<button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+<li role="separator" class="divider"></li>
+<li><a id="rmd-download-source" href="#">Download Rmd</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">Descriptives</h1>
+
+</div>
+
+
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">source</span>(<span class="st">&quot;0_helpers.R&quot;</span>)</span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="kw">load</span>(<span class="st">&quot;data/cleaned_selected.rdata&quot;</span>)</span>
+<span id="cb1-3"><a href="#cb1-3"></a>opts_chunk<span class="op">$</span><span class="kw">set</span>(<span class="dt">warning =</span> F, <span class="dt">message =</span> F, <span class="dt">error =</span> T)</span>
+<span id="cb1-4"><a href="#cb1-4"></a>all_surveys &lt;-<span class="st"> </span>all_surveys <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb1-5"><a href="#cb1-5"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">relationship_duration =</span> duration_relationship_years <span class="op">+</span><span class="st"> </span>duration_relationship_month<span class="op">/</span><span class="dv">12</span>)</span>
+<span id="cb1-6"><a href="#cb1-6"></a></span>
+<span id="cb1-7"><a href="#cb1-7"></a><span class="kw">library</span>(knitr)</span>
+<span id="cb1-8"><a href="#cb1-8"></a>opts_chunk<span class="op">$</span><span class="kw">set</span>(<span class="dt">fig.width =</span> <span class="dv">9</span>, <span class="dt">fig.height =</span> <span class="dv">7</span>, <span class="dt">cache =</span> T, <span class="dt">warning =</span> F, <span class="dt">message =</span> F, <span class="dt">cache =</span> F, <span class="dt">error =</span> T)</span>
+<span id="cb1-9"><a href="#cb1-9"></a><span class="kw">library</span>(kableExtra)</span></code></pre></div>
+<div id="study-flow-chart" class="section level2">
+<h2>Study flow chart</h2>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>knitr<span class="op">::</span><span class="kw">include_graphics</span>(<span class="st">&quot;sfig_flow_chart_general_desire.png&quot;</span>)</span></code></pre></div>
+<div class="figure">
+<img src="sfig_flow_chart_general_desire.png" alt="Flow chart of the steps of the menstrual cycle diary study." width="512" />
+<p class="caption">
+Flow chart of the steps of the menstrual cycle diary study.
+</p>
+</div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>began_s1_demo =<span class="st"> </span><span class="kw">sum</span>(<span class="op">!</span><span class="kw">is.na</span>(s1_demo<span class="op">$</span>created))</span>
+<span id="cb3-2"><a href="#cb3-2"></a>ended_s1_demo =<span class="st"> </span><span class="kw">sum</span>(<span class="op">!</span><span class="kw">is.na</span>(s1_demo<span class="op">$</span>ended))</span>
+<span id="cb3-3"><a href="#cb3-3"></a>diary &lt;-<span class="st"> </span>s1_filter <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">left_join</span>(diary, <span class="dt">by =</span> <span class="kw">c</span>(<span class="st">&#39;session&#39;</span>, <span class="st">&#39;short&#39;</span>), <span class="dt">suffix =</span> <span class="kw">c</span>(<span class="st">&quot;_filter&quot;</span>, <span class="st">&quot;&quot;</span>))</span>
+<span id="cb3-4"><a href="#cb3-4"></a>ended_pre =<span class="st"> </span>diary <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">filter</span>(<span class="op">!</span><span class="kw">is.na</span>(ended_initial)) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">ungroup</span>() <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">summarise</span>(<span class="dt">n =</span> <span class="kw">n_distinct</span>(session)) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">pull</span>(n)</span>
+<span id="cb3-5"><a href="#cb3-5"></a>diary <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">group_by</span>(gets_paid) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">summarise</span>(<span class="dt">n =</span> <span class="kw">sum</span>(<span class="op">!</span><span class="kw">is.na</span>(ended_initial[<span class="op">!</span><span class="kw">duplicated</span>(session)]), <span class="dt">n =</span> <span class="kw">n_distinct</span>(session)))</span></code></pre></div>
+<pre><code>## # A tibble: 2 x 2
+##   gets_paid     n
+##   &lt;chr&gt;     &lt;int&gt;
+## 1 0          1893
+## 2 1          1087</code></pre>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>at_least_one_diary_entry =<span class="st"> </span>diary <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">group_by</span>(session) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">summarise</span>(<span class="dt">n =</span> <span class="kw">n_nonmissing</span>(ended_diary)) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">filter</span>(n <span class="op">&gt;=</span><span class="st"> </span><span class="dv">1</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">nrow</span>()</span>
+<span id="cb5-2"><a href="#cb5-2"></a>at_least_<span class="dv">20</span>_diary_entries =<span class="st"> </span>diary <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">group_by</span>(session) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">summarise</span>(<span class="dt">n =</span> <span class="kw">n_nonmissing</span>(ended_diary)) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">filter</span>(n <span class="op">&gt;=</span><span class="st"> </span><span class="dv">20</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">nrow</span>()</span>
+<span id="cb5-3"><a href="#cb5-3"></a>at_least_<span class="dv">50</span>_diary_entries =<span class="st"> </span>diary <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">group_by</span>(session) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">summarise</span>(<span class="dt">n =</span> <span class="kw">n_nonmissing</span>(ended_diary)) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">filter</span>(n <span class="op">&gt;=</span><span class="st"> </span><span class="dv">50</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">nrow</span>()</span>
+<span id="cb5-4"><a href="#cb5-4"></a></span>
+<span id="cb5-5"><a href="#cb5-5"></a>in_relationship =<span class="st"> </span><span class="kw">sum</span>(s1_demo<span class="op">$</span>hetero_relationship, <span class="dt">na.rm =</span> T)</span>
+<span id="cb5-6"><a href="#cb5-6"></a>singles =<span class="st"> </span><span class="kw">sum</span>(<span class="op">!</span><span class="st"> </span>s1_demo<span class="op">$</span>hetero_relationship, <span class="dt">na.rm =</span> T)</span>
+<span id="cb5-7"><a href="#cb5-7"></a></span>
+<span id="cb5-8"><a href="#cb5-8"></a>at_least_one_diary_entry =<span class="st"> </span>s3_daily <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">group_by</span>(session) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">summarise</span>(<span class="dt">n =</span> <span class="kw">n_nonmissing</span>(ended)) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">filter</span>(n <span class="op">&gt;=</span><span class="st"> </span><span class="dv">1</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">nrow</span>()</span>
+<span id="cb5-9"><a href="#cb5-9"></a>at_least_<span class="dv">20</span>_diary_entries =<span class="st"> </span>s3_daily <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">group_by</span>(session) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">summarise</span>(<span class="dt">n =</span> <span class="kw">n_nonmissing</span>(ended)) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">filter</span>(n <span class="op">&gt;=</span><span class="st"> </span><span class="dv">20</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">nrow</span>()</span>
+<span id="cb5-10"><a href="#cb5-10"></a>at_least_<span class="dv">50</span>_diary_entries =<span class="st"> </span>s3_daily <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">group_by</span>(session) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">summarise</span>(<span class="dt">n =</span> <span class="kw">n_nonmissing</span>(ended)) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">filter</span>(n <span class="op">&gt;=</span><span class="st"> </span><span class="dv">50</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">nrow</span>()</span>
+<span id="cb5-11"><a href="#cb5-11"></a></span>
+<span id="cb5-12"><a href="#cb5-12"></a>mean_diary_entries &lt;-<span class="st"> </span>s3_daily <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">group_by</span>(session) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">summarise</span>(<span class="dt">n =</span> <span class="kw">n_nonmissing</span>(ended)) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">summarise</span>(<span class="kw">mean</span>(n))</span>
+<span id="cb5-13"><a href="#cb5-13"></a></span>
+<span id="cb5-14"><a href="#cb5-14"></a>mean_diary_entries_by_payment &lt;-<span class="st"> </span>s1_filter <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb5-15"><a href="#cb5-15"></a><span class="st">  </span><span class="kw">select</span>(<span class="op">-</span>ended) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">left_join</span>(s3_daily, <span class="dt">by =</span> <span class="st">&#39;session&#39;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb5-16"><a href="#cb5-16"></a><span class="st">  </span><span class="kw">group_by</span>(gets_paid, session) <span class="op">%&gt;%</span></span>
+<span id="cb5-17"><a href="#cb5-17"></a><span class="st">  </span><span class="kw">summarise</span>(<span class="dt">n =</span> <span class="kw">n_nonmissing</span>(ended)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb5-18"><a href="#cb5-18"></a><span class="st">  </span><span class="kw">filter</span>(n <span class="op">&gt;</span><span class="st"> </span><span class="dv">0</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb5-19"><a href="#cb5-19"></a><span class="st">  </span><span class="kw">group_by</span>(gets_paid) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb5-20"><a href="#cb5-20"></a><span class="st">  </span><span class="kw">summarise</span>(<span class="dt">responses =</span> <span class="kw">mean</span>(n), <span class="dt">n =</span> <span class="kw">n_distinct</span>(session))</span>
+<span id="cb5-21"><a href="#cb5-21"></a></span>
+<span id="cb5-22"><a href="#cb5-22"></a>response_rate_over_time &lt;-<span class="st"> </span>diary <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb5-23"><a href="#cb5-23"></a><span class="st">  </span><span class="kw">filter</span>(day_number <span class="op">&gt;=</span><span class="st"> </span><span class="dv">0</span>, day_number <span class="op">&lt;</span><span class="st"> </span><span class="dv">70</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb5-24"><a href="#cb5-24"></a><span class="st">  </span><span class="kw">left_join</span>(s1_filter, <span class="dt">by =</span> <span class="st">&#39;session&#39;</span>, <span class="dt">suffix =</span> <span class="kw">c</span>(<span class="st">&quot;&quot;</span>, <span class="st">&quot;_filter&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb5-25"><a href="#cb5-25"></a><span class="st">  </span><span class="kw">group_by</span>(gets_paid) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb5-26"><a href="#cb5-26"></a><span class="st">  </span><span class="kw">mutate</span>(</span>
+<span id="cb5-27"><a href="#cb5-27"></a>    <span class="dt">n =</span> <span class="kw">n_distinct</span>(session)</span>
+<span id="cb5-28"><a href="#cb5-28"></a>  ) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb5-29"><a href="#cb5-29"></a><span class="st">  </span><span class="kw">group_by</span>(gets_paid, day_number) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb5-30"><a href="#cb5-30"></a><span class="st">  </span><span class="kw">summarise</span>(</span>
+<span id="cb5-31"><a href="#cb5-31"></a>    <span class="dt">n =</span> <span class="kw">unique</span>(n),</span>
+<span id="cb5-32"><a href="#cb5-32"></a>    <span class="dt">entries =</span> <span class="kw">n_nonmissing</span>(ended_diary),</span>
+<span id="cb5-33"><a href="#cb5-33"></a>    <span class="dt">rr =</span> entries <span class="op">/</span><span class="st"> </span><span class="kw">unique</span>(n))</span>
+<span id="cb5-34"><a href="#cb5-34"></a></span>
+<span id="cb5-35"><a href="#cb5-35"></a><span class="kw">ggplot</span>(response_rate_over_time, <span class="kw">aes</span>(day_number, rr, <span class="dt">colour =</span> gets_paid)) <span class="op">+</span><span class="st"> </span><span class="kw">geom_point</span>() <span class="op">+</span></span>
+<span id="cb5-36"><a href="#cb5-36"></a><span class="st">    </span><span class="kw">ggtitle</span>(<span class="st">&quot;Response rate over time&quot;</span>, <span class="st">&quot;for people who started the diary&quot;</span>) <span class="op">+</span><span class="st"> </span><span class="kw">ylim</span>(<span class="dv">0</span>,<span class="dv">1</span>)</span></code></pre></div>
+<p><img src="1_descriptives_files/figure-html/unnamed-chunk-3-1.png" width="864" /></p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a>mean_diary_entries_finishers &lt;-<span class="st"> </span>s4_followup <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">select</span>(<span class="op">-</span>ended) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">left_join</span>(s3_daily, <span class="dt">by =</span> <span class="st">&#39;session&#39;</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">group_by</span>(session) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">summarise</span>(<span class="dt">n =</span> <span class="kw">n_nonmissing</span>(ended)) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">summarise</span>(<span class="kw">mean</span>(n))</span>
+<span id="cb6-2"><a href="#cb6-2"></a></span>
+<span id="cb6-3"><a href="#cb6-3"></a>response_rate_over_time &lt;-<span class="st"> </span>s4_followup <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">select</span>(<span class="op">-</span>ended) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb6-4"><a href="#cb6-4"></a><span class="st">  </span><span class="kw">left_join</span>(diary <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">select</span>(session, day_number, created_diary, ended_diary)) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">filter</span>(day_number <span class="op">&gt;=</span><span class="st"> </span><span class="dv">0</span>, day_number <span class="op">&lt;</span><span class="st"> </span><span class="dv">70</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb6-5"><a href="#cb6-5"></a><span class="st">  </span><span class="kw">left_join</span>(s1_filter, <span class="dt">by =</span> <span class="st">&#39;session&#39;</span>, <span class="dt">suffix =</span> <span class="kw">c</span>(<span class="st">&quot;&quot;</span>, <span class="st">&quot;_filter&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb6-6"><a href="#cb6-6"></a><span class="st">  </span><span class="kw">group_by</span>(gets_paid) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb6-7"><a href="#cb6-7"></a><span class="st">  </span><span class="kw">mutate</span>(</span>
+<span id="cb6-8"><a href="#cb6-8"></a>    <span class="dt">n =</span> <span class="kw">n_distinct</span>(session)</span>
+<span id="cb6-9"><a href="#cb6-9"></a>  ) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb6-10"><a href="#cb6-10"></a><span class="st">  </span><span class="kw">group_by</span>(gets_paid, day_number) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb6-11"><a href="#cb6-11"></a><span class="st">  </span><span class="kw">summarise</span>(</span>
+<span id="cb6-12"><a href="#cb6-12"></a>    <span class="dt">entries =</span> <span class="kw">n_nonmissing</span>(ended_diary),</span>
+<span id="cb6-13"><a href="#cb6-13"></a>    <span class="dt">rr =</span> entries <span class="op">/</span><span class="st"> </span><span class="kw">unique</span>(n))</span>
+<span id="cb6-14"><a href="#cb6-14"></a></span>
+<span id="cb6-15"><a href="#cb6-15"></a><span class="kw">ggplot</span>(response_rate_over_time, <span class="kw">aes</span>(day_number, rr, <span class="dt">colour =</span> gets_paid)) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb6-16"><a href="#cb6-16"></a><span class="st">  </span><span class="kw">geom_point</span>() <span class="op">+</span></span>
+<span id="cb6-17"><a href="#cb6-17"></a><span class="st">    </span><span class="kw">ggtitle</span>(<span class="st">&quot;Response rate over time&quot;</span>, <span class="st">&quot;for people who finished the diary&quot;</span>) <span class="op">+</span><span class="st"> </span><span class="kw">ylim</span>(<span class="dv">0</span>,<span class="dv">1</span>)</span></code></pre></div>
+<p><img src="1_descriptives_files/figure-html/unnamed-chunk-3-2.png" width="864" /></p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a>response_rate_over_time &lt;-<span class="st"> </span>diary <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb7-2"><a href="#cb7-2"></a><span class="st">  </span><span class="co"># I am leaving in days that we excluded post-hoc (e.g., because fertility was not estimable, to show the real response rate, irrespective of diary-data-based exclusions)</span></span>
+<span id="cb7-3"><a href="#cb7-3"></a><span class="st">  </span><span class="kw">filter</span>(reasons_for_exclusion <span class="op">==</span><span class="st"> </span>reasons_for_exclusion_diary) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb7-4"><a href="#cb7-4"></a><span class="st">  </span><span class="kw">select</span>(session, day_number, created_diary, ended_diary) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb7-5"><a href="#cb7-5"></a><span class="st">  </span><span class="kw">filter</span>(day_number <span class="op">&gt;=</span><span class="st"> </span><span class="dv">0</span>, day_number <span class="op">&lt;</span><span class="st"> </span><span class="dv">70</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb7-6"><a href="#cb7-6"></a><span class="st">  </span><span class="kw">left_join</span>(s1_filter, <span class="dt">by =</span> <span class="st">&#39;session&#39;</span>, <span class="dt">suffix =</span> <span class="kw">c</span>(<span class="st">&quot;&quot;</span>, <span class="st">&quot;_filter&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb7-7"><a href="#cb7-7"></a><span class="st">  </span><span class="kw">group_by</span>(gets_paid) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb7-8"><a href="#cb7-8"></a><span class="st">  </span><span class="kw">mutate</span>(</span>
+<span id="cb7-9"><a href="#cb7-9"></a>    <span class="dt">n =</span> <span class="kw">n_distinct</span>(session)</span>
+<span id="cb7-10"><a href="#cb7-10"></a>  ) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb7-11"><a href="#cb7-11"></a><span class="st">  </span><span class="kw">group_by</span>(gets_paid, day_number) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb7-12"><a href="#cb7-12"></a><span class="st">  </span><span class="kw">summarise</span>(</span>
+<span id="cb7-13"><a href="#cb7-13"></a>    <span class="dt">n =</span> <span class="kw">unique</span>(n),</span>
+<span id="cb7-14"><a href="#cb7-14"></a>    <span class="dt">entries =</span> <span class="kw">n_nonmissing</span>(ended_diary),</span>
+<span id="cb7-15"><a href="#cb7-15"></a>    <span class="dt">rr =</span> entries <span class="op">/</span><span class="st"> </span><span class="kw">unique</span>(n))</span>
+<span id="cb7-16"><a href="#cb7-16"></a></span>
+<span id="cb7-17"><a href="#cb7-17"></a><span class="kw">ggplot</span>(response_rate_over_time, <span class="kw">aes</span>(day_number, rr, <span class="dt">colour =</span> gets_paid)) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb7-18"><a href="#cb7-18"></a><span class="st">  </span><span class="kw">geom_point</span>() <span class="op">+</span></span>
+<span id="cb7-19"><a href="#cb7-19"></a><span class="st">    </span><span class="kw">ggtitle</span>(<span class="st">&quot;Response rate over time&quot;</span>, <span class="st">&quot;for included subsample&quot;</span>) <span class="op">+</span><span class="st"> </span><span class="kw">ylim</span>(<span class="dv">0</span>,<span class="dv">1</span>)</span></code></pre></div>
+<p><img src="1_descriptives_files/figure-html/unnamed-chunk-3-3.png" width="864" /></p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a>nsmt2d_over_time &lt;-<span class="st"> </span>s4_followup <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">select</span>(<span class="op">-</span>ended) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb8-2"><a href="#cb8-2"></a><span class="st">  </span><span class="kw">left_join</span>(diary <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">select</span>(session, day_number, never_skipped_more_than_<span class="dv">2</span>, created_diary, ended_diary)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb8-3"><a href="#cb8-3"></a><span class="st">  </span><span class="kw">left_join</span>(s1_filter, <span class="dt">by =</span> <span class="st">&#39;session&#39;</span>, <span class="dt">suffix =</span> <span class="kw">c</span>(<span class="st">&quot;&quot;</span>, <span class="st">&quot;_filter&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb8-4"><a href="#cb8-4"></a><span class="st">  </span><span class="kw">left_join</span>(mean_diary_entries_by_payment) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb8-5"><a href="#cb8-5"></a><span class="st">  </span><span class="kw">group_by</span>(gets_paid, day_number) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb8-6"><a href="#cb8-6"></a><span class="st">  </span><span class="kw">summarise</span>(<span class="dt">entries =</span> <span class="kw">sum</span>(<span class="kw">as.numeric</span>(never_skipped_more_than_<span class="dv">2</span>), <span class="dt">na.rm =</span> T),</span>
+<span id="cb8-7"><a href="#cb8-7"></a>            <span class="dt">rr =</span> entries <span class="op">/</span><span class="st"> </span><span class="kw">unique</span>(n))</span>
+<span id="cb8-8"><a href="#cb8-8"></a></span>
+<span id="cb8-9"><a href="#cb8-9"></a><span class="kw">ggplot</span>(nsmt2d_over_time, <span class="kw">aes</span>(day_number, rr, <span class="dt">colour =</span> gets_paid)) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb8-10"><a href="#cb8-10"></a><span class="st">  </span><span class="kw">geom_point</span>() <span class="op">+</span></span>
+<span id="cb8-11"><a href="#cb8-11"></a><span class="st">    </span><span class="kw">ggtitle</span>(<span class="st">&quot;Percentage who never skipped more than two days over time&quot;</span>, <span class="st">&quot;for people who finished the diary&quot;</span>) <span class="op">+</span><span class="st"> </span><span class="kw">ylim</span>(<span class="dv">0</span>,<span class="dv">1</span>)</span></code></pre></div>
+<p><img src="1_descriptives_files/figure-html/unnamed-chunk-3-4.png" width="864" /></p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a>mean_finishing_personality_by_payment &lt;-<span class="st"> </span>s1_demo <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb9-2"><a href="#cb9-2"></a><span class="st">  </span><span class="kw">left_join</span>(s1_filter, <span class="dt">by =</span> <span class="st">&#39;session&#39;</span>, <span class="dt">suffix =</span> <span class="kw">c</span>(<span class="st">&quot;_demo&quot;</span>, <span class="st">&quot;&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb9-3"><a href="#cb9-3"></a><span class="st">  </span><span class="kw">left_join</span>(s2_initial,<span class="dt">by =</span><span class="st">&#39;session&#39;</span>, <span class="dt">suffix =</span> <span class="kw">c</span>(<span class="st">&quot;&quot;</span>, <span class="st">&quot;_initial&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb9-4"><a href="#cb9-4"></a><span class="st">  </span><span class="kw">group_by</span>(gets_paid) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb9-5"><a href="#cb9-5"></a><span class="st">  </span><span class="kw">summarise</span>(<span class="dt">finish_demo =</span> <span class="kw">n_nonmissing</span>(ended_demo), </span>
+<span id="cb9-6"><a href="#cb9-6"></a>            <span class="dt">finish_initial =</span> <span class="kw">n_nonmissing</span>(ended_initial), <span class="dt">n =</span> <span class="kw">n</span>(),</span>
+<span id="cb9-7"><a href="#cb9-7"></a>            <span class="dt">prc_ini_over_demo =</span> <span class="kw">round</span>(<span class="dv">100</span><span class="op">*</span>finish_initial<span class="op">/</span>finish_demo),</span>
+<span id="cb9-8"><a href="#cb9-8"></a>            <span class="dt">consc =</span> <span class="kw">mean</span>(bfi_consc,<span class="dt">na.rm=</span>T))</span>
+<span id="cb9-9"><a href="#cb9-9"></a><span class="kw">kable</span>(mean_finishing_personality_by_payment)</span></code></pre></div>
+<table>
+<thead>
+<tr>
+<th style="text-align:left;">
+gets_paid
+</th>
+<th style="text-align:right;">
+finish_demo
+</th>
+<th style="text-align:right;">
+finish_initial
+</th>
+<th style="text-align:right;">
+n
+</th>
+<th style="text-align:right;">
+prc_ini_over_demo
+</th>
+<th style="text-align:right;">
+consc
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:right;">
+1050
+</td>
+<td style="text-align:right;">
+871
+</td>
+<td style="text-align:right;">
+1050
+</td>
+<td style="text-align:right;">
+83
+</td>
+<td style="text-align:right;">
+3.577
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+1
+</td>
+<td style="text-align:right;">
+557
+</td>
+<td style="text-align:right;">
+540
+</td>
+<td style="text-align:right;">
+557
+</td>
+<td style="text-align:right;">
+97
+</td>
+<td style="text-align:right;">
+3.478
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+53
+</td>
+<td style="text-align:right;">
+NaN
+</td>
+<td style="text-align:right;">
+NaN
+</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a>mean_finishing_follow_up_by_payment &lt;-<span class="st"> </span>s1_filter <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">select</span>(<span class="op">-</span>ended) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">right_join</span>(s2_initial,<span class="dt">by =</span><span class="st">&#39;session&#39;</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">left_join</span>(s4_followup, <span class="dt">by =</span> <span class="st">&#39;session&#39;</span>, <span class="dt">suffix =</span> <span class="kw">c</span>(<span class="st">&quot;_initial&quot;</span>, <span class="st">&quot;_followup&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">group_by</span>(gets_paid) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">summarise</span>(<span class="dt">followup =</span> <span class="kw">n_nonmissing</span>(ended_followup), <span class="dt">initial =</span> <span class="kw">n_nonmissing</span>(ended_initial), <span class="kw">n</span>(), <span class="dt">prc_fu_over_initial =</span> <span class="kw">round</span>(<span class="dv">100</span><span class="op">*</span>followup<span class="op">/</span>initial))</span>
+<span id="cb10-2"><a href="#cb10-2"></a><span class="kw">kable</span>(mean_finishing_follow_up_by_payment)</span></code></pre></div>
+<table>
+<thead>
+<tr>
+<th style="text-align:left;">
+gets_paid
+</th>
+<th style="text-align:right;">
+followup
+</th>
+<th style="text-align:right;">
+initial
+</th>
+<th style="text-align:right;">
+n()
+</th>
+<th style="text-align:right;">
+prc_fu_over_initial
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:right;">
+656
+</td>
+<td style="text-align:right;">
+871
+</td>
+<td style="text-align:right;">
+958
+</td>
+<td style="text-align:right;">
+75
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+1
+</td>
+<td style="text-align:right;">
+484
+</td>
+<td style="text-align:right;">
+540
+</td>
+<td style="text-align:right;">
+554
+</td>
+<td style="text-align:right;">
+90
+</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a>fertile_known_man_known =<span class="st"> </span>diary_social <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">group_by</span>(session, created) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb11-2"><a href="#cb11-2"></a><span class="st">  </span><span class="kw">summarise</span>(<span class="dt">n =</span> <span class="kw">n_nonmissing</span>(person_attractiveness_short_term)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb11-3"><a href="#cb11-3"></a><span class="st">  </span><span class="kw">group_by</span>(session) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">summarise</span>(<span class="dt">n =</span> <span class="kw">sum</span>(n)) <span class="co"># fertility known, man known</span></span>
+<span id="cb11-4"><a href="#cb11-4"></a>fertile_known_man_known<span class="op">$</span>n <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">qplot</span>() <span class="op">+</span><span class="st"> </span><span class="kw">xlim</span>(<span class="dv">1</span>,<span class="ot">NA</span>)</span></code></pre></div>
+<p><img src="1_descriptives_files/figure-html/unnamed-chunk-3-5.png" width="864" /></p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a>fertile_known_person_known =<span class="st"> </span>diary_social <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">group_by</span>(session, created) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb12-2"><a href="#cb12-2"></a><span class="st">  </span><span class="kw">summarise</span>(<span class="dt">n =</span> <span class="kw">n_nonmissing</span>(person_sex)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb12-3"><a href="#cb12-3"></a><span class="st">  </span><span class="kw">group_by</span>(session) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">summarise</span>(<span class="dt">n =</span> <span class="kw">sum</span>(n)) <span class="co"># fertility known, man known</span></span>
+<span id="cb12-4"><a href="#cb12-4"></a></span>
+<span id="cb12-5"><a href="#cb12-5"></a>finished_timespent =<span class="st"> </span>s4_timespent <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">group_by</span>(session) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">summarise</span>(<span class="dt">n =</span> <span class="kw">n_nonmissing</span>(ended)) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">filter</span>(n <span class="op">&gt;=</span><span class="st"> </span><span class="dv">1</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">nrow</span>()</span>
+<span id="cb12-6"><a href="#cb12-6"></a>timespent_gt3 =<span class="st"> </span>s4_timespent <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">group_by</span>(session) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">summarise</span>(<span class="dt">n =</span> <span class="kw">n_nonmissing</span>(ended)) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">filter</span>(n <span class="op">&gt;</span><span class="st"> </span><span class="dv">3</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">nrow</span>()</span>
+<span id="cb12-7"><a href="#cb12-7"></a>timespent_men =<span class="st"> </span>network <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">group_by</span>(session) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">filter</span>(person_sex <span class="op">==</span><span class="st"> </span><span class="dv">2</span>, person_relationship_to_anchor <span class="op">!=</span><span class="st"> &quot;biological_relative&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">summarise</span>(<span class="dt">n =</span> <span class="kw">n_nonmissing</span>(ended)) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">filter</span>(n <span class="op">&gt;</span><span class="st"> </span><span class="dv">0</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">nrow</span>()</span>
+<span id="cb12-8"><a href="#cb12-8"></a>timespent_3men =<span class="st"> </span>network <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">group_by</span>(session) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">filter</span>(person_sex <span class="op">==</span><span class="st"> </span><span class="dv">2</span>, person_relationship_to_anchor <span class="op">!=</span><span class="st"> &quot;biological_relative&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">summarise</span>(<span class="dt">n =</span> <span class="kw">n_nonmissing</span>(ended)) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">filter</span>(n <span class="op">&gt;</span><span class="st"> </span><span class="dv">2</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">nrow</span>()</span>
+<span id="cb12-9"><a href="#cb12-9"></a></span>
+<span id="cb12-10"><a href="#cb12-10"></a>fertile_known_man_known_participants =<span class="st"> </span>fertile_known_man_known <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">filter</span>(n <span class="op">&gt;</span><span class="st"> </span><span class="dv">0</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">nrow</span>()</span>
+<span id="cb12-11"><a href="#cb12-11"></a>fertile_known_person_known_participants =<span class="st"> </span>fertile_known_person_known <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">filter</span>(n <span class="op">&gt;</span><span class="st"> </span><span class="dv">0</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">nrow</span>()</span>
+<span id="cb12-12"><a href="#cb12-12"></a></span>
+<span id="cb12-13"><a href="#cb12-13"></a>finished_followup =<span class="st"> </span><span class="kw">sum</span>(<span class="op">!</span><span class="kw">is.na</span>(s4_followup<span class="op">$</span>ended))</span>
+<span id="cb12-14"><a href="#cb12-14"></a></span>
+<span id="cb12-15"><a href="#cb12-15"></a><span class="co"># all_surveys %&gt;% mutate(</span></span>
+<span id="cb12-16"><a href="#cb12-16"></a><span class="co">#   should_be_done = created_demo + days(70) &lt; today()</span></span>
+<span id="cb12-17"><a href="#cb12-17"></a><span class="co"># ) %&gt;% filter(should_be_done == T) %&gt;% xtabs(~ is.na(ended), .)</span></span>
+<span id="cb12-18"><a href="#cb12-18"></a></span>
+<span id="cb12-19"><a href="#cb12-19"></a><span class="co"># all_surveys %&gt;% mutate(</span></span>
+<span id="cb12-20"><a href="#cb12-20"></a><span class="co"># should_be_done = created_demo + days(70) &lt; today()</span></span>
+<span id="cb12-21"><a href="#cb12-21"></a><span class="co"># ) %&gt;% left_join(s3_daily %&gt;% group_by(session) %&gt;% summarise(n = n_nonmissing(ended))) %&gt;% </span></span>
+<span id="cb12-22"><a href="#cb12-22"></a><span class="co">#  filter(should_be_done == T, n &gt; 40) %&gt;% xtabs(~ is.na(ended), .)</span></span>
+<span id="cb12-23"><a href="#cb12-23"></a></span>
+<span id="cb12-24"><a href="#cb12-24"></a>all_surveys <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">mutate</span>(<span class="dt">should_be_done =</span> created_demo <span class="op">+</span><span class="st"> </span><span class="kw">days</span>(<span class="dv">70</span>) <span class="op">&lt;</span><span class="st"> </span><span class="kw">today</span>()) <span class="op">%&gt;%</span></span>
+<span id="cb12-25"><a href="#cb12-25"></a><span class="st"> </span><span class="kw">left_join</span>( s4_timespent <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">group_by</span>(session) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">summarise</span>(<span class="dt">n_timespent =</span> <span class="kw">n_nonmissing</span>(ended)), <span class="dt">by =</span> <span class="st">&#39;session&#39;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb12-26"><a href="#cb12-26"></a><span class="st"> </span><span class="kw">filter</span>(hetero_relationship <span class="op">==</span><span class="st"> </span><span class="dv">0</span>, should_be_done <span class="op">==</span><span class="st"> </span>T, n_timespent <span class="op">&gt;</span><span class="st"> </span><span class="dv">0</span>, <span class="op">!</span><span class="kw">is.na</span>(n_timespent)) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">nrow</span>()</span></code></pre></div>
+<pre><code>## [1] 349</code></pre>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a>all_surveys <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">mutate</span>(<span class="dt">should_be_done =</span> created_demo <span class="op">+</span><span class="st"> </span><span class="kw">days</span>(<span class="dv">70</span>) <span class="op">&lt;</span><span class="st"> </span><span class="kw">today</span>()) <span class="op">%&gt;%</span></span>
+<span id="cb14-2"><a href="#cb14-2"></a><span class="st"> </span><span class="kw">left_join</span>( s4_timespent <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">group_by</span>(session) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">summarise</span>(<span class="dt">n_timespent =</span>  <span class="kw">n_nonmissing</span>(ended)), <span class="dt">by =</span> <span class="st">&#39;session&#39;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb14-3"><a href="#cb14-3"></a><span class="st"> </span><span class="kw">filter</span>(hetero_relationship <span class="op">==</span><span class="st"> </span><span class="dv">0</span> <span class="op">&amp;</span><span class="st"> </span>should_be_done <span class="op">==</span><span class="st"> </span>T <span class="op">&amp;</span><span class="st"> </span>(<span class="kw">is.na</span>(n_timespent) <span class="op">|</span><span class="st"> </span>n_timespent <span class="op">==</span><span class="st"> </span><span class="dv">0</span>)) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">nrow</span>()</span></code></pre></div>
+<pre><code>## [1] 184</code></pre>
+<ol style="list-style-type: decimal">
+<li><strong>1660</strong> signed up for the study.</li>
+<li><strong>1607</strong> finished the demographics (533 singles, 1091 in relationship).</li>
+<li><strong>1373</strong> finished the demographic and personality questionnaires.</li>
+<li><strong>1345</strong> submitted at least one diary entry (&gt;= 20: 1075, &gt;= 50 774). On average participants completed 44.5645 diary entries.</li>
+<li>349 singles reported information on least one person mentioned during the diary (&gt;3: 293, at least one man who wasn’t biologically related: 282, &gt;2men: 124).</li>
+<li><strong>1140</strong> (83% of those who finished the intake survey) finished the follow-up survey. Finishers completed on average 50.316 diary entries.</li>
+</ol>
+</div>
+<div id="contraception" class="section level1">
+<h1>Contraception</h1>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1"></a><span class="kw">library</span>(UpSetR)</span>
+<span id="cb16-2"><a href="#cb16-2"></a>comma_separated_to_columns &lt;-<span class="st"> </span><span class="cf">function</span>(df, col) {</span>
+<span id="cb16-3"><a href="#cb16-3"></a>  colname &lt;-<span class="st"> </span><span class="kw">deparse</span>(<span class="kw">substitute</span>(col))</span>
+<span id="cb16-4"><a href="#cb16-4"></a>  df<span class="op">$</span>splitcol &lt;-<span class="st"> </span>df <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">pull</span>(colname)</span>
+<span id="cb16-5"><a href="#cb16-5"></a>  <span class="kw">separate_rows</span>(df, splitcol, <span class="dt">convert =</span> <span class="ot">TRUE</span>, <span class="dt">sep =</span> <span class="st">&quot;, &quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb16-6"><a href="#cb16-6"></a><span class="st">    </span><span class="kw">mutate</span>(<span class="dt">splitcol =</span> <span class="kw">if_else</span>(<span class="kw">is.na</span>(splitcol), <span class="st">&quot;no&quot;</span>, </span>
+<span id="cb16-7"><a href="#cb16-7"></a>                        <span class="kw">if_else</span>(splitcol <span class="op">==</span><span class="st"> &quot;&quot;</span> <span class="op">|</span><span class="st"> </span></span>
+<span id="cb16-8"><a href="#cb16-8"></a><span class="st">                                  </span>splitcol <span class="op">%in%</span><span class="st"> </span><span class="kw">c</span>(), <span class="st">&quot;other&quot;</span>, <span class="kw">as.character</span>(splitcol)))) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb16-9"><a href="#cb16-9"></a><span class="st">    </span><span class="kw">mutate</span>(<span class="co">#splitcol = stringr::str_c(colname, &quot;_&quot;, splitcol), </span></span>
+<span id="cb16-10"><a href="#cb16-10"></a>           <span class="dt">value =</span> <span class="dv">1</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb16-11"><a href="#cb16-11"></a><span class="st">    </span><span class="kw">spread</span>(splitcol, value, <span class="dt">fill =</span> <span class="dv">0</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb16-12"><a href="#cb16-12"></a><span class="st">    </span><span class="kw">select</span>(<span class="op">-</span>colname)</span>
+<span id="cb16-13"><a href="#cb16-13"></a>}</span>
+<span id="cb16-14"><a href="#cb16-14"></a><span class="kw">library</span>(UpSetR)</span>
+<span id="cb16-15"><a href="#cb16-15"></a>all_surveys <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">select</span>(session, contraception_method) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb16-16"><a href="#cb16-16"></a><span class="st">  </span><span class="kw">comma_separated_to_columns</span>(contraception_method) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb16-17"><a href="#cb16-17"></a><span class="st">  </span><span class="kw">select</span>(<span class="op">-</span>session) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb16-18"><a href="#cb16-18"></a><span class="st">  </span><span class="kw">as.data.frame</span>() <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb16-19"><a href="#cb16-19"></a><span class="st">  </span>{</span>
+<span id="cb16-20"><a href="#cb16-20"></a>  <span class="kw">upset</span>(., <span class="kw">ncol</span>(.), <span class="dv">20</span>, <span class="dt">show.numbers =</span> <span class="ot">TRUE</span>, <span class="dt">order.by =</span> <span class="st">&quot;freq&quot;</span>,</span>
+<span id="cb16-21"><a href="#cb16-21"></a>      <span class="dt">main.bar.color =</span> <span class="st">&quot;#6E8691&quot;</span>,</span>
+<span id="cb16-22"><a href="#cb16-22"></a>      <span class="dt">matrix.color =</span> <span class="st">&quot;#6E8691&quot;</span>,</span>
+<span id="cb16-23"><a href="#cb16-23"></a>      <span class="dt">sets.bar.color =</span> <span class="st">&quot;#53AC9B&quot;</span>)</span>
+<span id="cb16-24"><a href="#cb16-24"></a>  }</span></code></pre></div>
+<p><img src="1_descriptives_files/figure-html/unnamed-chunk-4-1.png" width="864" /></p>
+<div id="social-network" class="section level2">
+<h2>social network</h2>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1"></a><span class="kw">summary</span>(<span class="kw">as.factor</span>(network<span class="op">$</span>person_sex))</span></code></pre></div>
+<pre><code>##    1    2    3 NA&#39;s 
+## 1160  796  160  129</code></pre>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1"></a>by_sex =<span class="st"> </span>s4_timespent <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb19-2"><a href="#cb19-2"></a><span class="st">    </span><span class="kw">group_by</span>(session) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb19-3"><a href="#cb19-3"></a><span class="st">    </span><span class="kw">summarise</span>(<span class="dt">female =</span> <span class="kw">sum</span>(person_sex <span class="op">==</span><span class="st"> </span><span class="dv">1</span>, <span class="dt">na.rm=</span>T), <span class="dt">male =</span> <span class="kw">sum</span>(person_sex <span class="op">==</span><span class="st"> </span><span class="dv">2</span>, <span class="dt">na.rm=</span>T), <span class="dt">n=</span> <span class="kw">n</span>()) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">select</span>(female, male,n)</span></code></pre></div>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1"></a>total_network =<span class="st"> </span><span class="kw">nrow</span>(network)</span>
+<span id="cb20-2"><a href="#cb20-2"></a>persons=<span class="st"> </span><span class="kw">nrow</span>(network <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">filter</span>(person_remember <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">&amp;</span><span class="st"> </span><span class="op">!</span><span class="kw">is.na</span>(ended)))</span></code></pre></div>
+<p><strong>2245</strong> number of persons who were mentioned in diary <strong>2118</strong> number of nicknames/names women remembered.</p>
+</div>
+<div id="comparison-with-quasi-control-group" class="section level2">
+<h2>Comparison with quasi-control group</h2>
+<div id="comparisons-on-key-variables" class="section level3">
+<h3>Comparisons on key variables</h3>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1"></a>women &lt;-<span class="st"> </span>all_surveys <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">filter</span>(reasons_for_exclusion <span class="op">==</span><span class="st"> &quot;&quot;</span>)</span>
+<span id="cb21-2"><a href="#cb21-2"></a>dig1 &lt;-<span class="st"> </span><span class="cf">function</span>(x) { <span class="kw">sprintf</span>(<span class="st">&quot;%.1f&quot;</span>, x) }</span>
+<span id="cb21-3"><a href="#cb21-3"></a>dig2 &lt;-<span class="st"> </span><span class="cf">function</span>(x) { <span class="kw">sprintf</span>(<span class="st">&quot;%.2f&quot;</span>, x) }</span>
+<span id="cb21-4"><a href="#cb21-4"></a>pct &lt;-<span class="st"> </span><span class="cf">function</span>(x) { <span class="kw">sprintf</span>(<span class="st">&quot;%.0f&quot;</span>, x<span class="op">*</span><span class="dv">100</span>) }</span>
+<span id="cb21-5"><a href="#cb21-5"></a></span>
+<span id="cb21-6"><a href="#cb21-6"></a>remove_p_values &lt;-<span class="st"> </span><span class="cf">function</span>(planned_plot, <span class="dt">call_parts =</span> <span class="dv">3</span><span class="op">:</span><span class="dv">10</span>) {</span>
+<span id="cb21-7"><a href="#cb21-7"></a>  subtitle &lt;-<span class="st"> </span><span class="kw">as.list</span>(planned_plot<span class="op">$</span>labels<span class="op">$</span>subtitle)</span>
+<span id="cb21-8"><a href="#cb21-8"></a>  subtitle[call_parts] &lt;-<span class="st"> </span><span class="ot">NULL</span></span>
+<span id="cb21-9"><a href="#cb21-9"></a>  planned_plot<span class="op">$</span>labels<span class="op">$</span>subtitle &lt;-<span class="st"> </span><span class="kw">as.call</span>(subtitle)</span>
+<span id="cb21-10"><a href="#cb21-10"></a>  planned_plot</span>
+<span id="cb21-11"><a href="#cb21-11"></a>}</span>
+<span id="cb21-12"><a href="#cb21-12"></a>comps =<span class="st"> </span><span class="kw">data_frame</span>(<span class="dt">Variable =</span> <span class="kw">character</span>(<span class="dv">0</span>), </span>
+<span id="cb21-13"><a href="#cb21-13"></a>                   <span class="st">`</span><span class="dt">HC user - Mean (SD)</span><span class="st">`</span> =<span class="st"> </span><span class="kw">character</span>(<span class="dv">0</span>), </span>
+<span id="cb21-14"><a href="#cb21-14"></a>                   <span class="st">`</span><span class="dt">Cycling - Mean (SD)</span><span class="st">`</span> =<span class="st"> </span><span class="kw">character</span>(<span class="dv">0</span>),</span>
+<span id="cb21-15"><a href="#cb21-15"></a>                   <span class="st">`</span><span class="dt">99% CI</span><span class="st">`</span> =<span class="st"> </span><span class="kw">character</span>(<span class="dv">0</span>),</span>
+<span id="cb21-16"><a href="#cb21-16"></a>)</span>
+<span id="cb21-17"><a href="#cb21-17"></a></span>
+<span id="cb21-18"><a href="#cb21-18"></a>compare_by_group =<span class="st"> </span><span class="cf">function</span>(var, data, <span class="dt">type =</span> <span class="st">&quot;np&quot;</span>, ...) {</span>
+<span id="cb21-19"><a href="#cb21-19"></a>  var_s &lt;-<span class="st"> </span><span class="kw">enquo</span>(var)</span>
+<span id="cb21-20"><a href="#cb21-20"></a>  var &lt;-<span class="st"> </span>rlang<span class="op">::</span><span class="kw">as_name</span>(var_s)</span>
+<span id="cb21-21"><a href="#cb21-21"></a> sd_hc =<span class="st"> </span><span class="kw">sd</span>(data[data<span class="op">$</span>hormonal_contraception <span class="op">==</span><span class="st"> </span><span class="dv">1</span>,][[var]], <span class="dt">na.rm =</span> T)</span>
+<span id="cb21-22"><a href="#cb21-22"></a> sd_nc =<span class="st"> </span><span class="kw">sd</span>(data[data<span class="op">$</span>hormonal_contraception <span class="op">==</span><span class="st"> </span><span class="dv">0</span>,][[var]], <span class="dt">na.rm =</span> T)</span>
+<span id="cb21-23"><a href="#cb21-23"></a>  data<span class="op">$</span><span class="st">`</span><span class="dt">Hormonal contraception</span><span class="st">`</span> =<span class="st"> </span>forcats<span class="op">::</span><span class="kw">fct_relevel</span>( forcats<span class="op">::</span><span class="kw">fct_recode</span>(forcats<span class="op">::</span><span class="kw">as_factor</span>(data<span class="op">$</span>hormonal_contraception), <span class="st">&quot;Cycling&quot;</span> =<span class="st"> &quot;FALSE&quot;</span>, <span class="st">&quot;HC user&quot;</span> =<span class="st"> &quot;TRUE&quot;</span>), <span class="st">&quot;HC user&quot;</span>)</span>
+<span id="cb21-24"><a href="#cb21-24"></a> comp =<span class="st"> </span><span class="kw">as.formula</span>(<span class="kw">paste0</span>(<span class="st">&quot;`&quot;</span>,var, <span class="st">&quot;` ~ `Hormonal contraception`&quot;</span>))</span>
+<span id="cb21-25"><a href="#cb21-25"></a> tt =<span class="st"> </span><span class="kw">t.test</span>(comp, <span class="dt">data =</span> data, <span class="dt">conf.level =</span> <span class="fl">0.99</span>)</span>
+<span id="cb21-26"><a href="#cb21-26"></a></span>
+<span id="cb21-27"><a href="#cb21-27"></a> summary =<span class="st"> </span><span class="kw">data_frame</span>(<span class="dt">Variable =</span> var, </span>
+<span id="cb21-28"><a href="#cb21-28"></a>                   <span class="st">`</span><span class="dt">HC user - Mean (SD)</span><span class="st">`</span> =<span class="st"> </span><span class="kw">paste0</span>(<span class="kw">dig1</span>(tt<span class="op">$</span>estimate[<span class="dv">1</span>]),<span class="st">&quot; (&quot;</span>, <span class="kw">dig1</span>(sd_hc),<span class="st">&quot;)&quot;</span>), </span>
+<span id="cb21-29"><a href="#cb21-29"></a>                   <span class="st">`</span><span class="dt">Cycling - Mean (SD)</span><span class="st">`</span> =<span class="st"> </span><span class="kw">paste0</span>(<span class="kw">dig1</span>(tt<span class="op">$</span>estimate[<span class="dv">2</span>]), <span class="st">&quot; (&quot;</span>, <span class="kw">dig1</span>(sd_nc), <span class="st">&quot;)&quot;</span>),</span>
+<span id="cb21-30"><a href="#cb21-30"></a>                   <span class="st">`</span><span class="dt">99% CI</span><span class="st">`</span> =<span class="st"> </span><span class="kw">paste</span>(<span class="kw">dig1</span>(tt<span class="op">$</span>conf.int), <span class="dt">collapse =</span> <span class="st">&quot;;&quot;</span>)</span>
+<span id="cb21-31"><a href="#cb21-31"></a> )</span>
+<span id="cb21-32"><a href="#cb21-32"></a> <span class="kw">rownames</span>(summary) =<span class="st"> </span><span class="ot">NULL</span></span>
+<span id="cb21-33"><a href="#cb21-33"></a> comps &lt;&lt;-<span class="st"> </span><span class="kw">bind_rows</span>(comps, summary)</span>
+<span id="cb21-34"><a href="#cb21-34"></a> data[[var]] &lt;-<span class="st"> </span>data[[var]] <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">zap_attributes</span>()</span>
+<span id="cb21-35"><a href="#cb21-35"></a> planned_plot &lt;-<span class="st"> </span>ggstatsplot<span class="op">::</span><span class="kw">ggbetweenstats</span>(</span>
+<span id="cb21-36"><a href="#cb21-36"></a>  <span class="dt">data =</span> data,</span>
+<span id="cb21-37"><a href="#cb21-37"></a>  <span class="dt">x =</span> <span class="st">`</span><span class="dt">Hormonal contraception</span><span class="st">`</span>,</span>
+<span id="cb21-38"><a href="#cb21-38"></a>  <span class="dt">y =</span> <span class="op">!!</span><span class="st"> </span>var_s,</span>
+<span id="cb21-39"><a href="#cb21-39"></a>  <span class="dt">messages =</span> <span class="ot">FALSE</span>,</span>
+<span id="cb21-40"><a href="#cb21-40"></a>  <span class="dt">conf.level =</span> <span class="fl">0.99</span>,</span>
+<span id="cb21-41"><a href="#cb21-41"></a>  <span class="dt">type =</span> type, ..., </span>
+<span id="cb21-42"><a href="#cb21-42"></a>  <span class="dt">ggtheme =</span> <span class="kw">theme_cowplot</span>(<span class="dt">font_size =</span> <span class="dv">18</span>)</span>
+<span id="cb21-43"><a href="#cb21-43"></a>  ) <span class="op">+</span><span class="st"> </span><span class="co"># further modification outside of ggstatsplot</span></span>
+<span id="cb21-44"><a href="#cb21-44"></a><span class="st">  </span><span class="kw">scale_color_manual</span>(<span class="st">&quot;&quot;</span>, <span class="dt">values =</span> <span class="kw">c</span>(<span class="st">&quot;Cycling&quot;</span> =<span class="st"> &quot;red&quot;</span>, <span class="st">&quot;HC user&quot;</span> =<span class="st"> &quot;black&quot;</span>), <span class="dt">guide =</span> F) <span class="op">+</span></span>
+<span id="cb21-45"><a href="#cb21-45"></a><span class="st">  </span><span class="co"># scale_x_discrete(&quot;Hormonal contraception&quot;, labels = c(&quot;1&quot; = &quot;HC user&quot;, &quot;2&quot; = &quot;Cycling&quot;)) +</span></span>
+<span id="cb21-46"><a href="#cb21-46"></a><span class="st">  </span><span class="kw">scale_fill_manual</span>(<span class="st">&quot;&quot;</span>, <span class="dt">values =</span> <span class="kw">c</span>(<span class="st">&quot;Cycling&quot;</span> =<span class="st"> &quot;red&quot;</span>, <span class="st">&quot;HC user&quot;</span> =<span class="st"> &quot;black&quot;</span>), <span class="dt">guide =</span> F)</span>
+<span id="cb21-47"><a href="#cb21-47"></a> <span class="kw">remove_p_values</span>(planned_plot)</span>
+<span id="cb21-48"><a href="#cb21-48"></a>}</span>
+<span id="cb21-49"><a href="#cb21-49"></a><span class="kw">library</span>(ggstatsplot)</span>
+<span id="cb21-50"><a href="#cb21-50"></a><span class="kw">library</span>(cowplot)</span></code></pre></div>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1"></a>women<span class="op">$</span><span class="st">`</span><span class="dt">Age (years)</span><span class="st">`</span> &lt;-<span class="st"> </span>women<span class="op">$</span>age</span>
+<span id="cb22-2"><a href="#cb22-2"></a><span class="kw">compare_by_group</span>(<span class="st">`</span><span class="dt">Age (years)</span><span class="st">`</span>, women)</span></code></pre></div>
+<div class="figure">
+<img src="1_descriptives_files/figure-html/unnamed-chunk-8-1.png" alt="Comparison of the hormonal contraception users (our quasi-control group) with women who are regularly cycling. The plot shows the distribution of values in each group and the results of a Mann-Whitney U test." width="864" />
+<p class="caption">
+Comparison of the hormonal contraception users (our quasi-control group) with women who are regularly cycling. The plot shows the distribution of values in each group and the results of a Mann-Whitney U test.
+</p>
+</div>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1"></a>{ <span class="kw">ggbarstats</span>(women <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">mutate</span>(<span class="dt">relationship_status=</span><span class="kw">as_factor</span>(relationship_status)), </span>
+<span id="cb23-2"><a href="#cb23-2"></a>           relationship_status,</span>
+<span id="cb23-3"><a href="#cb23-3"></a>           hormonal_contraception,</span>
+<span id="cb23-4"><a href="#cb23-4"></a>           <span class="dt">messages =</span> <span class="ot">FALSE</span>,</span>
+<span id="cb23-5"><a href="#cb23-5"></a>  <span class="dt">conf.level =</span> <span class="fl">0.99</span>,</span>
+<span id="cb23-6"><a href="#cb23-6"></a>  <span class="dt">bf.message =</span> F,</span>
+<span id="cb23-7"><a href="#cb23-7"></a>  <span class="dt">ggtheme =</span> <span class="kw">theme_cowplot</span>(<span class="dt">font_size =</span> <span class="dv">18</span>)</span>
+<span id="cb23-8"><a href="#cb23-8"></a>  ) <span class="op">+</span><span class="st"> </span><span class="co"># further modification outside of ggstatsplot</span></span>
+<span id="cb23-9"><a href="#cb23-9"></a><span class="st">  </span><span class="kw">scale_x_discrete</span>(<span class="st">&quot;Hormonal contraception&quot;</span>, <span class="dt">labels =</span> <span class="kw">c</span>(<span class="st">&quot;TRUE&quot;</span> =<span class="st"> &quot;HC user&quot;</span>, <span class="st">&quot;FALSE&quot;</span> =<span class="st"> &quot;Cycling&quot;</span>))</span>
+<span id="cb23-10"><a href="#cb23-10"></a>} <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb23-11"><a href="#cb23-11"></a><span class="st">  </span><span class="kw">remove_p_values</span>(<span class="dt">call_parts =</span> <span class="dv">3</span><span class="op">:</span><span class="dv">12</span>)</span></code></pre></div>
+<div class="figure">
+<img src="1_descriptives_files/figure-html/unnamed-chunk-9-1.png" alt="Comparison of the hormonal contraception users (our quasi-control group) with women who are regularly cycling. The plot shows the distribution of categories in each group and the results of a Chi-Square test for equal distribution." width="864" />
+<p class="caption">
+Comparison of the hormonal contraception users (our quasi-control group) with women who are regularly cycling. The plot shows the distribution of categories in each group and the results of a Chi-Square test for equal distribution.
+</p>
+</div>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1"></a>women<span class="op">$</span><span class="st">`</span><span class="dt">Age at first sex (years)</span><span class="st">`</span> &lt;-<span class="st"> </span>women<span class="op">$</span>first_time</span>
+<span id="cb24-2"><a href="#cb24-2"></a><span class="kw">compare_by_group</span>(<span class="st">`</span><span class="dt">Age at first sex (years)</span><span class="st">`</span>, women)</span></code></pre></div>
+<div class="figure">
+<img src="1_descriptives_files/figure-html/unnamed-chunk-10-1.png" alt="Comparison of the hormonal contraception users (our quasi-control group) with women who are regularly cycling. The plot shows the distribution of values in each group and the results of a Mann-Whitney U test." width="864" />
+<p class="caption">
+Comparison of the hormonal contraception users (our quasi-control group) with women who are regularly cycling. The plot shows the distribution of values in each group and the results of a Mann-Whitney U test.
+</p>
+</div>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1"></a>women<span class="op">$</span><span class="st">`</span><span class="dt">Age at menarche (years)</span><span class="st">`</span> &lt;-<span class="st"> </span>women<span class="op">$</span>menarche</span>
+<span id="cb25-2"><a href="#cb25-2"></a><span class="kw">compare_by_group</span>(<span class="st">`</span><span class="dt">Age at menarche (years)</span><span class="st">`</span>, women)</span></code></pre></div>
+<div class="figure">
+<img src="1_descriptives_files/figure-html/unnamed-chunk-11-1.png" alt="Comparison of the hormonal contraception users (our quasi-control group) with women who are regularly cycling. The plot shows the distribution of values in each group and the results of a Mann-Whitney U test." width="864" />
+<p class="caption">
+Comparison of the hormonal contraception users (our quasi-control group) with women who are regularly cycling. The plot shows the distribution of values in each group and the results of a Mann-Whitney U test.
+</p>
+</div>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1"></a>women<span class="op">$</span><span class="st">`</span><span class="dt">Relationship duration (years)</span><span class="st">`</span> &lt;-<span class="st"> </span>women<span class="op">$</span>relationship_duration</span>
+<span id="cb26-2"><a href="#cb26-2"></a><span class="kw">compare_by_group</span>(<span class="st">`</span><span class="dt">Relationship duration (years)</span><span class="st">`</span>, women) <span class="op">+</span><span class="st"> </span><span class="kw">scale_y_sqrt</span>(<span class="dt">breaks =</span> <span class="kw">c</span>(<span class="dv">1</span>,<span class="dv">5</span>, <span class="dv">10</span>, <span class="dv">20</span>, <span class="dv">30</span>))</span></code></pre></div>
+<div class="figure">
+<img src="1_descriptives_files/figure-html/unnamed-chunk-12-1.png" alt="Comparison of the hormonal contraception users (our quasi-control group) with women who are regularly cycling. The plot shows the distribution of values in each group and the results of a Mann-Whitney U test." width="864" />
+<p class="caption">
+Comparison of the hormonal contraception users (our quasi-control group) with women who are regularly cycling. The plot shows the distribution of values in each group and the results of a Mann-Whitney U test.
+</p>
+</div>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1"></a>women<span class="op">$</span><span class="st">`</span><span class="dt">Avg. cycle length (days)</span><span class="st">`</span> &lt;-<span class="st"> </span>women<span class="op">$</span>menstruation_length</span>
+<span id="cb27-2"><a href="#cb27-2"></a><span class="kw">compare_by_group</span>(<span class="st">`</span><span class="dt">Avg. cycle length (days)</span><span class="st">`</span>, women)</span></code></pre></div>
+<div class="figure">
+<img src="1_descriptives_files/figure-html/unnamed-chunk-13-1.png" alt="Comparison of the hormonal contraception users (our quasi-control group) with women who are regularly cycling. The plot shows the distribution of values in each group and the results of a Mann-Whitney U test." width="864" />
+<p class="caption">
+Comparison of the hormonal contraception users (our quasi-control group) with women who are regularly cycling. The plot shows the distribution of values in each group and the results of a Mann-Whitney U test.
+</p>
+</div>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1"></a>women<span class="op">$</span><span class="st">`</span><span class="dt">Cycle regularity</span><span class="st">`</span> &lt;-<span class="st"> </span>women<span class="op">$</span>menstruation_regularity</span>
+<span id="cb28-2"><a href="#cb28-2"></a><span class="kw">compare_by_group</span>(<span class="st">`</span><span class="dt">Cycle regularity</span><span class="st">`</span>, women) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb28-3"><a href="#cb28-3"></a><span class="st">  </span><span class="kw">scale_y_continuous</span>(</span>
+<span id="cb28-4"><a href="#cb28-4"></a>    <span class="dt">labels =</span> <span class="kw">c</span>(<span class="st">&quot;1&quot;</span> =<span class="st"> &quot;no fluctuation&quot;</span>,</span>
+<span id="cb28-5"><a href="#cb28-5"></a>               <span class="st">&quot;2&quot;</span> =<span class="st"> &quot;1-2 days&quot;</span>,</span>
+<span id="cb28-6"><a href="#cb28-6"></a>               <span class="st">&quot;3&quot;</span> =<span class="st"> &quot;3-5 days&quot;</span>,</span>
+<span id="cb28-7"><a href="#cb28-7"></a>               <span class="st">&quot;4&quot;</span> =<span class="st"> &quot;&gt;5 days&quot;</span>))</span></code></pre></div>
+<div class="figure">
+<img src="1_descriptives_files/figure-html/unnamed-chunk-14-1.png" alt="Comparison of the hormonal contraception users (our quasi-control group) with women who are regularly cycling. The plot shows the distribution of values in each group and the results of a Mann-Whitney U test." width="864" />
+<p class="caption">
+Comparison of the hormonal contraception users (our quasi-control group) with women who are regularly cycling. The plot shows the distribution of values in each group and the results of a Mann-Whitney U test.
+</p>
+</div>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1"></a>women<span class="op">$</span><span class="st">`</span><span class="dt">No. lifetime sexual partners</span><span class="st">`</span> &lt;-<span class="st"> </span>women<span class="op">$</span>number_sexual_partner</span>
+<span id="cb29-2"><a href="#cb29-2"></a><span class="kw">compare_by_group</span>(<span class="st">`</span><span class="dt">No. lifetime sexual partners</span><span class="st">`</span>, women, <span class="dt">type =</span> <span class="st">&quot;r&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb29-3"><a href="#cb29-3"></a><span class="st">  </span><span class="kw">remove_p_values</span>(<span class="dt">call_parts =</span> <span class="dv">3</span><span class="op">:</span><span class="dv">4</span>) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb29-4"><a href="#cb29-4"></a><span class="st">  </span><span class="kw">scale_y_sqrt</span>(<span class="dt">breaks =</span> <span class="kw">c</span>(<span class="dv">1</span>,<span class="dv">5</span>, <span class="dv">10</span>, <span class="dv">20</span>, <span class="dv">50</span>, <span class="dv">100</span>))</span></code></pre></div>
+<div class="figure">
+<img src="1_descriptives_files/figure-html/unnamed-chunk-15-1.png" alt="Comparison of the hormonal contraception users (our quasi-control group) with women who are regularly cycling. The plot shows the distribution of values in each group and the results of Yuen's test for trimmed means (10% trimmed)." width="864" />
+<p class="caption">
+Comparison of the hormonal contraception users (our quasi-control group) with women who are regularly cycling. The plot shows the distribution of values in each group and the results of Yuen’s test for trimmed means (10% trimmed).
+</p>
+</div>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1"></a>women<span class="op">$</span><span class="st">`</span><span class="dt">BFI Extraversion</span><span class="st">`</span> &lt;-<span class="st"> </span>women<span class="op">$</span>bfi_extra</span>
+<span id="cb30-2"><a href="#cb30-2"></a><span class="kw">compare_by_group</span>(<span class="st">`</span><span class="dt">BFI Extraversion</span><span class="st">`</span>, women)</span></code></pre></div>
+<div class="figure">
+<img src="1_descriptives_files/figure-html/unnamed-chunk-16-1.png" alt="Comparison of the hormonal contraception users (our quasi-control group) with women who are regularly cycling. The plot shows the distribution of values in each group and the results of a Mann-Whitney U test." width="864" />
+<p class="caption">
+Comparison of the hormonal contraception users (our quasi-control group) with women who are regularly cycling. The plot shows the distribution of values in each group and the results of a Mann-Whitney U test.
+</p>
+</div>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1"></a>women<span class="op">$</span><span class="st">`</span><span class="dt">BFI Agreeableness</span><span class="st">`</span> &lt;-<span class="st"> </span>women<span class="op">$</span>bfi_agree</span>
+<span id="cb31-2"><a href="#cb31-2"></a><span class="kw">compare_by_group</span>(<span class="st">`</span><span class="dt">BFI Agreeableness</span><span class="st">`</span>, women)</span></code></pre></div>
+<div class="figure">
+<img src="1_descriptives_files/figure-html/unnamed-chunk-17-1.png" alt="Comparison of the hormonal contraception users (our quasi-control group) with women who are regularly cycling. The plot shows the distribution of values in each group and the results of a Mann-Whitney U test." width="864" />
+<p class="caption">
+Comparison of the hormonal contraception users (our quasi-control group) with women who are regularly cycling. The plot shows the distribution of values in each group and the results of a Mann-Whitney U test.
+</p>
+</div>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1"></a>women<span class="op">$</span><span class="st">`</span><span class="dt">BFI Neuroticism</span><span class="st">`</span> &lt;-<span class="st"> </span>women<span class="op">$</span>bfi_neuro</span>
+<span id="cb32-2"><a href="#cb32-2"></a><span class="kw">compare_by_group</span>(<span class="st">`</span><span class="dt">BFI Neuroticism</span><span class="st">`</span>, women)</span></code></pre></div>
+<div class="figure">
+<img src="1_descriptives_files/figure-html/unnamed-chunk-18-1.png" alt="Comparison of the hormonal contraception users (our quasi-control group) with women who are regularly cycling. The plot shows the distribution of values in each group and the results of a Mann-Whitney U test." width="864" />
+<p class="caption">
+Comparison of the hormonal contraception users (our quasi-control group) with women who are regularly cycling. The plot shows the distribution of values in each group and the results of a Mann-Whitney U test.
+</p>
+</div>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1"></a>women<span class="op">$</span><span class="st">`</span><span class="dt">BFI Conscientiousness</span><span class="st">`</span> &lt;-<span class="st"> </span>women<span class="op">$</span>bfi_consc</span>
+<span id="cb33-2"><a href="#cb33-2"></a><span class="kw">compare_by_group</span>(<span class="st">`</span><span class="dt">BFI Conscientiousness</span><span class="st">`</span>, women)</span></code></pre></div>
+<div class="figure">
+<img src="1_descriptives_files/figure-html/unnamed-chunk-19-1.png" alt="Comparison of the hormonal contraception users (our quasi-control group) with women who are regularly cycling. The plot shows the distribution of values in each group and the results of a Mann-Whitney U test." width="864" />
+<p class="caption">
+Comparison of the hormonal contraception users (our quasi-control group) with women who are regularly cycling. The plot shows the distribution of values in each group and the results of a Mann-Whitney U test.
+</p>
+</div>
+<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1"></a>women<span class="op">$</span><span class="st">`</span><span class="dt">BFI Openness</span><span class="st">`</span> &lt;-<span class="st"> </span>women<span class="op">$</span>bfi_open</span>
+<span id="cb34-2"><a href="#cb34-2"></a><span class="kw">compare_by_group</span>(<span class="st">`</span><span class="dt">BFI Openness</span><span class="st">`</span>, women)</span></code></pre></div>
+<div class="figure">
+<img src="1_descriptives_files/figure-html/unnamed-chunk-20-1.png" alt="Comparison of the hormonal contraception users (our quasi-control group) with women who are regularly cycling. The plot shows the distribution of values in each group and the results of a Mann-Whitney U test." width="864" />
+<p class="caption">
+Comparison of the hormonal contraception users (our quasi-control group) with women who are regularly cycling. The plot shows the distribution of values in each group and the results of a Mann-Whitney U test.
+</p>
+</div>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1"></a>women<span class="op">$</span><span class="st">`</span><span class="dt">Sociosexuality Inventory Revised</span><span class="st">`</span> &lt;-<span class="st"> </span>women<span class="op">$</span>soi_r</span>
+<span id="cb35-2"><a href="#cb35-2"></a><span class="kw">compare_by_group</span>(<span class="st">`</span><span class="dt">Sociosexuality Inventory Revised</span><span class="st">`</span>, women)</span></code></pre></div>
+<div class="figure">
+<img src="1_descriptives_files/figure-html/unnamed-chunk-21-1.png" alt="Comparison of the hormonal contraception users (our quasi-control group) with women who are regularly cycling. The plot shows the distribution of values in each group and the results of a Mann-Whitney U test." width="864" />
+<p class="caption">
+Comparison of the hormonal contraception users (our quasi-control group) with women who are regularly cycling. The plot shows the distribution of values in each group and the results of a Mann-Whitney U test.
+</p>
+</div>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1"></a>women<span class="op">$</span><span class="st">`</span><span class="dt">Relationship satisfaction</span><span class="st">`</span> &lt;-<span class="st"> </span>women<span class="op">$</span>relationship_satisfaction</span>
+<span id="cb36-2"><a href="#cb36-2"></a><span class="kw">compare_by_group</span>(<span class="st">`</span><span class="dt">Relationship satisfaction</span><span class="st">`</span>, women)</span></code></pre></div>
+<div class="figure">
+<img src="1_descriptives_files/figure-html/unnamed-chunk-22-1.png" alt="Comparison of the hormonal contraception users (our quasi-control group) with women who are regularly cycling. The plot shows the distribution of values in each group and the results of a Mann-Whitney U test." width="864" />
+<p class="caption">
+Comparison of the hormonal contraception users (our quasi-control group) with women who are regularly cycling. The plot shows the distribution of values in each group and the results of a Mann-Whitney U test.
+</p>
+</div>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1"></a><span class="kw">compare_by_group</span>(religiosity, women)</span></code></pre></div>
+<div class="figure">
+<img src="1_descriptives_files/figure-html/unnamed-chunk-23-1.png" alt="Comparison of the hormonal contraception users (our quasi-control group) with women who are regularly cycling. The plot shows the distribution of values in each group and the results of a Mann-Whitney U test." width="864" />
+<p class="caption">
+Comparison of the hormonal contraception users (our quasi-control group) with women who are regularly cycling. The plot shows the distribution of values in each group and the results of a Mann-Whitney U test.
+</p>
+</div>
+<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1"></a>{ <span class="kw">ggbarstats</span>(women, </span>
+<span id="cb38-2"><a href="#cb38-2"></a>           net_income,</span>
+<span id="cb38-3"><a href="#cb38-3"></a>           hormonal_contraception,</span>
+<span id="cb38-4"><a href="#cb38-4"></a>           <span class="dt">messages =</span> <span class="ot">FALSE</span>,</span>
+<span id="cb38-5"><a href="#cb38-5"></a>  <span class="dt">bf.message =</span> F,</span>
+<span id="cb38-6"><a href="#cb38-6"></a>  <span class="dt">conf.level =</span> <span class="fl">0.99</span>,</span>
+<span id="cb38-7"><a href="#cb38-7"></a>  <span class="dt">ggtheme =</span> <span class="kw">theme_cowplot</span>(<span class="dt">font_size =</span> <span class="dv">18</span>)</span>
+<span id="cb38-8"><a href="#cb38-8"></a>  ) <span class="op">+</span><span class="st"> </span><span class="co"># further modification outside of ggstatsplot</span></span>
+<span id="cb38-9"><a href="#cb38-9"></a><span class="st">  </span><span class="kw">scale_x_discrete</span>(<span class="st">&quot;Hormonal contraception&quot;</span>, <span class="dt">labels =</span> <span class="kw">c</span>(<span class="st">&quot;TRUE&quot;</span> =<span class="st"> &quot;HC user&quot;</span>, <span class="st">&quot;FALSE&quot;</span> =<span class="st"> &quot;Cycling&quot;</span>))} <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb38-10"><a href="#cb38-10"></a><span class="st">  </span><span class="kw">remove_p_values</span>(<span class="dt">call_parts =</span> <span class="dv">3</span><span class="op">:</span><span class="dv">12</span>)</span></code></pre></div>
+<div class="figure">
+<img src="1_descriptives_files/figure-html/unnamed-chunk-24-1.png" alt="Comparison of the hormonal contraception users (our quasi-control group) with women who are regularly cycling. The plot shows the distribution of categories in each group and the results of a Chi-Square test for equal distribution." width="864" />
+<p class="caption">
+Comparison of the hormonal contraception users (our quasi-control group) with women who are regularly cycling. The plot shows the distribution of categories in each group and the results of a Chi-Square test for equal distribution.
+</p>
+</div>
+<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1"></a>{ <span class="kw">ggbarstats</span>(women, </span>
+<span id="cb39-2"><a href="#cb39-2"></a>           living_situation,</span>
+<span id="cb39-3"><a href="#cb39-3"></a>           hormonal_contraception,</span>
+<span id="cb39-4"><a href="#cb39-4"></a>           <span class="dt">messages =</span> <span class="ot">FALSE</span>,</span>
+<span id="cb39-5"><a href="#cb39-5"></a>  <span class="dt">conf.level =</span> <span class="fl">0.99</span>,</span>
+<span id="cb39-6"><a href="#cb39-6"></a>  <span class="dt">bf.message =</span> F,</span>
+<span id="cb39-7"><a href="#cb39-7"></a>  <span class="dt">ggtheme =</span> <span class="kw">theme_cowplot</span>(<span class="dt">font_size =</span> <span class="dv">18</span>)</span>
+<span id="cb39-8"><a href="#cb39-8"></a>  ) <span class="op">+</span><span class="st"> </span><span class="co"># further modification outside of ggstatsplot</span></span>
+<span id="cb39-9"><a href="#cb39-9"></a><span class="st">  </span><span class="kw">scale_x_discrete</span>(<span class="st">&quot;Hormonal contraception&quot;</span>, <span class="dt">labels =</span> <span class="kw">c</span>(<span class="st">&quot;TRUE&quot;</span> =<span class="st"> &quot;HC user&quot;</span>, <span class="st">&quot;FALSE&quot;</span> =<span class="st"> &quot;Cycling&quot;</span>)) } <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb39-10"><a href="#cb39-10"></a><span class="st">  </span><span class="kw">remove_p_values</span>(<span class="dt">call_parts =</span> <span class="dv">3</span><span class="op">:</span><span class="dv">12</span>)</span></code></pre></div>
+<div class="figure">
+<img src="1_descriptives_files/figure-html/unnamed-chunk-25-1.png" alt="Comparison of the hormonal contraception users (our quasi-control group) with women who are regularly cycling. The plot shows the distribution of categories in each group and the results of a Chi-Square test for equal distribution." width="864" />
+<p class="caption">
+Comparison of the hormonal contraception users (our quasi-control group) with women who are regularly cycling. The plot shows the distribution of categories in each group and the results of a Chi-Square test for equal distribution.
+</p>
+</div>
+</div>
+</div>
+<div id="summary" class="section level2">
+<h2>Summary</h2>
+<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1"></a>comps <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb40-2"><a href="#cb40-2"></a><span class="st">    </span><span class="kw">kable</span>(<span class="dt">caption =</span> <span class="st">&quot;Means, SDs, and differences between both groups for all continuous variables&quot;</span>) <span class="op">%&gt;%</span></span>
+<span id="cb40-3"><a href="#cb40-3"></a><span class="st">  </span><span class="kw">footnote</span>(<span class="st">&quot;99% CI interval of the difference.&quot;</span>) <span class="op">%&gt;%</span></span>
+<span id="cb40-4"><a href="#cb40-4"></a><span class="st">  </span><span class="kw">kable_styling</span>()</span></code></pre></div>
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<caption>
+Means, SDs, and differences between both groups for all continuous variables
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+Variable
+</th>
+<th style="text-align:left;">
+HC user - Mean (SD)
+</th>
+<th style="text-align:left;">
+Cycling - Mean (SD)
+</th>
+<th style="text-align:left;">
+99% CI
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Age (years)
+</td>
+<td style="text-align:left;">
+23.7 (4.4)
+</td>
+<td style="text-align:left;">
+26.3 (5.9)
+</td>
+<td style="text-align:left;">
+-3.6;-1.8
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Age at first sex (years)
+</td>
+<td style="text-align:left;">
+16.8 (2.6)
+</td>
+<td style="text-align:left;">
+17.1 (2.9)
+</td>
+<td style="text-align:left;">
+-0.8;0.2
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Age at menarche (years)
+</td>
+<td style="text-align:left;">
+12.7 (1.3)
+</td>
+<td style="text-align:left;">
+12.7 (1.4)
+</td>
+<td style="text-align:left;">
+-0.3;0.2
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Relationship duration (years)
+</td>
+<td style="text-align:left;">
+3.4 (3.2)
+</td>
+<td style="text-align:left;">
+4.2 (4.9)
+</td>
+<td style="text-align:left;">
+-1.6;0.1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Avg. cycle length (days)
+</td>
+<td style="text-align:left;">
+27.7 (2.3)
+</td>
+<td style="text-align:left;">
+28.9 (3.1)
+</td>
+<td style="text-align:left;">
+-1.7;-0.7
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Cycle regularity
+</td>
+<td style="text-align:left;">
+1.8 (0.7)
+</td>
+<td style="text-align:left;">
+2.4 (0.7)
+</td>
+<td style="text-align:left;">
+-0.8;-0.5
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+No. lifetime sexual partners
+</td>
+<td style="text-align:left;">
+5.8 (8.6)
+</td>
+<td style="text-align:left;">
+8.8 (10.9)
+</td>
+<td style="text-align:left;">
+-4.7;-1.2
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+BFI Extraversion
+</td>
+<td style="text-align:left;">
+3.5 (0.8)
+</td>
+<td style="text-align:left;">
+3.4 (0.8)
+</td>
+<td style="text-align:left;">
+-0.1;0.2
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+BFI Agreeableness
+</td>
+<td style="text-align:left;">
+3.7 (0.6)
+</td>
+<td style="text-align:left;">
+3.7 (0.6)
+</td>
+<td style="text-align:left;">
+-0.0;0.2
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+BFI Neuroticism
+</td>
+<td style="text-align:left;">
+3.0 (0.8)
+</td>
+<td style="text-align:left;">
+3.0 (0.8)
+</td>
+<td style="text-align:left;">
+-0.2;0.1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+BFI Conscientiousness
+</td>
+<td style="text-align:left;">
+3.6 (0.7)
+</td>
+<td style="text-align:left;">
+3.5 (0.7)
+</td>
+<td style="text-align:left;">
+0.0;0.3
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+BFI Openness
+</td>
+<td style="text-align:left;">
+3.7 (0.6)
+</td>
+<td style="text-align:left;">
+3.8 (0.6)
+</td>
+<td style="text-align:left;">
+-0.2;0.0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Sociosexuality Inventory Revised
+</td>
+<td style="text-align:left;">
+2.6 (0.8)
+</td>
+<td style="text-align:left;">
+2.9 (0.9)
+</td>
+<td style="text-align:left;">
+-0.5;-0.2
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Relationship satisfaction
+</td>
+<td style="text-align:left;">
+4.2 (0.8)
+</td>
+<td style="text-align:left;">
+3.9 (0.9)
+</td>
+<td style="text-align:left;">
+0.1;0.5
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+religiosity
+</td>
+<td style="text-align:left;">
+2.2 (1.4)
+</td>
+<td style="text-align:left;">
+2.2 (1.4)
+</td>
+<td style="text-align:left;">
+-0.3;0.2
+</td>
+</tr>
+</tbody>
+<tfoot>
+<tr>
+<td style="padding: 0; border: 0;" colspan="100%">
+<span style="font-style: italic;">Note: </span>
+</td>
+</tr>
+<tr>
+<td style="padding: 0; border: 0;" colspan="100%">
+<sup></sup> 99% CI interval of the difference.
+</td>
+</tr>
+</tfoot>
+</table>
+</div>
+<div id="multiple-regression" class="section level2">
+<h2>Multiple regression</h2>
+<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1"></a>altogether =<span class="st"> </span><span class="kw">glm</span>(hormonal_contraception <span class="op">~</span><span class="st"> </span>age  <span class="op">+</span><span class="st"> </span>living_situation <span class="op">+</span><span class="st"> </span>religiosity <span class="op">+</span><span class="st"> </span>bfi_extra <span class="op">+</span><span class="st"> </span>bfi_neuro <span class="op">+</span><span class="st"> </span>bfi_agree <span class="op">+</span><span class="st"> </span>bfi_consc <span class="op">+</span><span class="st"> </span>bfi_open <span class="op">+</span><span class="st"> </span>soi_r <span class="op">+</span><span class="st"> </span>first_time <span class="op">+</span><span class="st"> </span>relationship_status <span class="op">+</span><span class="st"> </span><span class="kw">log1p</span>(number_sexual_partner) <span class="op">+</span><span class="st"> </span>has_children <span class="op">+</span><span class="st"> </span>net_income, <span class="dt">data =</span> women <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">mutate</span>(<span class="dt">relationship_status=</span><span class="kw">as_factor</span>(relationship_status)), <span class="dt">family =</span> <span class="kw">binomial</span>(<span class="st">&quot;probit&quot;</span>))</span>
+<span id="cb41-2"><a href="#cb41-2"></a><span class="kw">ggcoefstats</span>(altogether, <span class="dt">package =</span> <span class="st">&quot;ggsci&quot;</span>, <span class="dt">palette =</span> <span class="st">&quot;default_igv&quot;</span>, <span class="dt">p.adjust.method =</span> <span class="st">&quot;BH&quot;</span>,</span>
+<span id="cb41-3"><a href="#cb41-3"></a>            <span class="dt">conv.level =</span> <span class="fl">0.99</span>, <span class="dt">stats.labels =</span> <span class="ot">FALSE</span>, <span class="dt">point.color =</span> <span class="st">&quot;black&quot;</span>) <span class="op">+</span></span>
+<span id="cb41-4"><a href="#cb41-4"></a><span class="st">  </span>ggrepel<span class="op">::</span><span class="kw">geom_text_repel</span>(<span class="kw">aes</span>(<span class="dt">label =</span> <span class="kw">sprintf</span>(<span class="st">&quot;%.2f [%.2f;%.2f]&quot;</span>, estimate, conf.low, conf.high)), <span class="dt">size =</span> <span class="fl">3.3</span>)</span></code></pre></div>
+<div class="figure">
+<img src="1_descriptives_files/figure-html/unnamed-chunk-27-1.png" alt="A probit regression predicting hormonal contraception with many predictors at once." width="864" />
+<p class="caption">
+A probit regression predicting hormonal contraception with many predictors at once.
+</p>
+</div>
+</div>
+</div>
+
+<div id="rmd-source-code">LS0tCnRpdGxlOiBEZXNjcmlwdGl2ZXMKLS0tCgoKYGBge3J9CnNvdXJjZSgiMF9oZWxwZXJzLlIiKQpsb2FkKCJkYXRhL2NsZWFuZWRfc2VsZWN0ZWQucmRhdGEiKQpvcHRzX2NodW5rJHNldCh3YXJuaW5nID0gRiwgbWVzc2FnZSA9IEYsIGVycm9yID0gVCkKYWxsX3N1cnZleXMgPC0gYWxsX3N1cnZleXMgJT4lIAogIG11dGF0ZShyZWxhdGlvbnNoaXBfZHVyYXRpb24gPSBkdXJhdGlvbl9yZWxhdGlvbnNoaXBfeWVhcnMgKyBkdXJhdGlvbl9yZWxhdGlvbnNoaXBfbW9udGgvMTIpCgpsaWJyYXJ5KGtuaXRyKQpvcHRzX2NodW5rJHNldChmaWcud2lkdGggPSA5LCBmaWcuaGVpZ2h0ID0gNywgY2FjaGUgPSBULCB3YXJuaW5nID0gRiwgbWVzc2FnZSA9IEYsIGNhY2hlID0gRiwgZXJyb3IgPSBUKQpsaWJyYXJ5KGthYmxlRXh0cmEpCmBgYAoKIyMgU3R1ZHkgZmxvdyBjaGFydApgYGB7ciBmaWcuY2FwPSJGbG93IGNoYXJ0IG9mIHRoZSBzdGVwcyBvZiB0aGUgbWVuc3RydWFsIGN5Y2xlIGRpYXJ5IHN0dWR5LiIsZmlnLndpZHRoPTgsZmlnLmhlaWdodD04fQprbml0cjo6aW5jbHVkZV9ncmFwaGljcygic2ZpZ19mbG93X2NoYXJ0X2dlbmVyYWxfZGVzaXJlLnBuZyIpCmBgYAoKYGBge3J9CmJlZ2FuX3MxX2RlbW8gPSBzdW0oIWlzLm5hKHMxX2RlbW8kY3JlYXRlZCkpCmVuZGVkX3MxX2RlbW8gPSBzdW0oIWlzLm5hKHMxX2RlbW8kZW5kZWQpKQpkaWFyeSA8LSBzMV9maWx0ZXIgJT4lIGxlZnRfam9pbihkaWFyeSwgYnkgPSBjKCdzZXNzaW9uJywgJ3Nob3J0JyksIHN1ZmZpeCA9IGMoIl9maWx0ZXIiLCAiIikpCmVuZGVkX3ByZSA9IGRpYXJ5ICU+JSBmaWx0ZXIoIWlzLm5hKGVuZGVkX2luaXRpYWwpKSAlPiUgdW5ncm91cCgpICU+JSBzdW1tYXJpc2UobiA9IG5fZGlzdGluY3Qoc2Vzc2lvbikpICU+JSBwdWxsKG4pCmRpYXJ5ICU+JSBncm91cF9ieShnZXRzX3BhaWQpICU+JSBzdW1tYXJpc2UobiA9IHN1bSghaXMubmEoZW5kZWRfaW5pdGlhbFshZHVwbGljYXRlZChzZXNzaW9uKV0pLCBuID0gbl9kaXN0aW5jdChzZXNzaW9uKSkpCmF0X2xlYXN0X29uZV9kaWFyeV9lbnRyeSA9IGRpYXJ5ICU+JSBncm91cF9ieShzZXNzaW9uKSAlPiUgc3VtbWFyaXNlKG4gPSBuX25vbm1pc3NpbmcoZW5kZWRfZGlhcnkpKSAlPiUgZmlsdGVyKG4gPj0gMSkgJT4lIG5yb3coKQphdF9sZWFzdF8yMF9kaWFyeV9lbnRyaWVzID0gZGlhcnkgJT4lIGdyb3VwX2J5KHNlc3Npb24pICU+JSBzdW1tYXJpc2UobiA9IG5fbm9ubWlzc2luZyhlbmRlZF9kaWFyeSkpICU+JSBmaWx0ZXIobiA+PSAyMCkgJT4lIG5yb3coKQphdF9sZWFzdF81MF9kaWFyeV9lbnRyaWVzID0gZGlhcnkgJT4lIGdyb3VwX2J5KHNlc3Npb24pICU+JSBzdW1tYXJpc2UobiA9IG5fbm9ubWlzc2luZyhlbmRlZF9kaWFyeSkpICU+JSBmaWx0ZXIobiA+PSA1MCkgJT4lIG5yb3coKQoKaW5fcmVsYXRpb25zaGlwID0gc3VtKHMxX2RlbW8kaGV0ZXJvX3JlbGF0aW9uc2hpcCwgbmEucm0gPSBUKQpzaW5nbGVzID0gc3VtKCEgczFfZGVtbyRoZXRlcm9fcmVsYXRpb25zaGlwLCBuYS5ybSA9IFQpCgphdF9sZWFzdF9vbmVfZGlhcnlfZW50cnkgPSBzM19kYWlseSAlPiUgZ3JvdXBfYnkoc2Vzc2lvbikgJT4lIHN1bW1hcmlzZShuID0gbl9ub25taXNzaW5nKGVuZGVkKSkgJT4lIGZpbHRlcihuID49IDEpICU+JSBucm93KCkKYXRfbGVhc3RfMjBfZGlhcnlfZW50cmllcyA9IHMzX2RhaWx5ICU+JSBncm91cF9ieShzZXNzaW9uKSAlPiUgc3VtbWFyaXNlKG4gPSBuX25vbm1pc3NpbmcoZW5kZWQpKSAlPiUgZmlsdGVyKG4gPj0gMjApICU+JSBucm93KCkKYXRfbGVhc3RfNTBfZGlhcnlfZW50cmllcyA9IHMzX2RhaWx5ICU+JSBncm91cF9ieShzZXNzaW9uKSAlPiUgc3VtbWFyaXNlKG4gPSBuX25vbm1pc3NpbmcoZW5kZWQpKSAlPiUgZmlsdGVyKG4gPj0gNTApICU+JSBucm93KCkKCm1lYW5fZGlhcnlfZW50cmllcyA8LSBzM19kYWlseSAlPiUgZ3JvdXBfYnkoc2Vzc2lvbikgJT4lIHN1bW1hcmlzZShuID0gbl9ub25taXNzaW5nKGVuZGVkKSkgJT4lIHN1bW1hcmlzZShtZWFuKG4pKQoKbWVhbl9kaWFyeV9lbnRyaWVzX2J5X3BheW1lbnQgPC0gczFfZmlsdGVyICU+JSAKICBzZWxlY3QoLWVuZGVkKSAlPiUgbGVmdF9qb2luKHMzX2RhaWx5LCBieSA9ICdzZXNzaW9uJykgJT4lIAogIGdyb3VwX2J5KGdldHNfcGFpZCwgc2Vzc2lvbikgJT4lCiAgc3VtbWFyaXNlKG4gPSBuX25vbm1pc3NpbmcoZW5kZWQpKSAlPiUgCiAgZmlsdGVyKG4gPiAwKSAlPiUgCiAgZ3JvdXBfYnkoZ2V0c19wYWlkKSAlPiUgCiAgc3VtbWFyaXNlKHJlc3BvbnNlcyA9IG1lYW4obiksIG4gPSBuX2Rpc3RpbmN0KHNlc3Npb24pKQoKcmVzcG9uc2VfcmF0ZV9vdmVyX3RpbWUgPC0gZGlhcnkgJT4lIAogIGZpbHRlcihkYXlfbnVtYmVyID49IDAsIGRheV9udW1iZXIgPCA3MCkgJT4lIAogIGxlZnRfam9pbihzMV9maWx0ZXIsIGJ5ID0gJ3Nlc3Npb24nLCBzdWZmaXggPSBjKCIiLCAiX2ZpbHRlciIpKSAlPiUgCiAgZ3JvdXBfYnkoZ2V0c19wYWlkKSAlPiUgCiAgbXV0YXRlKAogICAgbiA9IG5fZGlzdGluY3Qoc2Vzc2lvbikKICApICU+JSAKICBncm91cF9ieShnZXRzX3BhaWQsIGRheV9udW1iZXIpICU+JSAKICBzdW1tYXJpc2UoCiAgICBuID0gdW5pcXVlKG4pLAogICAgZW50cmllcyA9IG5fbm9ubWlzc2luZyhlbmRlZF9kaWFyeSksCiAgICByciA9IGVudHJpZXMgLyB1bmlxdWUobikpCgpnZ3Bsb3QocmVzcG9uc2VfcmF0ZV9vdmVyX3RpbWUsIGFlcyhkYXlfbnVtYmVyLCByciwgY29sb3VyID0gZ2V0c19wYWlkKSkgKyBnZW9tX3BvaW50KCkgKwogICAgZ2d0aXRsZSgiUmVzcG9uc2UgcmF0ZSBvdmVyIHRpbWUiLCAiZm9yIHBlb3BsZSB3aG8gc3RhcnRlZCB0aGUgZGlhcnkiKSArIHlsaW0oMCwxKQoKbWVhbl9kaWFyeV9lbnRyaWVzX2ZpbmlzaGVycyA8LSBzNF9mb2xsb3d1cCAlPiUgc2VsZWN0KC1lbmRlZCkgJT4lIGxlZnRfam9pbihzM19kYWlseSwgYnkgPSAnc2Vzc2lvbicpICU+JSBncm91cF9ieShzZXNzaW9uKSAlPiUgc3VtbWFyaXNlKG4gPSBuX25vbm1pc3NpbmcoZW5kZWQpKSAlPiUgc3VtbWFyaXNlKG1lYW4obikpCgpyZXNwb25zZV9yYXRlX292ZXJfdGltZSA8LSBzNF9mb2xsb3d1cCAlPiUgc2VsZWN0KC1lbmRlZCkgJT4lIAogIGxlZnRfam9pbihkaWFyeSAlPiUgc2VsZWN0KHNlc3Npb24sIGRheV9udW1iZXIsIGNyZWF0ZWRfZGlhcnksIGVuZGVkX2RpYXJ5KSkgJT4lIGZpbHRlcihkYXlfbnVtYmVyID49IDAsIGRheV9udW1iZXIgPCA3MCkgJT4lIAogIGxlZnRfam9pbihzMV9maWx0ZXIsIGJ5ID0gJ3Nlc3Npb24nLCBzdWZmaXggPSBjKCIiLCAiX2ZpbHRlciIpKSAlPiUgCiAgZ3JvdXBfYnkoZ2V0c19wYWlkKSAlPiUgCiAgbXV0YXRlKAogICAgbiA9IG5fZGlzdGluY3Qoc2Vzc2lvbikKICApICU+JSAKICBncm91cF9ieShnZXRzX3BhaWQsIGRheV9udW1iZXIpICU+JSAKICBzdW1tYXJpc2UoCiAgICBlbnRyaWVzID0gbl9ub25taXNzaW5nKGVuZGVkX2RpYXJ5KSwKICAgIHJyID0gZW50cmllcyAvIHVuaXF1ZShuKSkKCmdncGxvdChyZXNwb25zZV9yYXRlX292ZXJfdGltZSwgYWVzKGRheV9udW1iZXIsIHJyLCBjb2xvdXIgPSBnZXRzX3BhaWQpKSArIAogIGdlb21fcG9pbnQoKSArCiAgICBnZ3RpdGxlKCJSZXNwb25zZSByYXRlIG92ZXIgdGltZSIsICJmb3IgcGVvcGxlIHdobyBmaW5pc2hlZCB0aGUgZGlhcnkiKSArIHlsaW0oMCwxKQoKcmVzcG9uc2VfcmF0ZV9vdmVyX3RpbWUgPC0gZGlhcnkgJT4lIAogICMgSSBhbSBsZWF2aW5nIGluIGRheXMgdGhhdCB3ZSBleGNsdWRlZCBwb3N0LWhvYyAoZS5nLiwgYmVjYXVzZSBmZXJ0aWxpdHkgd2FzIG5vdCBlc3RpbWFibGUsIHRvIHNob3cgdGhlIHJlYWwgcmVzcG9uc2UgcmF0ZSwgaXJyZXNwZWN0aXZlIG9mIGRpYXJ5LWRhdGEtYmFzZWQgZXhjbHVzaW9ucykKICBmaWx0ZXIocmVhc29uc19mb3JfZXhjbHVzaW9uID09IHJlYXNvbnNfZm9yX2V4Y2x1c2lvbl9kaWFyeSkgJT4lIAogIHNlbGVjdChzZXNzaW9uLCBkYXlfbnVtYmVyLCBjcmVhdGVkX2RpYXJ5LCBlbmRlZF9kaWFyeSkgJT4lIAogIGZpbHRlcihkYXlfbnVtYmVyID49IDAsIGRheV9udW1iZXIgPCA3MCkgJT4lIAogIGxlZnRfam9pbihzMV9maWx0ZXIsIGJ5ID0gJ3Nlc3Npb24nLCBzdWZmaXggPSBjKCIiLCAiX2ZpbHRlciIpKSAlPiUgCiAgZ3JvdXBfYnkoZ2V0c19wYWlkKSAlPiUgCiAgbXV0YXRlKAogICAgbiA9IG5fZGlzdGluY3Qoc2Vzc2lvbikKICApICU+JSAKICBncm91cF9ieShnZXRzX3BhaWQsIGRheV9udW1iZXIpICU+JSAKICBzdW1tYXJpc2UoCiAgICBuID0gdW5pcXVlKG4pLAogICAgZW50cmllcyA9IG5fbm9ubWlzc2luZyhlbmRlZF9kaWFyeSksCiAgICByciA9IGVudHJpZXMgLyB1bmlxdWUobikpCgpnZ3Bsb3QocmVzcG9uc2VfcmF0ZV9vdmVyX3RpbWUsIGFlcyhkYXlfbnVtYmVyLCByciwgY29sb3VyID0gZ2V0c19wYWlkKSkgKyAKICBnZW9tX3BvaW50KCkgKwogICAgZ2d0aXRsZSgiUmVzcG9uc2UgcmF0ZSBvdmVyIHRpbWUiLCAiZm9yIGluY2x1ZGVkIHN1YnNhbXBsZSIpICsgeWxpbSgwLDEpCgpuc210MmRfb3Zlcl90aW1lIDwtIHM0X2ZvbGxvd3VwICU+JSBzZWxlY3QoLWVuZGVkKSAlPiUgCiAgbGVmdF9qb2luKGRpYXJ5ICU+JSBzZWxlY3Qoc2Vzc2lvbiwgZGF5X251bWJlciwgbmV2ZXJfc2tpcHBlZF9tb3JlX3RoYW5fMiwgY3JlYXRlZF9kaWFyeSwgZW5kZWRfZGlhcnkpKSAlPiUgCiAgbGVmdF9qb2luKHMxX2ZpbHRlciwgYnkgPSAnc2Vzc2lvbicsIHN1ZmZpeCA9IGMoIiIsICJfZmlsdGVyIikpICU+JSAKICBsZWZ0X2pvaW4obWVhbl9kaWFyeV9lbnRyaWVzX2J5X3BheW1lbnQpICU+JSAKICBncm91cF9ieShnZXRzX3BhaWQsIGRheV9udW1iZXIpICU+JSAKICBzdW1tYXJpc2UoZW50cmllcyA9IHN1bShhcy5udW1lcmljKG5ldmVyX3NraXBwZWRfbW9yZV90aGFuXzIpLCBuYS5ybSA9IFQpLAogICAgICAgICAgICByciA9IGVudHJpZXMgLyB1bmlxdWUobikpCgpnZ3Bsb3QobnNtdDJkX292ZXJfdGltZSwgYWVzKGRheV9udW1iZXIsIHJyLCBjb2xvdXIgPSBnZXRzX3BhaWQpKSArIAogIGdlb21fcG9pbnQoKSArCiAgICBnZ3RpdGxlKCJQZXJjZW50YWdlIHdobyBuZXZlciBza2lwcGVkIG1vcmUgdGhhbiB0d28gZGF5cyBvdmVyIHRpbWUiLCAiZm9yIHBlb3BsZSB3aG8gZmluaXNoZWQgdGhlIGRpYXJ5IikgKyB5bGltKDAsMSkKCgptZWFuX2ZpbmlzaGluZ19wZXJzb25hbGl0eV9ieV9wYXltZW50IDwtIHMxX2RlbW8gJT4lIAogIGxlZnRfam9pbihzMV9maWx0ZXIsIGJ5ID0gJ3Nlc3Npb24nLCBzdWZmaXggPSBjKCJfZGVtbyIsICIiKSkgJT4lIAogIGxlZnRfam9pbihzMl9pbml0aWFsLGJ5ID0nc2Vzc2lvbicsIHN1ZmZpeCA9IGMoIiIsICJfaW5pdGlhbCIpKSAlPiUgCiAgZ3JvdXBfYnkoZ2V0c19wYWlkKSAlPiUgCiAgc3VtbWFyaXNlKGZpbmlzaF9kZW1vID0gbl9ub25taXNzaW5nKGVuZGVkX2RlbW8pLCAKICAgICAgICAgICAgZmluaXNoX2luaXRpYWwgPSBuX25vbm1pc3NpbmcoZW5kZWRfaW5pdGlhbCksIG4gPSBuKCksCiAgICAgICAgICAgIHByY19pbmlfb3Zlcl9kZW1vID0gcm91bmQoMTAwKmZpbmlzaF9pbml0aWFsL2ZpbmlzaF9kZW1vKSwKICAgICAgICAgICAgY29uc2MgPSBtZWFuKGJmaV9jb25zYyxuYS5ybT1UKSkKa2FibGUobWVhbl9maW5pc2hpbmdfcGVyc29uYWxpdHlfYnlfcGF5bWVudCkKCm1lYW5fZmluaXNoaW5nX2ZvbGxvd191cF9ieV9wYXltZW50IDwtIHMxX2ZpbHRlciAlPiUgc2VsZWN0KC1lbmRlZCkgJT4lIHJpZ2h0X2pvaW4oczJfaW5pdGlhbCxieSA9J3Nlc3Npb24nKSAlPiUgbGVmdF9qb2luKHM0X2ZvbGxvd3VwLCBieSA9ICdzZXNzaW9uJywgc3VmZml4ID0gYygiX2luaXRpYWwiLCAiX2ZvbGxvd3VwIikpICU+JSBncm91cF9ieShnZXRzX3BhaWQpICU+JSBzdW1tYXJpc2UoZm9sbG93dXAgPSBuX25vbm1pc3NpbmcoZW5kZWRfZm9sbG93dXApLCBpbml0aWFsID0gbl9ub25taXNzaW5nKGVuZGVkX2luaXRpYWwpLCBuKCksIHByY19mdV9vdmVyX2luaXRpYWwgPSByb3VuZCgxMDAqZm9sbG93dXAvaW5pdGlhbCkpCmthYmxlKG1lYW5fZmluaXNoaW5nX2ZvbGxvd191cF9ieV9wYXltZW50KQoKZmVydGlsZV9rbm93bl9tYW5fa25vd24gPSBkaWFyeV9zb2NpYWwgJT4lIGdyb3VwX2J5KHNlc3Npb24sIGNyZWF0ZWQpICU+JSAKICBzdW1tYXJpc2UobiA9IG5fbm9ubWlzc2luZyhwZXJzb25fYXR0cmFjdGl2ZW5lc3Nfc2hvcnRfdGVybSkpICU+JSAKICBncm91cF9ieShzZXNzaW9uKSAlPiUgc3VtbWFyaXNlKG4gPSBzdW0obikpICMgZmVydGlsaXR5IGtub3duLCBtYW4ga25vd24KZmVydGlsZV9rbm93bl9tYW5fa25vd24kbiAlPiUgcXBsb3QoKSArIHhsaW0oMSxOQSkKCmZlcnRpbGVfa25vd25fcGVyc29uX2tub3duID0gZGlhcnlfc29jaWFsICU+JSBncm91cF9ieShzZXNzaW9uLCBjcmVhdGVkKSAlPiUgCiAgc3VtbWFyaXNlKG4gPSBuX25vbm1pc3NpbmcocGVyc29uX3NleCkpICU+JSAKICBncm91cF9ieShzZXNzaW9uKSAlPiUgc3VtbWFyaXNlKG4gPSBzdW0obikpICMgZmVydGlsaXR5IGtub3duLCBtYW4ga25vd24KCmZpbmlzaGVkX3RpbWVzcGVudCA9IHM0X3RpbWVzcGVudCAlPiUgZ3JvdXBfYnkoc2Vzc2lvbikgJT4lIHN1bW1hcmlzZShuID0gbl9ub25taXNzaW5nKGVuZGVkKSkgJT4lIGZpbHRlcihuID49IDEpICU+JSBucm93KCkKdGltZXNwZW50X2d0MyA9IHM0X3RpbWVzcGVudCAlPiUgZ3JvdXBfYnkoc2Vzc2lvbikgJT4lIHN1bW1hcmlzZShuID0gbl9ub25taXNzaW5nKGVuZGVkKSkgJT4lIGZpbHRlcihuID4gMykgJT4lIG5yb3coKQp0aW1lc3BlbnRfbWVuID0gbmV0d29yayAlPiUgZ3JvdXBfYnkoc2Vzc2lvbikgJT4lIGZpbHRlcihwZXJzb25fc2V4ID09IDIsIHBlcnNvbl9yZWxhdGlvbnNoaXBfdG9fYW5jaG9yICE9ICJiaW9sb2dpY2FsX3JlbGF0aXZlIikgJT4lIHN1bW1hcmlzZShuID0gbl9ub25taXNzaW5nKGVuZGVkKSkgJT4lIGZpbHRlcihuID4gMCkgJT4lIG5yb3coKQp0aW1lc3BlbnRfM21lbiA9IG5ldHdvcmsgJT4lIGdyb3VwX2J5KHNlc3Npb24pICU+JSBmaWx0ZXIocGVyc29uX3NleCA9PSAyLCBwZXJzb25fcmVsYXRpb25zaGlwX3RvX2FuY2hvciAhPSAiYmlvbG9naWNhbF9yZWxhdGl2ZSIpICU+JSBzdW1tYXJpc2UobiA9IG5fbm9ubWlzc2luZyhlbmRlZCkpICU+JSBmaWx0ZXIobiA+IDIpICU+JSBucm93KCkKCmZlcnRpbGVfa25vd25fbWFuX2tub3duX3BhcnRpY2lwYW50cyA9IGZlcnRpbGVfa25vd25fbWFuX2tub3duICU+JSBmaWx0ZXIobiA+IDApICU+JSBucm93KCkKZmVydGlsZV9rbm93bl9wZXJzb25fa25vd25fcGFydGljaXBhbnRzID0gZmVydGlsZV9rbm93bl9wZXJzb25fa25vd24gJT4lIGZpbHRlcihuID4gMCkgJT4lIG5yb3coKQoKZmluaXNoZWRfZm9sbG93dXAgPSBzdW0oIWlzLm5hKHM0X2ZvbGxvd3VwJGVuZGVkKSkKCiMgYWxsX3N1cnZleXMgJT4lIG11dGF0ZSgKIyAgIHNob3VsZF9iZV9kb25lID0gY3JlYXRlZF9kZW1vICsgZGF5cyg3MCkgPCB0b2RheSgpCiMgKSAlPiUgZmlsdGVyKHNob3VsZF9iZV9kb25lID09IFQpICU+JSB4dGFicyh+IGlzLm5hKGVuZGVkKSwgLikKCiMgYWxsX3N1cnZleXMgJT4lIG11dGF0ZSgKIyBzaG91bGRfYmVfZG9uZSA9IGNyZWF0ZWRfZGVtbyArIGRheXMoNzApIDwgdG9kYXkoKQojICkgJT4lIGxlZnRfam9pbihzM19kYWlseSAlPiUgZ3JvdXBfYnkoc2Vzc2lvbikgJT4lIHN1bW1hcmlzZShuID0gbl9ub25taXNzaW5nKGVuZGVkKSkpICU+JSAKIyAgZmlsdGVyKHNob3VsZF9iZV9kb25lID09IFQsIG4gPiA0MCkgJT4lIHh0YWJzKH4gaXMubmEoZW5kZWQpLCAuKQoKYWxsX3N1cnZleXMgJT4lIG11dGF0ZShzaG91bGRfYmVfZG9uZSA9IGNyZWF0ZWRfZGVtbyArIGRheXMoNzApIDwgdG9kYXkoKSkgJT4lCiBsZWZ0X2pvaW4oIHM0X3RpbWVzcGVudCAlPiUgZ3JvdXBfYnkoc2Vzc2lvbikgJT4lIHN1bW1hcmlzZShuX3RpbWVzcGVudCA9IG5fbm9ubWlzc2luZyhlbmRlZCkpLCBieSA9ICdzZXNzaW9uJykgJT4lIAogZmlsdGVyKGhldGVyb19yZWxhdGlvbnNoaXAgPT0gMCwgc2hvdWxkX2JlX2RvbmUgPT0gVCwgbl90aW1lc3BlbnQgPiAwLCAhaXMubmEobl90aW1lc3BlbnQpKSAlPiUgbnJvdygpCgphbGxfc3VydmV5cyAlPiUgbXV0YXRlKHNob3VsZF9iZV9kb25lID0gY3JlYXRlZF9kZW1vICsgZGF5cyg3MCkgPCB0b2RheSgpKSAlPiUKIGxlZnRfam9pbiggczRfdGltZXNwZW50ICU+JSBncm91cF9ieShzZXNzaW9uKSAlPiUgc3VtbWFyaXNlKG5fdGltZXNwZW50ID0gIG5fbm9ubWlzc2luZyhlbmRlZCkpLCBieSA9ICdzZXNzaW9uJykgJT4lIAogZmlsdGVyKGhldGVyb19yZWxhdGlvbnNoaXAgPT0gMCAmIHNob3VsZF9iZV9kb25lID09IFQgJiAoaXMubmEobl90aW1lc3BlbnQpIHwgbl90aW1lc3BlbnQgPT0gMCkpICU+JSBucm93KCkKYGBgCgoxLiBfX2ByIGJlZ2FuX3MxX2RlbW9gX18gc2lnbmVkIHVwIGZvciB0aGUgc3R1ZHkuCjIuIF9fYHIgZW5kZWRfczFfZGVtb2BfXyBmaW5pc2hlZCB0aGUgZGVtb2dyYXBoaWNzIChgciBzaW5nbGVzYCBzaW5nbGVzLCBgciBpbl9yZWxhdGlvbnNoaXBgIGluIHJlbGF0aW9uc2hpcCkuCjIuIF9fYHIgZW5kZWRfcHJlYF9fIGZpbmlzaGVkIHRoZSBkZW1vZ3JhcGhpYyBhbmQgcGVyc29uYWxpdHkgcXVlc3Rpb25uYWlyZXMuCjMuIF9fYHIgYXRfbGVhc3Rfb25lX2RpYXJ5X2VudHJ5YF9fIHN1Ym1pdHRlZCBhdCBsZWFzdCBvbmUgZGlhcnkgZW50cnkgKD49IDIwOiBgciBhdF9sZWFzdF8yMF9kaWFyeV9lbnRyaWVzYCwgPj0gNTAgYHIgYXRfbGVhc3RfNTBfZGlhcnlfZW50cmllc2ApLiBPbiBhdmVyYWdlIHBhcnRpY2lwYW50cyBjb21wbGV0ZWQgYHIgbWVhbl9kaWFyeV9lbnRyaWVzYCBkaWFyeSBlbnRyaWVzLgo0LiBgciBmaW5pc2hlZF90aW1lc3BlbnRgIHNpbmdsZXMgcmVwb3J0ZWQgaW5mb3JtYXRpb24gb24gbGVhc3Qgb25lIHBlcnNvbiBtZW50aW9uZWQgZHVyaW5nIHRoZSBkaWFyeSAoPjM6IGByIHRpbWVzcGVudF9ndDNgLCBhdCBsZWFzdCBvbmUgbWFuIHdobyB3YXNuJ3QgYmlvbG9naWNhbGx5IHJlbGF0ZWQ6IGByIHRpbWVzcGVudF9tZW5gLCA+Mm1lbjogYHIgdGltZXNwZW50XzNtZW5gKS4gCjUuIF9fYHIgZmluaXNoZWRfZm9sbG93dXBgX18gKGByIHJvdW5kKDEwMCpmaW5pc2hlZF9mb2xsb3d1cC9lbmRlZF9wcmUpYCUgb2YgdGhvc2Ugd2hvIGZpbmlzaGVkIHRoZSBpbnRha2Ugc3VydmV5KSBmaW5pc2hlZCB0aGUgZm9sbG93LXVwIHN1cnZleS4gRmluaXNoZXJzIGNvbXBsZXRlZCBvbiBhdmVyYWdlIGByIG1lYW5fZGlhcnlfZW50cmllc19maW5pc2hlcnNgIGRpYXJ5IGVudHJpZXMuCgoKCgojIENvbnRyYWNlcHRpb24KYGBge3J9CmxpYnJhcnkoVXBTZXRSKQpjb21tYV9zZXBhcmF0ZWRfdG9fY29sdW1ucyA8LSBmdW5jdGlvbihkZiwgY29sKSB7CiAgY29sbmFtZSA8LSBkZXBhcnNlKHN1YnN0aXR1dGUoY29sKSkKICBkZiRzcGxpdGNvbCA8LSBkZiAlPiUgcHVsbChjb2xuYW1lKQogIHNlcGFyYXRlX3Jvd3MoZGYsIHNwbGl0Y29sLCBjb252ZXJ0ID0gVFJVRSwgc2VwID0gIiwgIikgJT4lIAogICAgbXV0YXRlKHNwbGl0Y29sID0gaWZfZWxzZShpcy5uYShzcGxpdGNvbCksICJubyIsIAogICAgICAgICAgICAgICAgICAgICAgICBpZl9lbHNlKHNwbGl0Y29sID09ICIiIHwgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBzcGxpdGNvbCAlaW4lIGMoKSwgIm90aGVyIiwgYXMuY2hhcmFjdGVyKHNwbGl0Y29sKSkpKSAlPiUgCiAgICBtdXRhdGUoI3NwbGl0Y29sID0gc3RyaW5ncjo6c3RyX2MoY29sbmFtZSwgIl8iLCBzcGxpdGNvbCksIAogICAgICAgICAgIHZhbHVlID0gMSkgJT4lIAogICAgc3ByZWFkKHNwbGl0Y29sLCB2YWx1ZSwgZmlsbCA9IDApICU+JSAKICAgIHNlbGVjdCgtY29sbmFtZSkKfQpsaWJyYXJ5KFVwU2V0UikKYWxsX3N1cnZleXMgJT4lIHNlbGVjdChzZXNzaW9uLCBjb250cmFjZXB0aW9uX21ldGhvZCkgJT4lIAogIGNvbW1hX3NlcGFyYXRlZF90b19jb2x1bW5zKGNvbnRyYWNlcHRpb25fbWV0aG9kKSAlPiUgCiAgc2VsZWN0KC1zZXNzaW9uKSAlPiUgCiAgYXMuZGF0YS5mcmFtZSgpICU+JSAKICB7CiAgdXBzZXQoLiwgbmNvbCguKSwgMjAsIHNob3cubnVtYmVycyA9IFRSVUUsIG9yZGVyLmJ5ID0gImZyZXEiLAogICAgICBtYWluLmJhci5jb2xvciA9ICIjNkU4NjkxIiwKICAgICAgbWF0cml4LmNvbG9yID0gIiM2RTg2OTEiLAogICAgICBzZXRzLmJhci5jb2xvciA9ICIjNTNBQzlCIikKICB9CmBgYAoKIyMgc29jaWFsIG5ldHdvcmsgCmBgYHtyfQpzdW1tYXJ5KGFzLmZhY3RvcihuZXR3b3JrJHBlcnNvbl9zZXgpKQpieV9zZXggPSBzNF90aW1lc3BlbnQgJT4lIAogICAgZ3JvdXBfYnkoc2Vzc2lvbikgJT4lIAogICAgc3VtbWFyaXNlKGZlbWFsZSA9IHN1bShwZXJzb25fc2V4ID09IDEsIG5hLnJtPVQpLCBtYWxlID0gc3VtKHBlcnNvbl9zZXggPT0gMiwgbmEucm09VCksIG49IG4oKSkgJT4lIHNlbGVjdChmZW1hbGUsIG1hbGUsbikKYGBgCgoKYGBge3J9CnRvdGFsX25ldHdvcmsgPSBucm93KG5ldHdvcmspCnBlcnNvbnM9IG5yb3cobmV0d29yayAlPiUgZmlsdGVyKHBlcnNvbl9yZW1lbWJlciA9PSAxICYgIWlzLm5hKGVuZGVkKSkpCgpgYGAKX19gciB0b3RhbF9uZXR3b3JrYF9fIG51bWJlciBvZiBwZXJzb25zIHdobyB3ZXJlIG1lbnRpb25lZCBpbiBkaWFyeQpfX2ByIHBlcnNvbnNgX18gbnVtYmVyIG9mIG5pY2tuYW1lcy9uYW1lcyB3b21lbiByZW1lbWJlcmVkLgoKCiMjIENvbXBhcmlzb24gd2l0aCBxdWFzaS1jb250cm9sIGdyb3VwCgojIyMgQ29tcGFyaXNvbnMgb24ga2V5IHZhcmlhYmxlcwoKYGBge3J9CndvbWVuIDwtIGFsbF9zdXJ2ZXlzICU+JSBmaWx0ZXIocmVhc29uc19mb3JfZXhjbHVzaW9uID09ICIiKQpkaWcxIDwtIGZ1bmN0aW9uKHgpIHsgc3ByaW50ZigiJS4xZiIsIHgpIH0KZGlnMiA8LSBmdW5jdGlvbih4KSB7IHNwcmludGYoIiUuMmYiLCB4KSB9CnBjdCA8LSBmdW5jdGlvbih4KSB7IHNwcmludGYoIiUuMGYiLCB4KjEwMCkgfQoKcmVtb3ZlX3BfdmFsdWVzIDwtIGZ1bmN0aW9uKHBsYW5uZWRfcGxvdCwgY2FsbF9wYXJ0cyA9IDM6MTApIHsKICBzdWJ0aXRsZSA8LSBhcy5saXN0KHBsYW5uZWRfcGxvdCRsYWJlbHMkc3VidGl0bGUpCiAgc3VidGl0bGVbY2FsbF9wYXJ0c10gPC0gTlVMTAogIHBsYW5uZWRfcGxvdCRsYWJlbHMkc3VidGl0bGUgPC0gYXMuY2FsbChzdWJ0aXRsZSkKICBwbGFubmVkX3Bsb3QKfQpjb21wcyA9IGRhdGFfZnJhbWUoVmFyaWFibGUgPSBjaGFyYWN0ZXIoMCksIAogICAgICAgICAgICAgICAgICAgYEhDIHVzZXIgLSBNZWFuIChTRClgID0gY2hhcmFjdGVyKDApLCAKICAgICAgICAgICAgICAgICAgIGBDeWNsaW5nIC0gTWVhbiAoU0QpYCA9IGNoYXJhY3RlcigwKSwKICAgICAgICAgICAgICAgICAgIGA5OSUgQ0lgID0gY2hhcmFjdGVyKDApLAopCgpjb21wYXJlX2J5X2dyb3VwID0gZnVuY3Rpb24odmFyLCBkYXRhLCB0eXBlID0gIm5wIiwgLi4uKSB7CiAgdmFyX3MgPC0gZW5xdW8odmFyKQogIHZhciA8LSBybGFuZzo6YXNfbmFtZSh2YXJfcykKIHNkX2hjID0gc2QoZGF0YVtkYXRhJGhvcm1vbmFsX2NvbnRyYWNlcHRpb24gPT0gMSxdW1t2YXJdXSwgbmEucm0gPSBUKQogc2RfbmMgPSBzZChkYXRhW2RhdGEkaG9ybW9uYWxfY29udHJhY2VwdGlvbiA9PSAwLF1bW3Zhcl1dLCBuYS5ybSA9IFQpCiAgZGF0YSRgSG9ybW9uYWwgY29udHJhY2VwdGlvbmAgPSBmb3JjYXRzOjpmY3RfcmVsZXZlbCggZm9yY2F0czo6ZmN0X3JlY29kZShmb3JjYXRzOjphc19mYWN0b3IoZGF0YSRob3Jtb25hbF9jb250cmFjZXB0aW9uKSwgIkN5Y2xpbmciID0gIkZBTFNFIiwgIkhDIHVzZXIiID0gIlRSVUUiKSwgIkhDIHVzZXIiKQogY29tcCA9IGFzLmZvcm11bGEocGFzdGUwKCJgIix2YXIsICJgIH4gYEhvcm1vbmFsIGNvbnRyYWNlcHRpb25gIikpCiB0dCA9IHQudGVzdChjb21wLCBkYXRhID0gZGF0YSwgY29uZi5sZXZlbCA9IDAuOTkpCgogc3VtbWFyeSA9IGRhdGFfZnJhbWUoVmFyaWFibGUgPSB2YXIsIAogICAgICAgICAgICAgICAgICAgYEhDIHVzZXIgLSBNZWFuIChTRClgID0gcGFzdGUwKGRpZzEodHQkZXN0aW1hdGVbMV0pLCIgKCIsIGRpZzEoc2RfaGMpLCIpIiksIAogICAgICAgICAgICAgICAgICAgYEN5Y2xpbmcgLSBNZWFuIChTRClgID0gcGFzdGUwKGRpZzEodHQkZXN0aW1hdGVbMl0pLCAiICgiLCBkaWcxKHNkX25jKSwgIikiKSwKICAgICAgICAgICAgICAgICAgIGA5OSUgQ0lgID0gcGFzdGUoZGlnMSh0dCRjb25mLmludCksIGNvbGxhcHNlID0gIjsiKQogKQogcm93bmFtZXMoc3VtbWFyeSkgPSBOVUxMCiBjb21wcyA8PC0gYmluZF9yb3dzKGNvbXBzLCBzdW1tYXJ5KQogZGF0YVtbdmFyXV0gPC0gZGF0YVtbdmFyXV0gJT4lIHphcF9hdHRyaWJ1dGVzKCkKIHBsYW5uZWRfcGxvdCA8LSBnZ3N0YXRzcGxvdDo6Z2diZXR3ZWVuc3RhdHMoCiAgZGF0YSA9IGRhdGEsCiAgeCA9IGBIb3Jtb25hbCBjb250cmFjZXB0aW9uYCwKICB5ID0gISEgdmFyX3MsCiAgbWVzc2FnZXMgPSBGQUxTRSwKICBjb25mLmxldmVsID0gMC45OSwKICB0eXBlID0gdHlwZSwgLi4uLCAKICBnZ3RoZW1lID0gdGhlbWVfY293cGxvdChmb250X3NpemUgPSAxOCkKICApICsgIyBmdXJ0aGVyIG1vZGlmaWNhdGlvbiBvdXRzaWRlIG9mIGdnc3RhdHNwbG90CiAgc2NhbGVfY29sb3JfbWFudWFsKCIiLCB2YWx1ZXMgPSBjKCJDeWNsaW5nIiA9ICJyZWQiLCAiSEMgdXNlciIgPSAiYmxhY2siKSwgZ3VpZGUgPSBGKSArCiAgIyBzY2FsZV94X2Rpc2NyZXRlKCJIb3Jtb25hbCBjb250cmFjZXB0aW9uIiwgbGFiZWxzID0gYygiMSIgPSAiSEMgdXNlciIsICIyIiA9ICJDeWNsaW5nIikpICsKICBzY2FsZV9maWxsX21hbnVhbCgiIiwgdmFsdWVzID0gYygiQ3ljbGluZyIgPSAicmVkIiwgIkhDIHVzZXIiID0gImJsYWNrIiksIGd1aWRlID0gRikKIHJlbW92ZV9wX3ZhbHVlcyhwbGFubmVkX3Bsb3QpCn0KbGlicmFyeShnZ3N0YXRzcGxvdCkKbGlicmFyeShjb3dwbG90KQpgYGAKCmBgYHtyIGZpZy5jYXA9IkNvbXBhcmlzb24gb2YgdGhlIGhvcm1vbmFsIGNvbnRyYWNlcHRpb24gdXNlcnMgKG91ciBxdWFzaS1jb250cm9sIGdyb3VwKSB3aXRoIHdvbWVuIHdobyBhcmUgcmVndWxhcmx5IGN5Y2xpbmcuIFRoZSBwbG90IHNob3dzIHRoZSBkaXN0cmlidXRpb24gb2YgdmFsdWVzIGluIGVhY2ggZ3JvdXAgYW5kIHRoZSByZXN1bHRzIG9mIGEgTWFubi1XaGl0bmV5IFUgdGVzdC4ifQp3b21lbiRgQWdlICh5ZWFycylgIDwtIHdvbWVuJGFnZQpjb21wYXJlX2J5X2dyb3VwKGBBZ2UgKHllYXJzKWAsIHdvbWVuKQpgYGAKCgoKYGBge3IgZmlnLmNhcD0iQ29tcGFyaXNvbiBvZiB0aGUgaG9ybW9uYWwgY29udHJhY2VwdGlvbiB1c2VycyAob3VyIHF1YXNpLWNvbnRyb2wgZ3JvdXApIHdpdGggd29tZW4gd2hvIGFyZSByZWd1bGFybHkgY3ljbGluZy4gVGhlIHBsb3Qgc2hvd3MgdGhlIGRpc3RyaWJ1dGlvbiBvZiBjYXRlZ29yaWVzIGluIGVhY2ggZ3JvdXAgYW5kIHRoZSByZXN1bHRzIG9mIGEgQ2hpLVNxdWFyZSB0ZXN0IGZvciBlcXVhbCBkaXN0cmlidXRpb24uIn0KeyBnZ2JhcnN0YXRzKHdvbWVuICU+JSBtdXRhdGUocmVsYXRpb25zaGlwX3N0YXR1cz1hc19mYWN0b3IocmVsYXRpb25zaGlwX3N0YXR1cykpLCAKICAgICAgICAgICByZWxhdGlvbnNoaXBfc3RhdHVzLAogICAgICAgICAgIGhvcm1vbmFsX2NvbnRyYWNlcHRpb24sCiAgICAgICAgICAgbWVzc2FnZXMgPSBGQUxTRSwKICBjb25mLmxldmVsID0gMC45OSwKICBiZi5tZXNzYWdlID0gRiwKICBnZ3RoZW1lID0gdGhlbWVfY293cGxvdChmb250X3NpemUgPSAxOCkKICApICsgIyBmdXJ0aGVyIG1vZGlmaWNhdGlvbiBvdXRzaWRlIG9mIGdnc3RhdHNwbG90CiAgc2NhbGVfeF9kaXNjcmV0ZSgiSG9ybW9uYWwgY29udHJhY2VwdGlvbiIsIGxhYmVscyA9IGMoIlRSVUUiID0gIkhDIHVzZXIiLCAiRkFMU0UiID0gIkN5Y2xpbmciKSkKfSAlPiUgCiAgcmVtb3ZlX3BfdmFsdWVzKGNhbGxfcGFydHMgPSAzOjEyKQpgYGAKCgoKYGBge3IgZmlnLmNhcD0iQ29tcGFyaXNvbiBvZiB0aGUgaG9ybW9uYWwgY29udHJhY2VwdGlvbiB1c2VycyAob3VyIHF1YXNpLWNvbnRyb2wgZ3JvdXApIHdpdGggd29tZW4gd2hvIGFyZSByZWd1bGFybHkgY3ljbGluZy4gVGhlIHBsb3Qgc2hvd3MgdGhlIGRpc3RyaWJ1dGlvbiBvZiB2YWx1ZXMgaW4gZWFjaCBncm91cCBhbmQgdGhlIHJlc3VsdHMgb2YgYSBNYW5uLVdoaXRuZXkgVSB0ZXN0LiJ9CndvbWVuJGBBZ2UgYXQgZmlyc3Qgc2V4ICh5ZWFycylgIDwtIHdvbWVuJGZpcnN0X3RpbWUKY29tcGFyZV9ieV9ncm91cChgQWdlIGF0IGZpcnN0IHNleCAoeWVhcnMpYCwgd29tZW4pCmBgYAoKCgpgYGB7ciBmaWcuY2FwPSJDb21wYXJpc29uIG9mIHRoZSBob3Jtb25hbCBjb250cmFjZXB0aW9uIHVzZXJzIChvdXIgcXVhc2ktY29udHJvbCBncm91cCkgd2l0aCB3b21lbiB3aG8gYXJlIHJlZ3VsYXJseSBjeWNsaW5nLiBUaGUgcGxvdCBzaG93cyB0aGUgZGlzdHJpYnV0aW9uIG9mIHZhbHVlcyBpbiBlYWNoIGdyb3VwIGFuZCB0aGUgcmVzdWx0cyBvZiBhIE1hbm4tV2hpdG5leSBVIHRlc3QuIn0Kd29tZW4kYEFnZSBhdCBtZW5hcmNoZSAoeWVhcnMpYCA8LSB3b21lbiRtZW5hcmNoZQpjb21wYXJlX2J5X2dyb3VwKGBBZ2UgYXQgbWVuYXJjaGUgKHllYXJzKWAsIHdvbWVuKQpgYGAKCgoKYGBge3IgZmlnLmNhcD0iQ29tcGFyaXNvbiBvZiB0aGUgaG9ybW9uYWwgY29udHJhY2VwdGlvbiB1c2VycyAob3VyIHF1YXNpLWNvbnRyb2wgZ3JvdXApIHdpdGggd29tZW4gd2hvIGFyZSByZWd1bGFybHkgY3ljbGluZy4gVGhlIHBsb3Qgc2hvd3MgdGhlIGRpc3RyaWJ1dGlvbiBvZiB2YWx1ZXMgaW4gZWFjaCBncm91cCBhbmQgdGhlIHJlc3VsdHMgb2YgYSBNYW5uLVdoaXRuZXkgVSB0ZXN0LiJ9CndvbWVuJGBSZWxhdGlvbnNoaXAgZHVyYXRpb24gKHllYXJzKWAgPC0gd29tZW4kcmVsYXRpb25zaGlwX2R1cmF0aW9uCmNvbXBhcmVfYnlfZ3JvdXAoYFJlbGF0aW9uc2hpcCBkdXJhdGlvbiAoeWVhcnMpYCwgd29tZW4pICsgc2NhbGVfeV9zcXJ0KGJyZWFrcyA9IGMoMSw1LCAxMCwgMjAsIDMwKSkKYGBgCgoKCmBgYHtyIGZpZy5jYXA9IkNvbXBhcmlzb24gb2YgdGhlIGhvcm1vbmFsIGNvbnRyYWNlcHRpb24gdXNlcnMgKG91ciBxdWFzaS1jb250cm9sIGdyb3VwKSB3aXRoIHdvbWVuIHdobyBhcmUgcmVndWxhcmx5IGN5Y2xpbmcuIFRoZSBwbG90IHNob3dzIHRoZSBkaXN0cmlidXRpb24gb2YgdmFsdWVzIGluIGVhY2ggZ3JvdXAgYW5kIHRoZSByZXN1bHRzIG9mIGEgTWFubi1XaGl0bmV5IFUgdGVzdC4ifQp3b21lbiRgQXZnLiBjeWNsZSBsZW5ndGggKGRheXMpYCA8LSB3b21lbiRtZW5zdHJ1YXRpb25fbGVuZ3RoCmNvbXBhcmVfYnlfZ3JvdXAoYEF2Zy4gY3ljbGUgbGVuZ3RoIChkYXlzKWAsIHdvbWVuKQpgYGAKCgoKYGBge3IgZmlnLmNhcD0iQ29tcGFyaXNvbiBvZiB0aGUgaG9ybW9uYWwgY29udHJhY2VwdGlvbiB1c2VycyAob3VyIHF1YXNpLWNvbnRyb2wgZ3JvdXApIHdpdGggd29tZW4gd2hvIGFyZSByZWd1bGFybHkgY3ljbGluZy4gVGhlIHBsb3Qgc2hvd3MgdGhlIGRpc3RyaWJ1dGlvbiBvZiB2YWx1ZXMgaW4gZWFjaCBncm91cCBhbmQgdGhlIHJlc3VsdHMgb2YgYSBNYW5uLVdoaXRuZXkgVSB0ZXN0LiJ9CndvbWVuJGBDeWNsZSByZWd1bGFyaXR5YCA8LSB3b21lbiRtZW5zdHJ1YXRpb25fcmVndWxhcml0eQpjb21wYXJlX2J5X2dyb3VwKGBDeWNsZSByZWd1bGFyaXR5YCwgd29tZW4pICsgCiAgc2NhbGVfeV9jb250aW51b3VzKAogICAgbGFiZWxzID0gYygiMSIgPSAibm8gZmx1Y3R1YXRpb24iLAogICAgICAgICAgICAgICAiMiIgPSAiMS0yIGRheXMiLAogICAgICAgICAgICAgICAiMyIgPSAiMy01IGRheXMiLAogICAgICAgICAgICAgICAiNCIgPSAiPjUgZGF5cyIpKQpgYGAKCgoKYGBge3IgZmlnLmNhcD0iQ29tcGFyaXNvbiBvZiB0aGUgaG9ybW9uYWwgY29udHJhY2VwdGlvbiB1c2VycyAob3VyIHF1YXNpLWNvbnRyb2wgZ3JvdXApIHdpdGggd29tZW4gd2hvIGFyZSByZWd1bGFybHkgY3ljbGluZy4gVGhlIHBsb3Qgc2hvd3MgdGhlIGRpc3RyaWJ1dGlvbiBvZiB2YWx1ZXMgaW4gZWFjaCBncm91cCBhbmQgdGhlIHJlc3VsdHMgb2YgWXVlbidzIHRlc3QgZm9yIHRyaW1tZWQgbWVhbnMgKDEwJSB0cmltbWVkKS4ifQp3b21lbiRgTm8uIGxpZmV0aW1lIHNleHVhbCBwYXJ0bmVyc2AgPC0gd29tZW4kbnVtYmVyX3NleHVhbF9wYXJ0bmVyCmNvbXBhcmVfYnlfZ3JvdXAoYE5vLiBsaWZldGltZSBzZXh1YWwgcGFydG5lcnNgLCB3b21lbiwgdHlwZSA9ICJyIikgJT4lIAogIHJlbW92ZV9wX3ZhbHVlcyhjYWxsX3BhcnRzID0gMzo0KSArIAogIHNjYWxlX3lfc3FydChicmVha3MgPSBjKDEsNSwgMTAsIDIwLCA1MCwgMTAwKSkKYGBgCgoKCmBgYHtyIGZpZy5jYXA9IkNvbXBhcmlzb24gb2YgdGhlIGhvcm1vbmFsIGNvbnRyYWNlcHRpb24gdXNlcnMgKG91ciBxdWFzaS1jb250cm9sIGdyb3VwKSB3aXRoIHdvbWVuIHdobyBhcmUgcmVndWxhcmx5IGN5Y2xpbmcuIFRoZSBwbG90IHNob3dzIHRoZSBkaXN0cmlidXRpb24gb2YgdmFsdWVzIGluIGVhY2ggZ3JvdXAgYW5kIHRoZSByZXN1bHRzIG9mIGEgTWFubi1XaGl0bmV5IFUgdGVzdC4ifQp3b21lbiRgQkZJIEV4dHJhdmVyc2lvbmAgPC0gd29tZW4kYmZpX2V4dHJhCmNvbXBhcmVfYnlfZ3JvdXAoYEJGSSBFeHRyYXZlcnNpb25gLCB3b21lbikKYGBgCgoKCmBgYHtyIGZpZy5jYXA9IkNvbXBhcmlzb24gb2YgdGhlIGhvcm1vbmFsIGNvbnRyYWNlcHRpb24gdXNlcnMgKG91ciBxdWFzaS1jb250cm9sIGdyb3VwKSB3aXRoIHdvbWVuIHdobyBhcmUgcmVndWxhcmx5IGN5Y2xpbmcuIFRoZSBwbG90IHNob3dzIHRoZSBkaXN0cmlidXRpb24gb2YgdmFsdWVzIGluIGVhY2ggZ3JvdXAgYW5kIHRoZSByZXN1bHRzIG9mIGEgTWFubi1XaGl0bmV5IFUgdGVzdC4ifQp3b21lbiRgQkZJIEFncmVlYWJsZW5lc3NgIDwtIHdvbWVuJGJmaV9hZ3JlZQpjb21wYXJlX2J5X2dyb3VwKGBCRkkgQWdyZWVhYmxlbmVzc2AsIHdvbWVuKQpgYGAKCgoKYGBge3IgZmlnLmNhcD0iQ29tcGFyaXNvbiBvZiB0aGUgaG9ybW9uYWwgY29udHJhY2VwdGlvbiB1c2VycyAob3VyIHF1YXNpLWNvbnRyb2wgZ3JvdXApIHdpdGggd29tZW4gd2hvIGFyZSByZWd1bGFybHkgY3ljbGluZy4gVGhlIHBsb3Qgc2hvd3MgdGhlIGRpc3RyaWJ1dGlvbiBvZiB2YWx1ZXMgaW4gZWFjaCBncm91cCBhbmQgdGhlIHJlc3VsdHMgb2YgYSBNYW5uLVdoaXRuZXkgVSB0ZXN0LiJ9CndvbWVuJGBCRkkgTmV1cm90aWNpc21gIDwtIHdvbWVuJGJmaV9uZXVybwpjb21wYXJlX2J5X2dyb3VwKGBCRkkgTmV1cm90aWNpc21gLCB3b21lbikKYGBgCgoKCgpgYGB7ciBmaWcuY2FwPSJDb21wYXJpc29uIG9mIHRoZSBob3Jtb25hbCBjb250cmFjZXB0aW9uIHVzZXJzIChvdXIgcXVhc2ktY29udHJvbCBncm91cCkgd2l0aCB3b21lbiB3aG8gYXJlIHJlZ3VsYXJseSBjeWNsaW5nLiBUaGUgcGxvdCBzaG93cyB0aGUgZGlzdHJpYnV0aW9uIG9mIHZhbHVlcyBpbiBlYWNoIGdyb3VwIGFuZCB0aGUgcmVzdWx0cyBvZiBhIE1hbm4tV2hpdG5leSBVIHRlc3QuIn0Kd29tZW4kYEJGSSBDb25zY2llbnRpb3VzbmVzc2AgPC0gd29tZW4kYmZpX2NvbnNjCmNvbXBhcmVfYnlfZ3JvdXAoYEJGSSBDb25zY2llbnRpb3VzbmVzc2AsIHdvbWVuKQpgYGAKCgoKYGBge3IgZmlnLmNhcD0iQ29tcGFyaXNvbiBvZiB0aGUgaG9ybW9uYWwgY29udHJhY2VwdGlvbiB1c2VycyAob3VyIHF1YXNpLWNvbnRyb2wgZ3JvdXApIHdpdGggd29tZW4gd2hvIGFyZSByZWd1bGFybHkgY3ljbGluZy4gVGhlIHBsb3Qgc2hvd3MgdGhlIGRpc3RyaWJ1dGlvbiBvZiB2YWx1ZXMgaW4gZWFjaCBncm91cCBhbmQgdGhlIHJlc3VsdHMgb2YgYSBNYW5uLVdoaXRuZXkgVSB0ZXN0LiJ9CndvbWVuJGBCRkkgT3Blbm5lc3NgIDwtIHdvbWVuJGJmaV9vcGVuCmNvbXBhcmVfYnlfZ3JvdXAoYEJGSSBPcGVubmVzc2AsIHdvbWVuKQpgYGAKCgoKYGBge3IgZmlnLmNhcD0iQ29tcGFyaXNvbiBvZiB0aGUgaG9ybW9uYWwgY29udHJhY2VwdGlvbiB1c2VycyAob3VyIHF1YXNpLWNvbnRyb2wgZ3JvdXApIHdpdGggd29tZW4gd2hvIGFyZSByZWd1bGFybHkgY3ljbGluZy4gVGhlIHBsb3Qgc2hvd3MgdGhlIGRpc3RyaWJ1dGlvbiBvZiB2YWx1ZXMgaW4gZWFjaCBncm91cCBhbmQgdGhlIHJlc3VsdHMgb2YgYSBNYW5uLVdoaXRuZXkgVSB0ZXN0LiJ9CndvbWVuJGBTb2Npb3NleHVhbGl0eSBJbnZlbnRvcnkgUmV2aXNlZGAgPC0gd29tZW4kc29pX3IKY29tcGFyZV9ieV9ncm91cChgU29jaW9zZXh1YWxpdHkgSW52ZW50b3J5IFJldmlzZWRgLCB3b21lbikKYGBgCgoKCmBgYHtyIGZpZy5jYXA9IkNvbXBhcmlzb24gb2YgdGhlIGhvcm1vbmFsIGNvbnRyYWNlcHRpb24gdXNlcnMgKG91ciBxdWFzaS1jb250cm9sIGdyb3VwKSB3aXRoIHdvbWVuIHdobyBhcmUgcmVndWxhcmx5IGN5Y2xpbmcuIFRoZSBwbG90IHNob3dzIHRoZSBkaXN0cmlidXRpb24gb2YgdmFsdWVzIGluIGVhY2ggZ3JvdXAgYW5kIHRoZSByZXN1bHRzIG9mIGEgTWFubi1XaGl0bmV5IFUgdGVzdC4ifQp3b21lbiRgUmVsYXRpb25zaGlwIHNhdGlzZmFjdGlvbmAgPC0gd29tZW4kcmVsYXRpb25zaGlwX3NhdGlzZmFjdGlvbgpjb21wYXJlX2J5X2dyb3VwKGBSZWxhdGlvbnNoaXAgc2F0aXNmYWN0aW9uYCwgd29tZW4pCmBgYAoKCgpgYGB7ciBmaWcuY2FwPSJDb21wYXJpc29uIG9mIHRoZSBob3Jtb25hbCBjb250cmFjZXB0aW9uIHVzZXJzIChvdXIgcXVhc2ktY29udHJvbCBncm91cCkgd2l0aCB3b21lbiB3aG8gYXJlIHJlZ3VsYXJseSBjeWNsaW5nLiBUaGUgcGxvdCBzaG93cyB0aGUgZGlzdHJpYnV0aW9uIG9mIHZhbHVlcyBpbiBlYWNoIGdyb3VwIGFuZCB0aGUgcmVzdWx0cyBvZiBhIE1hbm4tV2hpdG5leSBVIHRlc3QuIn0KY29tcGFyZV9ieV9ncm91cChyZWxpZ2lvc2l0eSwgd29tZW4pCmBgYAoKCgpgYGB7ciBmaWcuY2FwPSJDb21wYXJpc29uIG9mIHRoZSBob3Jtb25hbCBjb250cmFjZXB0aW9uIHVzZXJzIChvdXIgcXVhc2ktY29udHJvbCBncm91cCkgd2l0aCB3b21lbiB3aG8gYXJlIHJlZ3VsYXJseSBjeWNsaW5nLiBUaGUgcGxvdCBzaG93cyB0aGUgZGlzdHJpYnV0aW9uIG9mIGNhdGVnb3JpZXMgaW4gZWFjaCBncm91cCBhbmQgdGhlIHJlc3VsdHMgb2YgYSBDaGktU3F1YXJlIHRlc3QgZm9yIGVxdWFsIGRpc3RyaWJ1dGlvbi4ifQp7IGdnYmFyc3RhdHMod29tZW4sIAogICAgICAgICAgIG5ldF9pbmNvbWUsCiAgICAgICAgICAgaG9ybW9uYWxfY29udHJhY2VwdGlvbiwKICAgICAgICAgICBtZXNzYWdlcyA9IEZBTFNFLAogIGJmLm1lc3NhZ2UgPSBGLAogIGNvbmYubGV2ZWwgPSAwLjk5LAogIGdndGhlbWUgPSB0aGVtZV9jb3dwbG90KGZvbnRfc2l6ZSA9IDE4KQogICkgKyAjIGZ1cnRoZXIgbW9kaWZpY2F0aW9uIG91dHNpZGUgb2YgZ2dzdGF0c3Bsb3QKICBzY2FsZV94X2Rpc2NyZXRlKCJIb3Jtb25hbCBjb250cmFjZXB0aW9uIiwgbGFiZWxzID0gYygiVFJVRSIgPSAiSEMgdXNlciIsICJGQUxTRSIgPSAiQ3ljbGluZyIpKX0gJT4lIAogIHJlbW92ZV9wX3ZhbHVlcyhjYWxsX3BhcnRzID0gMzoxMikKYGBgCgoKCmBgYHtyIGZpZy5jYXA9IkNvbXBhcmlzb24gb2YgdGhlIGhvcm1vbmFsIGNvbnRyYWNlcHRpb24gdXNlcnMgKG91ciBxdWFzaS1jb250cm9sIGdyb3VwKSB3aXRoIHdvbWVuIHdobyBhcmUgcmVndWxhcmx5IGN5Y2xpbmcuIFRoZSBwbG90IHNob3dzIHRoZSBkaXN0cmlidXRpb24gb2YgY2F0ZWdvcmllcyBpbiBlYWNoIGdyb3VwIGFuZCB0aGUgcmVzdWx0cyBvZiBhIENoaS1TcXVhcmUgdGVzdCBmb3IgZXF1YWwgZGlzdHJpYnV0aW9uLiJ9CnsgZ2diYXJzdGF0cyh3b21lbiwgCiAgICAgICAgICAgbGl2aW5nX3NpdHVhdGlvbiwKICAgICAgICAgICBob3Jtb25hbF9jb250cmFjZXB0aW9uLAogICAgICAgICAgIG1lc3NhZ2VzID0gRkFMU0UsCiAgY29uZi5sZXZlbCA9IDAuOTksCiAgYmYubWVzc2FnZSA9IEYsCiAgZ2d0aGVtZSA9IHRoZW1lX2Nvd3Bsb3QoZm9udF9zaXplID0gMTgpCiAgKSArICMgZnVydGhlciBtb2RpZmljYXRpb24gb3V0c2lkZSBvZiBnZ3N0YXRzcGxvdAogIHNjYWxlX3hfZGlzY3JldGUoIkhvcm1vbmFsIGNvbnRyYWNlcHRpb24iLCBsYWJlbHMgPSBjKCJUUlVFIiA9ICJIQyB1c2VyIiwgIkZBTFNFIiA9ICJDeWNsaW5nIikpIH0gJT4lIAogIHJlbW92ZV9wX3ZhbHVlcyhjYWxsX3BhcnRzID0gMzoxMikKYGBgCgoKCiMjIFN1bW1hcnkgCmBgYHtyfQpjb21wcyAlPiUgCiAgICBrYWJsZShjYXB0aW9uID0gIk1lYW5zLCBTRHMsIGFuZCBkaWZmZXJlbmNlcyBiZXR3ZWVuIGJvdGggZ3JvdXBzIGZvciBhbGwgY29udGludW91cyB2YXJpYWJsZXMiKSAlPiUKICBmb290bm90ZSgiOTklIENJIGludGVydmFsIG9mIHRoZSBkaWZmZXJlbmNlLiIpICU+JQogIGthYmxlX3N0eWxpbmcoKQpgYGAKCgoKIyMgTXVsdGlwbGUgcmVncmVzc2lvbgoKYGBge3IgZmlnLmNhcD0iQSBwcm9iaXQgcmVncmVzc2lvbiBwcmVkaWN0aW5nIGhvcm1vbmFsIGNvbnRyYWNlcHRpb24gd2l0aCBtYW55IHByZWRpY3RvcnMgYXQgb25jZS4iLCBmaWcuaGVpZ2h0PTEwLGZpZy53aWR0aD05fQphbHRvZ2V0aGVyID0gZ2xtKGhvcm1vbmFsX2NvbnRyYWNlcHRpb24gfiBhZ2UgICsgbGl2aW5nX3NpdHVhdGlvbiArIHJlbGlnaW9zaXR5ICsgYmZpX2V4dHJhICsgYmZpX25ldXJvICsgYmZpX2FncmVlICsgYmZpX2NvbnNjICsgYmZpX29wZW4gKyBzb2lfciArIGZpcnN0X3RpbWUgKyByZWxhdGlvbnNoaXBfc3RhdHVzICsgbG9nMXAobnVtYmVyX3NleHVhbF9wYXJ0bmVyKSArIGhhc19jaGlsZHJlbiArIG5ldF9pbmNvbWUsIGRhdGEgPSB3b21lbiAlPiUgbXV0YXRlKHJlbGF0aW9uc2hpcF9zdGF0dXM9YXNfZmFjdG9yKHJlbGF0aW9uc2hpcF9zdGF0dXMpKSwgZmFtaWx5ID0gYmlub21pYWwoInByb2JpdCIpKQpnZ2NvZWZzdGF0cyhhbHRvZ2V0aGVyLCBwYWNrYWdlID0gImdnc2NpIiwgcGFsZXR0ZSA9ICJkZWZhdWx0X2lndiIsIHAuYWRqdXN0Lm1ldGhvZCA9ICJCSCIsCiAgICAgICAgICAgIGNvbnYubGV2ZWwgPSAwLjk5LCBzdGF0cy5sYWJlbHMgPSBGQUxTRSwgcG9pbnQuY29sb3IgPSAiYmxhY2siKSArCiAgZ2dyZXBlbDo6Z2VvbV90ZXh0X3JlcGVsKGFlcyhsYWJlbCA9IHNwcmludGYoIiUuMmYgWyUuMmY7JS4yZl0iLCBlc3RpbWF0ZSwgY29uZi5sb3csIGNvbmYuaGlnaCkpLCBzaXplID0gMy4zKQpgYGAKCg==</div>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeSourceEmbed("1_descriptives.Rmd");
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

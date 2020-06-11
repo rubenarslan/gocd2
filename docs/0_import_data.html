@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Import data</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/paper.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<script src="site_libs/navigation-1.1/sourceembed.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css" data-origin="pandoc">
+code.sourceCode > span { display: inline-block; line-height: 1.25; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  { color: #cccccc; background-color: #303030; }
+@media screen {
+code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ffcfaf; } /* Alert */
+code span.an { color: #7f9f7f; font-weight: bold; } /* Annotation */
+code span.at { } /* Attribute */
+code span.bn { color: #dca3a3; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #f0dfaf; } /* ControlFlow */
+code span.ch { color: #dca3a3; } /* Char */
+code span.cn { color: #dca3a3; font-weight: bold; } /* Constant */
+code span.co { color: #7f9f7f; } /* Comment */
+code span.cv { color: #7f9f7f; font-weight: bold; } /* CommentVar */
+code span.do { color: #7f9f7f; } /* Documentation */
+code span.dt { color: #dfdfbf; } /* DataType */
+code span.dv { color: #dcdccc; } /* DecVal */
+code span.er { color: #c3bf9f; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #c0bed1; } /* Float */
+code span.fu { color: #efef8f; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #7f9f7f; font-weight: bold; } /* Information */
+code span.kw { color: #f0dfaf; } /* Keyword */
+code span.op { color: #f0efd0; } /* Operator */
+code span.ot { color: #efef8f; } /* Other */
+code span.pp { color: #ffcfaf; font-weight: bold; } /* Preprocessor */
+code span.sc { color: #dca3a3; } /* SpecialChar */
+code span.ss { color: #cc9393; } /* SpecialString */
+code span.st { color: #cc9393; } /* String */
+code span.va { } /* Variable */
+code span.vs { color: #cc9393; } /* VerbatimString */
+code span.wa { color: #7f9f7f; font-weight: bold; } /* Warning */
+
+.sourceCode .row {
+  width: 100%;
+}
+.sourceCode {
+  overflow-x: auto;
+}
+.code-folding-btn {
+  margin-right: -30px;
+}
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+#rmd-source-code {
+  display: none;
+}
+</style>
+
+<link rel="stylesheet" href="styles.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 64px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h2 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h3 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h4 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h5 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h6 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">GOCD2</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Overview</a>
+</li>
+<li>
+  <a href="0_import_data.html">Import data</a>
+</li>
+<li>
+  <a href="0_wrangle_data.html">Wrangle data</a>
+</li>
+<li>
+  <a href="1_exclusion.html">Exclusion criteria</a>
+</li>
+<li>
+  <a href="1_descriptives.html">Descriptives</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/rubenarslan/gocd2">
+    <span class="fa fa-github"></span>
+     
+    
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+<div class="btn-group pull-right">
+<button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+<li role="separator" class="divider"></li>
+<li><a id="rmd-download-source" href="#">Download Rmd</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">Import data</h1>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#load-data">Load data</a><ul>
+<li><a href="#demographics">Demographics</a></li>
+<li><a href="#personality">Personality</a></li>
+<li><a href="#diary">Diary</a></li>
+<li><a href="#follow-up">Follow-up</a></li>
+</ul></li>
+<li><a href="#post-process">Post-process</a></li>
+<li><a href="#save">Save</a></li>
+</ul>
+</div>
+
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">source</span>(<span class="st">&quot;0_helpers.R&quot;</span>)</span>
+<span id="cb1-2"><a href="#cb1-2"></a>knitr<span class="op">::</span>opts_chunk<span class="op">$</span><span class="kw">set</span>(<span class="dt">error =</span> <span class="ot">TRUE</span>)</span></code></pre></div>
+<div id="load-data" class="section level2">
+<h2>Load data</h2>
+<div id="demographics" class="section level3">
+<h3>Demographics</h3>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="kw">formr_connect</span>(keyring<span class="op">::</span><span class="kw">key_list</span>(<span class="dt">service =</span> <span class="st">&#39;gocd2&#39;</span>)[, <span class="st">&quot;username&quot;</span>], keyring<span class="op">::</span><span class="kw">key_get</span>(<span class="st">&quot;gocd2&quot;</span>))</span>
+<span id="cb2-2"><a href="#cb2-2"></a></span>
+<span id="cb2-3"><a href="#cb2-3"></a>s1_demo =<span class="st"> </span><span class="kw">formr_results</span>(<span class="st">&quot;s1_demo&quot;</span>, <span class="dt">plot_likert =</span> F, <span class="dt">compute_alphas =</span> F, <span class="dt">quiet =</span> T)</span>
+<span id="cb2-4"><a href="#cb2-4"></a>s1_filter =<span class="st"> </span><span class="kw">formr_results</span>(<span class="st">&quot;s1_filter&quot;</span>, <span class="dt">plot_likert =</span> F, <span class="dt">compute_alphas =</span> F, <span class="dt">quiet =</span> T)</span></code></pre></div>
+</div>
+<div id="personality" class="section level3">
+<h3>Personality</h3>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>s2_initial =<span class="st"> </span><span class="kw">formr_recognise</span>(<span class="st">&quot;s2_initial&quot;</span>)</span>
+<span id="cb3-2"><a href="#cb3-2"></a>s2_initial =<span class="st"> </span>s2_initial <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">rename</span>(</span>
+<span id="cb3-3"><a href="#cb3-3"></a>  <span class="dt">communal_strength_2R =</span> communal_strength_<span class="dv">2</span>,</span>
+<span id="cb3-4"><a href="#cb3-4"></a>  <span class="dt">ecr_avo_1R =</span> ecr_avo_33R,</span>
+<span id="cb3-5"><a href="#cb3-5"></a>  <span class="dt">ecr_avo_2 =</span> ecr_avo_<span class="dv">11</span>,</span>
+<span id="cb3-6"><a href="#cb3-6"></a>  <span class="dt">ecr_avo_3R =</span> ecr_avo_35R,</span>
+<span id="cb3-7"><a href="#cb3-7"></a>  <span class="dt">ecr_avo_4 =</span> ecr_avo_<span class="dv">17</span>,</span>
+<span id="cb3-8"><a href="#cb3-8"></a>  <span class="dt">ecr_avo_5R =</span> ecr_avo_27R,</span>
+<span id="cb3-9"><a href="#cb3-9"></a>  <span class="dt">ecr_avo_6 =</span> ecr_avo_<span class="dv">13</span>,</span>
+<span id="cb3-10"><a href="#cb3-10"></a>  <span class="dt">ecr_anx_1 =</span> ecr_anx_<span class="dv">18</span>,</span>
+<span id="cb3-11"><a href="#cb3-11"></a>  <span class="dt">ecr_anx_2 =</span> ecr_anx_<span class="dv">16</span>,</span>
+<span id="cb3-12"><a href="#cb3-12"></a>  <span class="dt">ecr_anx_3 =</span> ecr_anx_<span class="dv">26</span>,</span>
+<span id="cb3-13"><a href="#cb3-13"></a>  <span class="dt">ecr_anx_4R =</span> ecr_anx_22R,</span>
+<span id="cb3-14"><a href="#cb3-14"></a>  <span class="dt">ecr_anx_5 =</span> ecr_anx_<span class="dv">32</span>,</span>
+<span id="cb3-15"><a href="#cb3-15"></a>  <span class="dt">ecr_anx_6 =</span> ecr_anx_<span class="dv">6</span></span>
+<span id="cb3-16"><a href="#cb3-16"></a>  )</span>
+<span id="cb3-17"><a href="#cb3-17"></a></span>
+<span id="cb3-18"><a href="#cb3-18"></a>s2_initial_id =<span class="st"> </span><span class="kw">formr_item_displays</span>(<span class="st">&quot;s2_initial&quot;</span>)</span>
+<span id="cb3-19"><a href="#cb3-19"></a>s2_initial =<span class="st"> </span><span class="kw">formr_post_process_results</span>(<span class="dt">item_list =</span> <span class="kw">items</span>(s2_initial), <span class="dt">results =</span> s2_initial, <span class="dt">plot_likert =</span> F, <span class="dt">compute_alphas =</span> F, <span class="dt">quiet =</span> T, <span class="dt">tag_missings =</span> <span class="ot">TRUE</span>, <span class="dt">item_displays =</span> s2_initial_id)</span></code></pre></div>
+</div>
+<div id="diary" class="section level3">
+<h3>Diary</h3>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>s3_daily =<span class="st"> </span><span class="kw">formr_recognise</span>(<span class="dt">results =</span> jsonlite<span class="op">::</span><span class="kw">fromJSON</span>(<span class="st">&quot;data/s3_daily.json&quot;</span>), <span class="dt">item_list =</span> <span class="kw">formr_items</span>(<span class="st">&quot;s3_daily&quot;</span>))</span>
+<span id="cb4-2"><a href="#cb4-2"></a></span>
+<span id="cb4-3"><a href="#cb4-3"></a>s3_daily =<span class="st"> </span>s3_daily <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">rename</span>(<span class="dt">extra_pair_desire_5R =</span> extra_pair_desire_<span class="dv">15</span>,</span>
+<span id="cb4-4"><a href="#cb4-4"></a>                               <span class="dt">in_pair_desire_5R =</span> in_pair_desire_<span class="dv">15</span>,</span>
+<span id="cb4-5"><a href="#cb4-5"></a>                               <span class="dt">extra_pair_went_out =</span> extra_pair_desire_<span class="dv">5</span>,</span>
+<span id="cb4-6"><a href="#cb4-6"></a>                               <span class="dt">in_pair_went_out =</span> in_pair_desire_<span class="dv">5</span>)</span>
+<span id="cb4-7"><a href="#cb4-7"></a>s3_daily =<span class="st"> </span><span class="kw">formr_post_process_results</span>(<span class="dt">item_list =</span> <span class="kw">items</span>(s3_daily), <span class="dt">results =</span> s3_daily, <span class="dt">plot_likert =</span> F, <span class="dt">compute_alphas =</span> F, <span class="dt">quiet =</span> T, <span class="dt">tag_missings =</span> <span class="ot">FALSE</span>, <span class="dt">item_displays =</span> <span class="ot">NULL</span>) <span class="co">#item_displays = jsonlite::fromJSON(&quot;data/s3_daily_itemdisplay.json&quot;))</span></span></code></pre></div>
+</div>
+<div id="follow-up" class="section level3">
+<h3>Follow-up</h3>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>s4_timespent =<span class="st"> </span><span class="kw">formr_results</span>(<span class="st">&quot;s4_timespent&quot;</span>, <span class="dt">plot_likert =</span> F, <span class="dt">compute_alphas =</span> F, <span class="dt">quiet =</span> T)</span>
+<span id="cb5-2"><a href="#cb5-2"></a>s4_followup =<span class="st"> </span><span class="kw">formr_results</span>(<span class="st">&quot;s4_followup&quot;</span>, <span class="dt">plot_likert =</span> F, <span class="dt">compute_alphas =</span> F, <span class="dt">quiet =</span> T)</span>
+<span id="cb5-3"><a href="#cb5-3"></a>s4_followup =<span class="st"> </span>s4_followup <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">mutate</span>(<span class="dt">medication_name =</span> stringr<span class="op">::</span><span class="kw">str_trim</span>(medication_name))</span>
+<span id="cb5-4"><a href="#cb5-4"></a>s5_hadmenstruation =<span class="st"> </span><span class="kw">formr_results</span>(<span class="st">&quot;s5_hadmenstruation&quot;</span>, <span class="dt">plot_likert =</span> F, <span class="dt">compute_alphas =</span> F, <span class="dt">quiet =</span> T)</span></code></pre></div>
+</div>
+</div>
+<div id="post-process" class="section level2">
+<h2>Post-process</h2>
+<p>Test sessions (animal names) contain XXX, we filter them and two erroneous dupes.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a>s1_demo =<span class="st"> </span>s1_demo <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb6-2"><a href="#cb6-2"></a><span class="st">    </span><span class="kw">filter</span>(<span class="op">!</span>session <span class="op">%contains%</span><span class="st"> &quot;XXX&quot;</span>)</span>
+<span id="cb6-3"><a href="#cb6-3"></a>s3_daily =<span class="st"> </span>s3_daily <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb6-4"><a href="#cb6-4"></a><span class="st">    </span><span class="kw">filter</span>(<span class="op">!</span>session <span class="op">%contains%</span><span class="st"> &quot;XXX&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb6-5"><a href="#cb6-5"></a><span class="st">    </span><span class="kw">arrange</span>(session, created, modified) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb6-6"><a href="#cb6-6"></a><span class="st">    </span><span class="kw">filter</span>(<span class="op">!</span><span class="kw">duplicated</span>(<span class="kw">cbind</span>(session, created))) <span class="co"># one dupe mishap</span></span>
+<span id="cb6-7"><a href="#cb6-7"></a></span>
+<span id="cb6-8"><a href="#cb6-8"></a>twice_a_days &lt;-<span class="st"> </span>s3_daily <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb6-9"><a href="#cb6-9"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">created_date =</span> <span class="kw">as.Date</span>(created <span class="op">-</span><span class="st"> </span><span class="kw">hours</span>(<span class="dv">6</span>))) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb6-10"><a href="#cb6-10"></a><span class="st">  </span><span class="kw">group_by</span>(session, created_date) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb6-11"><a href="#cb6-11"></a><span class="st">  </span><span class="kw">filter</span>(<span class="kw">n</span>() <span class="op">&gt;</span><span class="st"> </span><span class="dv">1</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb6-12"><a href="#cb6-12"></a><span class="st">  </span><span class="kw">arrange</span>(session, <span class="kw">is.na</span>(ended), created_date, ended) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb6-13"><a href="#cb6-13"></a><span class="st">  </span><span class="kw">select</span>(session, created_date, created, ended) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb6-14"><a href="#cb6-14"></a><span class="st">  </span><span class="kw">filter</span>(<span class="kw">row_number</span>() <span class="op">&gt;</span><span class="st"> </span><span class="dv">1</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb6-15"><a href="#cb6-15"></a><span class="st">  </span><span class="kw">ungroup</span>() <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb6-16"><a href="#cb6-16"></a><span class="st">  </span><span class="kw">select</span>(session, created)</span>
+<span id="cb6-17"><a href="#cb6-17"></a></span>
+<span id="cb6-18"><a href="#cb6-18"></a>s3_daily =<span class="st"> </span>s3_daily <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb6-19"><a href="#cb6-19"></a><span class="st">  </span><span class="kw">anti_join</span>(twice_a_days, <span class="dt">by =</span> <span class="kw">c</span>(<span class="st">&quot;session&quot;</span>, <span class="st">&quot;created&quot;</span>))</span>
+<span id="cb6-20"><a href="#cb6-20"></a></span>
+<span id="cb6-21"><a href="#cb6-21"></a>s1_filter =<span class="st"> </span>s1_filter <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb6-22"><a href="#cb6-22"></a><span class="st">    </span><span class="kw">filter</span>(<span class="op">!</span>session <span class="op">%contains%</span><span class="st"> &quot;XXX&quot;</span>)</span>
+<span id="cb6-23"><a href="#cb6-23"></a>s2_initial =<span class="st"> </span>s2_initial <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb6-24"><a href="#cb6-24"></a><span class="st">    </span><span class="kw">filter</span>(<span class="op">!</span>session <span class="op">%contains%</span><span class="st"> &quot;XXX&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb6-25"><a href="#cb6-25"></a><span class="st">    </span><span class="kw">filter</span>(<span class="op">!</span><span class="kw">duplicated</span>(session)) <span class="co"># one dupe mishap with empty data</span></span>
+<span id="cb6-26"><a href="#cb6-26"></a>s4_followup =<span class="st"> </span>s4_followup <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb6-27"><a href="#cb6-27"></a><span class="st">  </span><span class="kw">filter</span>(<span class="op">!</span>session <span class="op">%contains%</span><span class="st"> &#39;XXX&#39;</span>)</span>
+<span id="cb6-28"><a href="#cb6-28"></a></span>
+<span id="cb6-29"><a href="#cb6-29"></a></span>
+<span id="cb6-30"><a href="#cb6-30"></a><span class="co"># short names reichen auch aus um nutzer zu unterscheiden</span></span>
+<span id="cb6-31"><a href="#cb6-31"></a>s2_initial<span class="op">$</span>short =<span class="st"> </span>stringr<span class="op">::</span><span class="kw">str_sub</span>(s2_initial<span class="op">$</span>session, <span class="dv">1</span>, <span class="dv">7</span>)</span>
+<span id="cb6-32"><a href="#cb6-32"></a>s1_filter<span class="op">$</span>short =<span class="st"> </span>stringr<span class="op">::</span><span class="kw">str_sub</span>(s1_filter<span class="op">$</span>session, <span class="dv">1</span>, <span class="dv">7</span>)</span>
+<span id="cb6-33"><a href="#cb6-33"></a>s1_demo<span class="op">$</span>short =<span class="st"> </span>stringr<span class="op">::</span><span class="kw">str_sub</span>(s1_demo<span class="op">$</span>session, <span class="dv">1</span>, <span class="dv">7</span>)</span>
+<span id="cb6-34"><a href="#cb6-34"></a>s3_daily<span class="op">$</span>short =<span class="st"> </span>stringr<span class="op">::</span><span class="kw">str_sub</span>(s3_daily<span class="op">$</span>session, <span class="dv">1</span>, <span class="dv">7</span>)</span>
+<span id="cb6-35"><a href="#cb6-35"></a>s4_followup<span class="op">$</span>short =<span class="st"> </span>stringr<span class="op">::</span><span class="kw">str_sub</span>(s4_followup<span class="op">$</span>session, <span class="dv">1</span>, <span class="dv">7</span>)</span>
+<span id="cb6-36"><a href="#cb6-36"></a>s4_timespent<span class="op">$</span>short =<span class="st"> </span>stringr<span class="op">::</span><span class="kw">str_sub</span>(s4_timespent<span class="op">$</span>session, <span class="dv">1</span>, <span class="dv">7</span>)</span>
+<span id="cb6-37"><a href="#cb6-37"></a>s5_hadmenstruation<span class="op">$</span>short =<span class="st"> </span>stringr<span class="op">::</span><span class="kw">str_sub</span>(s5_hadmenstruation<span class="op">$</span>session, <span class="dv">1</span>, <span class="dv">7</span>)</span></code></pre></div>
+</div>
+<div id="save" class="section level2">
+<h2>Save</h2>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a><span class="kw">save</span>(s1_demo, s1_filter, s2_initial, s3_daily, s4_followup, s4_timespent, s5_hadmenstruation, <span class="dt">file =</span> <span class="st">&quot;data/pretty_raw.rdata&quot;</span>)</span></code></pre></div>
+</div>
+
+<div id="rmd-source-code">LS0tCnRpdGxlOiAiSW1wb3J0IGRhdGEiCm91dHB1dDogCiAgaHRtbF9kb2N1bWVudDoKICAgIHRvYzogeWVzCiAgICB0b2NfZGVwdGg6IDUKICAgIGNvZGVfZm9sZGluZzogInNob3ciCi0tLQoKYGBge3IgZWNobz1GQUxTRX0Ka25pdHI6Om9wdHNfY2h1bmskc2V0KGV2YWwgPSBGQUxTRSkKYGBgCgoKYGBge3IgcmVzdWx0cz0naGlkZScsbWVzc2FnZT1GLHdhcm5pbmc9Rn0Kc291cmNlKCIwX2hlbHBlcnMuUiIpCmtuaXRyOjpvcHRzX2NodW5rJHNldChlcnJvciA9IFRSVUUpCmBgYAoKIyMgTG9hZCBkYXRhCgojIyMgRGVtb2dyYXBoaWNzCmBgYHtyfQpmb3Jtcl9jb25uZWN0KGtleXJpbmc6OmtleV9saXN0KHNlcnZpY2UgPSAnZ29jZDInKVssICJ1c2VybmFtZSJdLCBrZXlyaW5nOjprZXlfZ2V0KCJnb2NkMiIpKQoKczFfZGVtbyA9IGZvcm1yX3Jlc3VsdHMoInMxX2RlbW8iLCBwbG90X2xpa2VydCA9IEYsIGNvbXB1dGVfYWxwaGFzID0gRiwgcXVpZXQgPSBUKQpzMV9maWx0ZXIgPSBmb3Jtcl9yZXN1bHRzKCJzMV9maWx0ZXIiLCBwbG90X2xpa2VydCA9IEYsIGNvbXB1dGVfYWxwaGFzID0gRiwgcXVpZXQgPSBUKQpgYGAKCiMjIyBQZXJzb25hbGl0eQpgYGB7cn0KczJfaW5pdGlhbCA9IGZvcm1yX3JlY29nbmlzZSgiczJfaW5pdGlhbCIpCnMyX2luaXRpYWwgPSBzMl9pbml0aWFsICU+JSByZW5hbWUoCiAgY29tbXVuYWxfc3RyZW5ndGhfMlIgPSBjb21tdW5hbF9zdHJlbmd0aF8yLAogIGVjcl9hdm9fMVIgPSBlY3JfYXZvXzMzUiwKICBlY3JfYXZvXzIgPSBlY3JfYXZvXzExLAogIGVjcl9hdm9fM1IgPSBlY3JfYXZvXzM1UiwKICBlY3JfYXZvXzQgPSBlY3JfYXZvXzE3LAogIGVjcl9hdm9fNVIgPSBlY3JfYXZvXzI3UiwKICBlY3JfYXZvXzYgPSBlY3JfYXZvXzEzLAogIGVjcl9hbnhfMSA9IGVjcl9hbnhfMTgsCiAgZWNyX2FueF8yID0gZWNyX2FueF8xNiwKICBlY3JfYW54XzMgPSBlY3JfYW54XzI2LAogIGVjcl9hbnhfNFIgPSBlY3JfYW54XzIyUiwKICBlY3JfYW54XzUgPSBlY3JfYW54XzMyLAogIGVjcl9hbnhfNiA9IGVjcl9hbnhfNgogICkKCnMyX2luaXRpYWxfaWQgPSBmb3Jtcl9pdGVtX2Rpc3BsYXlzKCJzMl9pbml0aWFsIikKczJfaW5pdGlhbCA9IGZvcm1yX3Bvc3RfcHJvY2Vzc19yZXN1bHRzKGl0ZW1fbGlzdCA9IGl0ZW1zKHMyX2luaXRpYWwpLCByZXN1bHRzID0gczJfaW5pdGlhbCwgcGxvdF9saWtlcnQgPSBGLCBjb21wdXRlX2FscGhhcyA9IEYsIHF1aWV0ID0gVCwgdGFnX21pc3NpbmdzID0gVFJVRSwgaXRlbV9kaXNwbGF5cyA9IHMyX2luaXRpYWxfaWQpCmBgYAoKIyMjIERpYXJ5CmBgYHtyfQpzM19kYWlseSA9IGZvcm1yX3JlY29nbmlzZShyZXN1bHRzID0ganNvbmxpdGU6OmZyb21KU09OKCJkYXRhL3MzX2RhaWx5Lmpzb24iKSwgaXRlbV9saXN0ID0gZm9ybXJfaXRlbXMoInMzX2RhaWx5IikpCgpzM19kYWlseSA9IHMzX2RhaWx5ICU+JSByZW5hbWUoZXh0cmFfcGFpcl9kZXNpcmVfNVIgPSBleHRyYV9wYWlyX2Rlc2lyZV8xNSwKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGluX3BhaXJfZGVzaXJlXzVSID0gaW5fcGFpcl9kZXNpcmVfMTUsCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBleHRyYV9wYWlyX3dlbnRfb3V0ID0gZXh0cmFfcGFpcl9kZXNpcmVfNSwKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGluX3BhaXJfd2VudF9vdXQgPSBpbl9wYWlyX2Rlc2lyZV81KQpzM19kYWlseSA9IGZvcm1yX3Bvc3RfcHJvY2Vzc19yZXN1bHRzKGl0ZW1fbGlzdCA9IGl0ZW1zKHMzX2RhaWx5KSwgcmVzdWx0cyA9IHMzX2RhaWx5LCBwbG90X2xpa2VydCA9IEYsIGNvbXB1dGVfYWxwaGFzID0gRiwgcXVpZXQgPSBULCB0YWdfbWlzc2luZ3MgPSBGQUxTRSwgaXRlbV9kaXNwbGF5cyA9IE5VTEwpICNpdGVtX2Rpc3BsYXlzID0ganNvbmxpdGU6OmZyb21KU09OKCJkYXRhL3MzX2RhaWx5X2l0ZW1kaXNwbGF5Lmpzb24iKSkKYGBgCgojIyMgRm9sbG93LXVwCmBgYHtyfQpzNF90aW1lc3BlbnQgPSBmb3Jtcl9yZXN1bHRzKCJzNF90aW1lc3BlbnQiLCBwbG90X2xpa2VydCA9IEYsIGNvbXB1dGVfYWxwaGFzID0gRiwgcXVpZXQgPSBUKQpzNF9mb2xsb3d1cCA9IGZvcm1yX3Jlc3VsdHMoInM0X2ZvbGxvd3VwIiwgcGxvdF9saWtlcnQgPSBGLCBjb21wdXRlX2FscGhhcyA9IEYsIHF1aWV0ID0gVCkKczRfZm9sbG93dXAgPSBzNF9mb2xsb3d1cCAlPiUgbXV0YXRlKG1lZGljYXRpb25fbmFtZSA9IHN0cmluZ3I6OnN0cl90cmltKG1lZGljYXRpb25fbmFtZSkpCnM1X2hhZG1lbnN0cnVhdGlvbiA9IGZvcm1yX3Jlc3VsdHMoInM1X2hhZG1lbnN0cnVhdGlvbiIsIHBsb3RfbGlrZXJ0ID0gRiwgY29tcHV0ZV9hbHBoYXMgPSBGLCBxdWlldCA9IFQpCmBgYAoKIyMgUG9zdC1wcm9jZXNzClRlc3Qgc2Vzc2lvbnMgKGFuaW1hbCBuYW1lcykgY29udGFpbiBYWFgsIHdlIGZpbHRlciB0aGVtIGFuZCB0d28gZXJyb25lb3VzIGR1cGVzLgoKYGBge3IgYWJicmV2fQpzMV9kZW1vID0gczFfZGVtbyAlPiUgCiAgICBmaWx0ZXIoIXNlc3Npb24gJWNvbnRhaW5zJSAiWFhYIikKczNfZGFpbHkgPSBzM19kYWlseSAlPiUgCiAgICBmaWx0ZXIoIXNlc3Npb24gJWNvbnRhaW5zJSAiWFhYIikgJT4lIAogICAgYXJyYW5nZShzZXNzaW9uLCBjcmVhdGVkLCBtb2RpZmllZCkgJT4lIAogICAgZmlsdGVyKCFkdXBsaWNhdGVkKGNiaW5kKHNlc3Npb24sIGNyZWF0ZWQpKSkgIyBvbmUgZHVwZSBtaXNoYXAKCnR3aWNlX2FfZGF5cyA8LSBzM19kYWlseSAlPiUgCiAgbXV0YXRlKGNyZWF0ZWRfZGF0ZSA9IGFzLkRhdGUoY3JlYXRlZCAtIGhvdXJzKDYpKSkgJT4lIAogIGdyb3VwX2J5KHNlc3Npb24sIGNyZWF0ZWRfZGF0ZSkgJT4lIAogIGZpbHRlcihuKCkgPiAxKSAlPiUgCiAgYXJyYW5nZShzZXNzaW9uLCBpcy5uYShlbmRlZCksIGNyZWF0ZWRfZGF0ZSwgZW5kZWQpICU+JSAKICBzZWxlY3Qoc2Vzc2lvbiwgY3JlYXRlZF9kYXRlLCBjcmVhdGVkLCBlbmRlZCkgJT4lIAogIGZpbHRlcihyb3dfbnVtYmVyKCkgPiAxKSAlPiUgCiAgdW5ncm91cCgpICU+JSAKICBzZWxlY3Qoc2Vzc2lvbiwgY3JlYXRlZCkKCnMzX2RhaWx5ID0gczNfZGFpbHkgJT4lIAogIGFudGlfam9pbih0d2ljZV9hX2RheXMsIGJ5ID0gYygic2Vzc2lvbiIsICJjcmVhdGVkIikpCgpzMV9maWx0ZXIgPSBzMV9maWx0ZXIgJT4lIAogICAgZmlsdGVyKCFzZXNzaW9uICVjb250YWlucyUgIlhYWCIpCnMyX2luaXRpYWwgPSBzMl9pbml0aWFsICU+JSAKICAgIGZpbHRlcighc2Vzc2lvbiAlY29udGFpbnMlICJYWFgiKSAlPiUgCiAgICBmaWx0ZXIoIWR1cGxpY2F0ZWQoc2Vzc2lvbikpICMgb25lIGR1cGUgbWlzaGFwIHdpdGggZW1wdHkgZGF0YQpzNF9mb2xsb3d1cCA9IHM0X2ZvbGxvd3VwICU+JSAKICBmaWx0ZXIoIXNlc3Npb24gJWNvbnRhaW5zJSAnWFhYJykKCgojIHNob3J0IG5hbWVzIHJlaWNoZW4gYXVjaCBhdXMgdW0gbnV0emVyIHp1IHVudGVyc2NoZWlkZW4KczJfaW5pdGlhbCRzaG9ydCA9IHN0cmluZ3I6OnN0cl9zdWIoczJfaW5pdGlhbCRzZXNzaW9uLCAxLCA3KQpzMV9maWx0ZXIkc2hvcnQgPSBzdHJpbmdyOjpzdHJfc3ViKHMxX2ZpbHRlciRzZXNzaW9uLCAxLCA3KQpzMV9kZW1vJHNob3J0ID0gc3RyaW5ncjo6c3RyX3N1YihzMV9kZW1vJHNlc3Npb24sIDEsIDcpCnMzX2RhaWx5JHNob3J0ID0gc3RyaW5ncjo6c3RyX3N1YihzM19kYWlseSRzZXNzaW9uLCAxLCA3KQpzNF9mb2xsb3d1cCRzaG9ydCA9IHN0cmluZ3I6OnN0cl9zdWIoczRfZm9sbG93dXAkc2Vzc2lvbiwgMSwgNykKczRfdGltZXNwZW50JHNob3J0ID0gc3RyaW5ncjo6c3RyX3N1YihzNF90aW1lc3BlbnQkc2Vzc2lvbiwgMSwgNykKczVfaGFkbWVuc3RydWF0aW9uJHNob3J0ID0gc3RyaW5ncjo6c3RyX3N1YihzNV9oYWRtZW5zdHJ1YXRpb24kc2Vzc2lvbiwgMSwgNykKYGBgCgojIyBTYXZlCgpgYGB7cn0Kc2F2ZShzMV9kZW1vLCBzMV9maWx0ZXIsIHMyX2luaXRpYWwsIHMzX2RhaWx5LCBzNF9mb2xsb3d1cCwgczRfdGltZXNwZW50LCBzNV9oYWRtZW5zdHJ1YXRpb24sIGZpbGUgPSAiZGF0YS9wcmV0dHlfcmF3LnJkYXRhIikKYGBgCg==</div>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeSourceEmbed("0_import_data.Rmd");
+  window.initializeCodeFolding("show" === "show");
+});
+</script>
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

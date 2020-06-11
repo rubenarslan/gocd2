@@ -1,0 +1,1220 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>1_exclusion.utf8</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/paper.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<script src="site_libs/navigation-1.1/sourceembed.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css" data-origin="pandoc">
+code.sourceCode > span { display: inline-block; line-height: 1.25; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  { color: #cccccc; background-color: #303030; }
+@media screen {
+code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ffcfaf; } /* Alert */
+code span.an { color: #7f9f7f; font-weight: bold; } /* Annotation */
+code span.at { } /* Attribute */
+code span.bn { color: #dca3a3; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #f0dfaf; } /* ControlFlow */
+code span.ch { color: #dca3a3; } /* Char */
+code span.cn { color: #dca3a3; font-weight: bold; } /* Constant */
+code span.co { color: #7f9f7f; } /* Comment */
+code span.cv { color: #7f9f7f; font-weight: bold; } /* CommentVar */
+code span.do { color: #7f9f7f; } /* Documentation */
+code span.dt { color: #dfdfbf; } /* DataType */
+code span.dv { color: #dcdccc; } /* DecVal */
+code span.er { color: #c3bf9f; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #c0bed1; } /* Float */
+code span.fu { color: #efef8f; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #7f9f7f; font-weight: bold; } /* Information */
+code span.kw { color: #f0dfaf; } /* Keyword */
+code span.op { color: #f0efd0; } /* Operator */
+code span.ot { color: #efef8f; } /* Other */
+code span.pp { color: #ffcfaf; font-weight: bold; } /* Preprocessor */
+code span.sc { color: #dca3a3; } /* SpecialChar */
+code span.ss { color: #cc9393; } /* SpecialString */
+code span.st { color: #cc9393; } /* String */
+code span.va { } /* Variable */
+code span.vs { color: #cc9393; } /* VerbatimString */
+code span.wa { color: #7f9f7f; font-weight: bold; } /* Warning */
+
+.sourceCode .row {
+  width: 100%;
+}
+.sourceCode {
+  overflow-x: auto;
+}
+.code-folding-btn {
+  margin-right: -30px;
+}
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+#rmd-source-code {
+  display: none;
+}
+</style>
+
+<link rel="stylesheet" href="styles.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 64px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h2 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h3 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h4 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h5 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h6 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">GOCD2</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Overview</a>
+</li>
+<li>
+  <a href="0_import_data.html">Import data</a>
+</li>
+<li>
+  <a href="0_wrangle_data.html">Wrangle data</a>
+</li>
+<li>
+  <a href="1_exclusion.html">Exclusion criteria</a>
+</li>
+<li>
+  <a href="1_descriptives.html">Descriptives</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/rubenarslan/gocd2">
+    <span class="fa fa-github"></span>
+     
+    
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+<div class="btn-group pull-right">
+<button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+<li role="separator" class="divider"></li>
+<li><a id="rmd-download-source" href="#">Download Rmd</a></li>
+</ul>
+</div>
+
+
+
+
+</div>
+
+
+<div id="reasons-for-exclusion" class="section level1">
+<h1>Reasons for Exclusion</h1>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">source</span>(<span class="st">&quot;0_helpers.R&quot;</span>)</span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="kw">library</span>(tidylog)</span>
+<span id="cb1-3"><a href="#cb1-3"></a><span class="kw">load</span>(<span class="st">&quot;data/cleaned.rdata&quot;</span>)</span>
+<span id="cb1-4"><a href="#cb1-4"></a></span>
+<span id="cb1-5"><a href="#cb1-5"></a><span class="kw">library</span>(knitr)</span>
+<span id="cb1-6"><a href="#cb1-6"></a>opts_chunk<span class="op">$</span><span class="kw">set</span>(<span class="dt">fig.width =</span> <span class="dv">9</span>, <span class="dt">fig.height =</span> <span class="dv">7</span>, <span class="dt">cache =</span> T, <span class="dt">warning =</span> T, <span class="dt">message =</span> T, <span class="dt">cache =</span> F, <span class="dt">error =</span> <span class="ot">FALSE</span>)</span>
+<span id="cb1-7"><a href="#cb1-7"></a></span>
+<span id="cb1-8"><a href="#cb1-8"></a>comma_separated_to_columns &lt;-<span class="st"> </span><span class="cf">function</span>(df, col) {</span>
+<span id="cb1-9"><a href="#cb1-9"></a>  colname &lt;-<span class="st"> </span><span class="kw">deparse</span>(<span class="kw">substitute</span>(col))</span>
+<span id="cb1-10"><a href="#cb1-10"></a>  df<span class="op">$</span>splitcol &lt;-<span class="st"> </span>df <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">pull</span>(colname)</span>
+<span id="cb1-11"><a href="#cb1-11"></a>  <span class="kw">separate_rows</span>(df, splitcol, <span class="dt">convert =</span> <span class="ot">TRUE</span>, <span class="dt">sep =</span> <span class="st">&quot;, &quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb1-12"><a href="#cb1-12"></a><span class="st">    </span><span class="kw">mutate</span>(<span class="dt">splitcol =</span> <span class="kw">if_else</span>(<span class="kw">is.na</span>(splitcol), <span class="st">&quot;no&quot;</span>, </span>
+<span id="cb1-13"><a href="#cb1-13"></a>                        <span class="kw">if_else</span>(splitcol <span class="op">==</span><span class="st"> &quot;&quot;</span> <span class="op">|</span><span class="st"> </span></span>
+<span id="cb1-14"><a href="#cb1-14"></a><span class="st">                                  </span>splitcol <span class="op">%in%</span><span class="st"> </span><span class="kw">c</span>(), <span class="st">&quot;included&quot;</span>, <span class="kw">as.character</span>(splitcol)))) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb1-15"><a href="#cb1-15"></a><span class="st">    </span><span class="kw">mutate</span>(<span class="co">#splitcol = stringr::str_c(colname, &quot;_&quot;, splitcol), </span></span>
+<span id="cb1-16"><a href="#cb1-16"></a>           <span class="dt">value =</span> <span class="dv">1</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb1-17"><a href="#cb1-17"></a><span class="st">    </span><span class="kw">spread</span>(splitcol, value, <span class="dt">fill =</span> <span class="dv">0</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb1-18"><a href="#cb1-18"></a><span class="st">    </span><span class="kw">select</span>(<span class="op">-</span>colname)</span>
+<span id="cb1-19"><a href="#cb1-19"></a>}</span>
+<span id="cb1-20"><a href="#cb1-20"></a></span>
+<span id="cb1-21"><a href="#cb1-21"></a>all_survey_length &lt;-<span class="st"> </span><span class="kw">nrow</span>(all_surveys)</span>
+<span id="cb1-22"><a href="#cb1-22"></a>diary_length &lt;-<span class="st"> </span><span class="kw">nrow</span>(diary)</span>
+<span id="cb1-23"><a href="#cb1-23"></a>diary_social_length &lt;-<span class="st"> </span><span class="kw">nrow</span>(diary_social)</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>diary<span class="op">$</span>reasons_for_exclusion_diary &lt;-<span class="st"> &quot;&quot;</span></span></code></pre></div>
+<p>Lab participants that did not do the online diary (not merged)</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>diary &lt;-<span class="st"> </span>diary <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb3-2"><a href="#cb3-2"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">reasons_for_exclusion_diary =</span> <span class="kw">str_c</span>(reasons_for_exclusion_diary,</span>
+<span id="cb3-3"><a href="#cb3-3"></a>                                            <span class="kw">if_else</span>(<span class="kw">is.na</span>(session), <span class="st">&quot;lab_only, &quot;</span>, <span class="st">&quot;&quot;</span>, <span class="st">&quot;&quot;</span>)</span>
+<span id="cb3-4"><a href="#cb3-4"></a>                                       )</span>
+<span id="cb3-5"><a href="#cb3-5"></a>  )</span></code></pre></div>
+<pre><code>## mutate: no changes</code></pre>
+<p>Disclosed that they responded dishonestly on that day.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>diary &lt;-<span class="st"> </span>diary <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb5-2"><a href="#cb5-2"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">reasons_for_exclusion_diary =</span> <span class="kw">str_c</span>(reasons_for_exclusion_diary,</span>
+<span id="cb5-3"><a href="#cb5-3"></a>                                            <span class="kw">if_else</span>(dishonest_discard <span class="op">==</span><span class="st"> </span><span class="dv">1</span>, <span class="st">&quot;dishonest_answer, &quot;</span>, <span class="st">&quot;&quot;</span>, <span class="st">&quot;&quot;</span>)</span>
+<span id="cb5-4"><a href="#cb5-4"></a>                                       )</span>
+<span id="cb5-5"><a href="#cb5-5"></a>  )</span></code></pre></div>
+<pre><code>## mutate: changed 150 values (&lt;1%) of &#39;reasons_for_exclusion_diary&#39; (0 new NA)</code></pre>
+<p>Did not finish diary entry.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a>diary &lt;-<span class="st"> </span>diary <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb7-2"><a href="#cb7-2"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">reasons_for_exclusion_diary =</span> <span class="kw">str_c</span>(reasons_for_exclusion_diary,</span>
+<span id="cb7-3"><a href="#cb7-3"></a>                                            <span class="kw">if_else</span>(<span class="kw">is.na</span>(ended_diary) <span class="op">&amp;</span><span class="st"> </span><span class="op">!</span><span class="kw">is.na</span>(modified_diary), <span class="st">&quot;did_not_finish_entry, &quot;</span>, <span class="st">&quot;&quot;</span>, <span class="st">&quot;&quot;</span>)</span>
+<span id="cb7-4"><a href="#cb7-4"></a>                                       )</span>
+<span id="cb7-5"><a href="#cb7-5"></a>  )</span></code></pre></div>
+<pre><code>## mutate: changed 856 values (1%) of &#39;reasons_for_exclusion_diary&#39; (0 new NA)</code></pre>
+<p>Cycle shorter than 20 days.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a>diary &lt;-<span class="st"> </span>diary <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb9-2"><a href="#cb9-2"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">reasons_for_exclusion_diary =</span> <span class="kw">str_c</span>(reasons_for_exclusion_diary,</span>
+<span id="cb9-3"><a href="#cb9-3"></a>                                            <span class="kw">if_else</span>(<span class="kw">coalesce</span>(minimum_cycle_length_diary, <span class="kw">as.numeric</span>(menstruation_length)) <span class="op">&lt;</span><span class="st"> </span><span class="dv">20</span>, <span class="st">&quot;cycle_shorter_than_20, &quot;</span>, <span class="st">&quot;&quot;</span>, <span class="st">&quot;&quot;</span>)</span>
+<span id="cb9-4"><a href="#cb9-4"></a>                                       )</span>
+<span id="cb9-5"><a href="#cb9-5"></a>  )</span></code></pre></div>
+<pre><code>## mutate: changed 4,736 values (6%) of &#39;reasons_for_exclusion_diary&#39; (0 new NA)</code></pre>
+<p>Cycle longer than 40 days.</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a>diary &lt;-<span class="st"> </span>diary <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb11-2"><a href="#cb11-2"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">reasons_for_exclusion_diary =</span> <span class="kw">str_c</span>(reasons_for_exclusion_diary,</span>
+<span id="cb11-3"><a href="#cb11-3"></a>                                            <span class="kw">if_else</span>(<span class="kw">coalesce</span>(minimum_cycle_length_diary, <span class="kw">as.numeric</span>(menstruation_length)) <span class="op">&gt;</span><span class="st"> </span><span class="dv">40</span>, <span class="st">&quot;cycle_longer_than_40, &quot;</span>, <span class="st">&quot;&quot;</span>, <span class="st">&quot;&quot;</span>)</span>
+<span id="cb11-4"><a href="#cb11-4"></a>                                       )</span>
+<span id="cb11-5"><a href="#cb11-5"></a>  )</span></code></pre></div>
+<pre><code>## mutate: changed 7,461 values (10%) of &#39;reasons_for_exclusion_diary&#39; (0 new NA)</code></pre>
+<p>Next menstrual onset not observed</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1"></a>diary &lt;-<span class="st"> </span>diary <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb13-2"><a href="#cb13-2"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">reasons_for_exclusion_diary =</span> <span class="kw">str_c</span>(reasons_for_exclusion_diary,</span>
+<span id="cb13-3"><a href="#cb13-3"></a>                                            <span class="kw">if_else</span>(</span>
+<span id="cb13-4"><a href="#cb13-4"></a>                                              menstruation_regular <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">&amp;</span></span>
+<span id="cb13-5"><a href="#cb13-5"></a><span class="st">                                              </span><span class="kw">coalesce</span>(minimum_cycle_length_diary, <span class="kw">as.numeric</span>(menstruation_length)) <span class="op">&lt;=</span><span class="st"> </span><span class="dv">40</span> <span class="op">&amp;</span></span>
+<span id="cb13-6"><a href="#cb13-6"></a><span class="st">                                              </span><span class="kw">coalesce</span>(minimum_cycle_length_diary, <span class="kw">as.numeric</span>(menstruation_length)) <span class="op">&gt;=</span><span class="st"> </span><span class="dv">20</span> <span class="op">&amp;</span></span>
+<span id="cb13-7"><a href="#cb13-7"></a><span class="st">                                              </span><span class="kw">is.na</span>(fertile_fab), <span class="st">&quot;next_menstrual_onset_unobserved, &quot;</span>, <span class="st">&quot;&quot;</span>, <span class="st">&quot;&quot;</span>)</span>
+<span id="cb13-8"><a href="#cb13-8"></a>                                       )</span>
+<span id="cb13-9"><a href="#cb13-9"></a>  )</span></code></pre></div>
+<pre><code>## mutate: changed 4,100 values (5%) of &#39;reasons_for_exclusion_diary&#39; (0 new NA)</code></pre>
+<p>Skipped this diary day (days after dropping out not included)</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1"></a>diary &lt;-<span class="st"> </span>diary <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb15-2"><a href="#cb15-2"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">reasons_for_exclusion_diary =</span> <span class="kw">str_c</span>(reasons_for_exclusion_diary,</span>
+<span id="cb15-3"><a href="#cb15-3"></a>                                            <span class="kw">if_else</span>(<span class="kw">is.na</span>(ended_diary) <span class="op">&amp;</span><span class="st"> </span><span class="kw">is.na</span>(modified_diary), <span class="st">&quot;skipped_diary_entry, &quot;</span>, <span class="st">&quot;&quot;</span>)</span>
+<span id="cb15-4"><a href="#cb15-4"></a>                                       )</span>
+<span id="cb15-5"><a href="#cb15-5"></a>  )</span></code></pre></div>
+<pre><code>## mutate: changed 15,321 values (20%) of &#39;reasons_for_exclusion_diary&#39; (0 new NA)</code></pre>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1"></a>usable_diary_days &lt;-<span class="st"> </span>diary <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">group_by</span>(session) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb17-2"><a href="#cb17-2"></a><span class="st">  </span><span class="kw">summarise</span>(<span class="dt">usable_diary_days =</span> <span class="kw">any</span>(reasons_for_exclusion_diary <span class="op">==</span><span class="st"> &quot;&quot;</span>))</span></code></pre></div>
+<pre><code>## group_by: one grouping variable (session)</code></pre>
+<pre><code>## summarise: now 1,373 rows and 2 columns, ungrouped</code></pre>
+<div id="who-completed-what" class="section level2">
+<h2>Who completed what?</h2>
+<p>We create a character variable <code>reasons_for_exclusion</code>. We will concatenate (abbreviated) reasons for exclusion in this variable.</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1"></a>all_surveys<span class="op">$</span>reasons_for_exclusion &lt;-<span class="st"> &quot;&quot;</span></span></code></pre></div>
+<p>Did not finish demographics survey</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1"></a>all_surveys &lt;-<span class="st"> </span>all_surveys <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb21-2"><a href="#cb21-2"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">reasons_for_exclusion =</span> <span class="kw">str_c</span>(reasons_for_exclusion,</span>
+<span id="cb21-3"><a href="#cb21-3"></a>                                            <span class="kw">if_else</span>(<span class="kw">is.na</span>(ended_demo), <span class="st">&quot;didnt_finish_demographics, &quot;</span>, <span class="st">&quot;&quot;</span>)</span>
+<span id="cb21-4"><a href="#cb21-4"></a>                                       )</span>
+<span id="cb21-5"><a href="#cb21-5"></a>  )</span></code></pre></div>
+<pre><code>## mutate: changed 53 values (3%) of &#39;reasons_for_exclusion&#39; (0 new NA)</code></pre>
+<p>Reported no regular menstruation</p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1"></a>all_surveys &lt;-<span class="st"> </span>all_surveys <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb23-2"><a href="#cb23-2"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">reasons_for_exclusion =</span> <span class="kw">str_c</span>(reasons_for_exclusion,</span>
+<span id="cb23-3"><a href="#cb23-3"></a>                                            <span class="kw">if_else</span>(menstruation_regular <span class="op">==</span><span class="st"> </span><span class="dv">0</span>, <span class="st">&quot;no_regular_menstruation, &quot;</span>, <span class="st">&quot;&quot;</span>, <span class="st">&quot;&quot;</span>)</span>
+<span id="cb23-4"><a href="#cb23-4"></a>                                       )</span>
+<span id="cb23-5"><a href="#cb23-5"></a>  )</span></code></pre></div>
+<pre><code>## mutate: changed 302 values (18%) of &#39;reasons_for_exclusion&#39; (0 new NA)</code></pre>
+<p>Menopausal or in climacteric period</p>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1"></a>all_surveys &lt;-<span class="st"> </span>all_surveys <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb25-2"><a href="#cb25-2"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">reasons_for_exclusion =</span> <span class="kw">str_c</span>(reasons_for_exclusion,</span>
+<span id="cb25-3"><a href="#cb25-3"></a>                                            <span class="kw">if_else</span>(menopause_yes <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">|</span><span class="st"> </span>menopause_yes <span class="op">==</span><span class="st"> </span><span class="dv">2</span>, <span class="st">&quot;menopausal, &quot;</span>, <span class="st">&quot;&quot;</span>, <span class="st">&quot;&quot;</span>)</span>
+<span id="cb25-4"><a href="#cb25-4"></a>                                       )</span>
+<span id="cb25-5"><a href="#cb25-5"></a>  )</span></code></pre></div>
+<pre><code>## mutate: changed 41 values (2%) of &#39;reasons_for_exclusion&#39; (0 new NA)</code></pre>
+<p>Older than 50</p>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1"></a>all_surveys &lt;-<span class="st"> </span>all_surveys <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb27-2"><a href="#cb27-2"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">reasons_for_exclusion =</span> <span class="kw">str_c</span>(reasons_for_exclusion,</span>
+<span id="cb27-3"><a href="#cb27-3"></a>                                            <span class="kw">if_else</span>(age <span class="op">&gt;=</span><span class="st"> </span><span class="dv">50</span>, <span class="st">&quot;older_than_50, &quot;</span>, <span class="st">&quot;&quot;</span>, <span class="st">&quot;&quot;</span>)</span>
+<span id="cb27-4"><a href="#cb27-4"></a>                                       )</span>
+<span id="cb27-5"><a href="#cb27-5"></a>  )</span></code></pre></div>
+<pre><code>## mutate: changed 35 values (2%) of &#39;reasons_for_exclusion&#39; (0 new NA)</code></pre>
+<p>Pregnant</p>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1"></a>all_surveys &lt;-<span class="st"> </span>all_surveys <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb29-2"><a href="#cb29-2"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">reasons_for_exclusion =</span> <span class="kw">str_c</span>(reasons_for_exclusion,</span>
+<span id="cb29-3"><a href="#cb29-3"></a>                                            <span class="kw">if_else</span>(pregnant <span class="op">==</span><span class="st"> </span><span class="dv">1</span>, <span class="st">&quot;pregnant, &quot;</span>, <span class="st">&quot;&quot;</span>, <span class="st">&quot;&quot;</span>)</span>
+<span id="cb29-4"><a href="#cb29-4"></a>                                       )</span>
+<span id="cb29-5"><a href="#cb29-5"></a>  )</span></code></pre></div>
+<pre><code>## mutate: changed 23 values (1%) of &#39;reasons_for_exclusion&#39; (0 new NA)</code></pre>
+<p>Breast-feeding</p>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1"></a>all_surveys &lt;-<span class="st"> </span>all_surveys <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb31-2"><a href="#cb31-2"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">reasons_for_exclusion =</span> <span class="kw">str_c</span>(reasons_for_exclusion,</span>
+<span id="cb31-3"><a href="#cb31-3"></a>                                            <span class="kw">if_else</span>(breast_feeding <span class="op">==</span><span class="st"> </span><span class="dv">1</span>, <span class="st">&quot;breast_feeding, &quot;</span>, <span class="st">&quot;&quot;</span>, <span class="st">&quot;&quot;</span>)</span>
+<span id="cb31-4"><a href="#cb31-4"></a>                                       )</span>
+<span id="cb31-5"><a href="#cb31-5"></a>  )</span></code></pre></div>
+<pre><code>## mutate: changed 28 values (2%) of &#39;reasons_for_exclusion&#39; (0 new NA)</code></pre>
+<p>Not primarily heterosexual. This excludes women who reported being equally interested in men and women, women who reported being asexual or aromantic, and participants who did not identify as female gender.</p>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1"></a>all_surveys &lt;-<span class="st"> </span>all_surveys <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb33-2"><a href="#cb33-2"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">reasons_for_exclusion =</span> <span class="kw">str_c</span>(reasons_for_exclusion,</span>
+<span id="cb33-3"><a href="#cb33-3"></a>                                            <span class="kw">if_else</span>(sex_orientation <span class="op">&gt;=</span><span class="st"> </span><span class="dv">4</span> <span class="op">|</span><span class="st"> </span>gender <span class="op">!=</span><span class="st"> </span><span class="dv">1</span>, <span class="st">&quot;not_heterosexual_female, &quot;</span>, <span class="st">&quot;&quot;</span>, <span class="st">&quot;&quot;</span>)</span>
+<span id="cb33-4"><a href="#cb33-4"></a>                                       )</span>
+<span id="cb33-5"><a href="#cb33-5"></a>  )</span></code></pre></div>
+<pre><code>## mutate: changed 26 values (2%) of &#39;reasons_for_exclusion&#39; (0 new NA)</code></pre>
+<p>Did not finish personality survey</p>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1"></a>all_surveys &lt;-<span class="st"> </span>all_surveys <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb35-2"><a href="#cb35-2"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">reasons_for_exclusion =</span> <span class="kw">str_c</span>(reasons_for_exclusion,</span>
+<span id="cb35-3"><a href="#cb35-3"></a>                                            <span class="kw">if_else</span>(<span class="op">!</span><span class="kw">is.na</span>(ended_demo) <span class="op">&amp;</span><span class="st"> </span><span class="kw">is.na</span>(ended_initial), <span class="st">&quot;didnt_finish_personality, &quot;</span>, <span class="st">&quot;&quot;</span>)</span>
+<span id="cb35-4"><a href="#cb35-4"></a>                                       )</span>
+<span id="cb35-5"><a href="#cb35-5"></a>  )</span></code></pre></div>
+<pre><code>## mutate: changed 196 values (12%) of &#39;reasons_for_exclusion&#39; (0 new NA)</code></pre>
+<p>Changed contraception</p>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1"></a>all_surveys &lt;-<span class="st"> </span>all_surveys <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb37-2"><a href="#cb37-2"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">reasons_for_exclusion =</span> <span class="kw">str_c</span>(reasons_for_exclusion,</span>
+<span id="cb37-3"><a href="#cb37-3"></a>                                            <span class="kw">if_else</span>(change_to_nonhormonal <span class="op">!=</span><span class="st"> </span><span class="dv">0</span> <span class="op">|</span><span class="st"> </span>change_to_hormonal_contraception <span class="op">!=</span><span class="st"> </span><span class="dv">0</span>, <span class="st">&quot;switched_contraception, &quot;</span>, <span class="st">&quot;&quot;</span>, <span class="st">&quot;&quot;</span>)</span>
+<span id="cb37-4"><a href="#cb37-4"></a>                                       )</span>
+<span id="cb37-5"><a href="#cb37-5"></a>  )</span></code></pre></div>
+<pre><code>## mutate: changed 18 values (1%) of &#39;reasons_for_exclusion&#39; (0 new NA)</code></pre>
+<p>Taking sex hormones (other than the pill)</p>
+<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1"></a>all_surveys &lt;-<span class="st"> </span>all_surveys <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb39-2"><a href="#cb39-2"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">reasons_for_exclusion =</span> <span class="kw">str_c</span>(reasons_for_exclusion,</span>
+<span id="cb39-3"><a href="#cb39-3"></a>                                            <span class="kw">if_else</span>(medication_name <span class="op">%contains%</span><span class="st"> &quot;Cycloprognova&quot;</span> <span class="op">|</span></span>
+<span id="cb39-4"><a href="#cb39-4"></a><span class="st">                                                      </span>medication_name <span class="op">%contains%</span><span class="st"> &quot;Cyproderm&quot;</span> <span class="op">|</span></span>
+<span id="cb39-5"><a href="#cb39-5"></a><span class="st">                                                       </span>medication_name <span class="op">%contains%</span><span class="st"> &quot;DHEA&quot;</span> <span class="op">|</span></span>
+<span id="cb39-6"><a href="#cb39-6"></a><span class="st">                                                       </span>medication_name <span class="op">%contains%</span><span class="st"> &quot;Hormone&quot;</span> <span class="op">|</span></span>
+<span id="cb39-7"><a href="#cb39-7"></a><span class="st">                                                       </span>medication_name <span class="op">%contains%</span><span class="st"> &quot;Cyclo-Progynova&quot;</span> <span class="op">|</span></span>
+<span id="cb39-8"><a href="#cb39-8"></a><span class="st">                                                       </span>medication_name <span class="op">%contains%</span><span class="st"> &quot;Femoston&quot;</span> <span class="op">|</span></span>
+<span id="cb39-9"><a href="#cb39-9"></a><span class="st">                                                       </span>medication_name <span class="op">%contains%</span><span class="st"> &quot;Gynokadin&quot;</span>, <span class="st">&quot;sex_hormones, &quot;</span>, <span class="st">&quot;&quot;</span>, <span class="st">&quot;&quot;</span>)</span>
+<span id="cb39-10"><a href="#cb39-10"></a>                                       )</span>
+<span id="cb39-11"><a href="#cb39-11"></a>  )</span></code></pre></div>
+<pre><code>## mutate: changed 7 values (&lt;1%) of &#39;reasons_for_exclusion&#39; (0 new NA)</code></pre>
+<p>No diary days</p>
+<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1"></a>all_surveys &lt;-<span class="st"> </span>all_surveys <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb41-2"><a href="#cb41-2"></a><span class="st">  </span><span class="kw">left_join</span>(diary <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">group_by</span>(session) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">summarise</span>(<span class="dt">diary_days =</span> <span class="kw">n_nonmissing</span>(ended_diary)), <span class="dt">by =</span> <span class="st">&#39;session&#39;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb41-3"><a href="#cb41-3"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">reasons_for_exclusion =</span> <span class="kw">str_c</span>(reasons_for_exclusion,</span>
+<span id="cb41-4"><a href="#cb41-4"></a>                                            <span class="kw">if_else</span>(<span class="op">!</span><span class="kw">is.na</span>(ended_initial) <span class="op">&amp;</span><span class="st"> </span>diary_days <span class="op">==</span><span class="st"> </span><span class="dv">0</span>, <span class="st">&quot;didnt_do_diary, &quot;</span>, <span class="st">&quot;&quot;</span>, <span class="st">&quot;didnt_do_diary, &quot;</span>)</span>
+<span id="cb41-5"><a href="#cb41-5"></a>                                       )</span>
+<span id="cb41-6"><a href="#cb41-6"></a>  )</span></code></pre></div>
+<pre><code>## group_by: one grouping variable (session)</code></pre>
+<pre><code>## summarise: now 1,373 rows and 2 columns, ungrouped</code></pre>
+<pre><code>## left_join: added one column (diary_days)</code></pre>
+<pre><code>##            &gt; rows only in x     287</code></pre>
+<pre><code>##            &gt; rows only in y  (    0)</code></pre>
+<pre><code>##            &gt; matched rows     1,373</code></pre>
+<pre><code>##            &gt;                 =======</code></pre>
+<pre><code>##            &gt; rows total       1,660</code></pre>
+<pre><code>## mutate: changed 66 values (4%) of &#39;reasons_for_exclusion&#39; (0 new NA)</code></pre>
+<p>Fertility never estimable</p>
+<div class="sourceCode" id="cb51"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1"></a>all_surveys &lt;-<span class="st"> </span>all_surveys <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb51-2"><a href="#cb51-2"></a><span class="st">  </span><span class="kw">left_join</span>(diary <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">group_by</span>(session) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">summarise</span>(<span class="dt">fertility_days =</span> <span class="kw">n_nonmissing</span>(fertile_fab)), <span class="dt">by =</span> <span class="st">&#39;session&#39;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb51-3"><a href="#cb51-3"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">reasons_for_exclusion =</span> <span class="kw">str_c</span>(reasons_for_exclusion,</span>
+<span id="cb51-4"><a href="#cb51-4"></a>                                            <span class="kw">if_else</span>(menstruation_regular <span class="op">!=</span><span class="st"> </span><span class="dv">0</span>  <span class="op">&amp;</span><span class="st"> </span>diary_days <span class="op">&gt;</span><span class="st"> </span><span class="dv">0</span> <span class="op">&amp;</span><span class="st"> </span>fertility_days <span class="op">==</span><span class="st"> </span><span class="dv">0</span>, </span>
+<span id="cb51-5"><a href="#cb51-5"></a>                                                    <span class="st">&quot;fertility_never_estimable, &quot;</span>, <span class="st">&quot;&quot;</span>, <span class="st">&quot;&quot;</span>)</span>
+<span id="cb51-6"><a href="#cb51-6"></a>                                       )</span>
+<span id="cb51-7"><a href="#cb51-7"></a>  )</span></code></pre></div>
+<pre><code>## group_by: one grouping variable (session)</code></pre>
+<pre><code>## summarise: now 1,373 rows and 2 columns, ungrouped</code></pre>
+<pre><code>## left_join: added one column (fertility_days)</code></pre>
+<pre><code>##            &gt; rows only in x     287</code></pre>
+<pre><code>##            &gt; rows only in y  (    0)</code></pre>
+<pre><code>##            &gt; matched rows     1,373</code></pre>
+<pre><code>##            &gt;                 =======</code></pre>
+<pre><code>##            &gt; rows total       1,660</code></pre>
+<pre><code>## mutate: changed 143 values (9%) of &#39;reasons_for_exclusion&#39; (0 new NA)</code></pre>
+<div class="sourceCode" id="cb61"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1"></a>all_surveys &lt;-<span class="st"> </span>all_surveys <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">left_join</span>(usable_diary_days, <span class="dt">by =</span> <span class="st">&quot;session&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb61-2"><a href="#cb61-2"></a><span class="st">    </span><span class="kw">mutate</span>(<span class="dt">reasons_for_exclusion =</span> <span class="kw">str_c</span>(reasons_for_exclusion,</span>
+<span id="cb61-3"><a href="#cb61-3"></a>            <span class="kw">if_else</span>(menstruation_regular <span class="op">!=</span><span class="st"> </span><span class="dv">0</span>  <span class="op">&amp;</span><span class="st"> </span>diary_days <span class="op">&gt;</span><span class="st"> </span><span class="dv">0</span> <span class="op">&amp;</span><span class="st"> </span>fertility_days <span class="op">&gt;</span><span class="st"> </span><span class="dv">0</span> <span class="op">&amp;</span><span class="st"> </span><span class="op">!</span>usable_diary_days, <span class="st">&quot;diary_days_not_usable, &quot;</span>, <span class="st">&quot;&quot;</span>, <span class="st">&quot;&quot;</span>)</span>
+<span id="cb61-4"><a href="#cb61-4"></a>                                       )</span>
+<span id="cb61-5"><a href="#cb61-5"></a>  )</span></code></pre></div>
+<pre><code>## left_join: added one column (usable_diary_days)</code></pre>
+<pre><code>##            &gt; rows only in x     287</code></pre>
+<pre><code>##            &gt; rows only in y  (    0)</code></pre>
+<pre><code>##            &gt; matched rows     1,373</code></pre>
+<pre><code>##            &gt;                 =======</code></pre>
+<pre><code>##            &gt; rows total       1,660</code></pre>
+<pre><code>## mutate: changed 45 values (3%) of &#39;reasons_for_exclusion&#39; (0 new NA)</code></pre>
+<p>Women who are in monogamous heterosexual relationships</p>
+<div class="sourceCode" id="cb69"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1"></a>all_surveys &lt;-<span class="st"> </span>all_surveys <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb69-2"><a href="#cb69-2"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">reasons_for_exclusion =</span> <span class="kw">str_c</span>(reasons_for_exclusion,</span>
+<span id="cb69-3"><a href="#cb69-3"></a>                                            <span class="kw">if_else</span>(hetero_relationship <span class="op">==</span><span class="st"> </span><span class="dv">0</span> <span class="op">&amp;</span><span class="st"> </span>relationship_status <span class="op">!=</span><span class="st"> </span><span class="dv">1</span>, <span class="st">&quot;non_heterosexual_relationship, &quot;</span>, <span class="st">&quot;&quot;</span>, <span class="st">&quot;&quot;</span>)</span>
+<span id="cb69-4"><a href="#cb69-4"></a>                                       )</span>
+<span id="cb69-5"><a href="#cb69-5"></a>  )</span></code></pre></div>
+<pre><code>## mutate: changed 9 values (1%) of &#39;reasons_for_exclusion&#39; (0 new NA)</code></pre>
+</div>
+<div id="reasons-for-exclusion-1" class="section level2">
+<h2>Reasons for exclusion</h2>
+<p>How to read this plot: The horizontal green bars show for how many women this reason for exclusion applies. The blue bars show how many women are excluded for multiple reasons (e.g., they’re menopausal <em>and</em> not heterosexual). If reasons for exclusion necessarily depend on another (i.e. participants had to finish the first survey to get to the second), we counted only those who had not yet been excluded earlier. If reasons for exclusion depended on each other only stochastically (e.g., age and menopause), we did not do this.</p>
+<div class="sourceCode" id="cb71"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1"></a>testthat<span class="op">::</span><span class="kw">expect_equal</span>(all_surveys <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">group_by</span>(session) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">filter</span>(<span class="kw">n</span>() <span class="op">&gt;</span><span class="st"> </span><span class="dv">1</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">nrow</span>(),</span>
+<span id="cb71-2"><a href="#cb71-2"></a>                       <span class="dv">0</span>)</span></code></pre></div>
+<pre><code>## group_by: one grouping variable (session)</code></pre>
+<pre><code>## filter (grouped): removed all rows (100%)</code></pre>
+<div class="sourceCode" id="cb74"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb74-1"><a href="#cb74-1"></a><span class="kw">table</span>(all_surveys<span class="op">$</span>reasons_for_exclusion <span class="op">==</span><span class="st"> &quot;&quot;</span>, <span class="dt">exclude =</span> <span class="ot">NULL</span>)</span></code></pre></div>
+<pre><code>## 
+## FALSE  TRUE 
+##   788   872</code></pre>
+<div class="sourceCode" id="cb76"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb76-1"><a href="#cb76-1"></a><span class="kw">library</span>(UpSetR)</span>
+<span id="cb76-2"><a href="#cb76-2"></a>exclusion_reasons &lt;-<span class="st"> </span>all_surveys <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb76-3"><a href="#cb76-3"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">reasons_for_exclusion =</span> <span class="kw">str_sub</span>(reasons_for_exclusion, <span class="dv">1</span>, <span class="dv">-3</span>)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb76-4"><a href="#cb76-4"></a><span class="st">  </span><span class="kw">select</span>(session, reasons_for_exclusion) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb76-5"><a href="#cb76-5"></a><span class="st">  </span><span class="kw">comma_separated_to_columns</span>(reasons_for_exclusion) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb76-6"><a href="#cb76-6"></a><span class="st">  </span><span class="kw">select</span>(<span class="op">-</span>session)</span></code></pre></div>
+<pre><code>## mutate: changed 788 values (47%) of &#39;reasons_for_exclusion&#39; (0 new NA)</code></pre>
+<pre><code>## select: dropped 367 variables (created_demo, modified_demo, ended_demo, expired_demo, info_study, …)</code></pre>
+<pre><code>## mutate: changed 872 values (47%) of &#39;splitcol&#39; (0 new NA)</code></pre>
+<pre><code>## mutate: new variable &#39;value&#39; with one unique value and 0% NA</code></pre>
+<pre><code>## spread: reorganized (splitcol, value) into (breast_feeding, diary_days_not_usable, didnt_do_diary, didnt_finish_demographics, didnt_finish_personality, …) [was 1864x4, now 1660x17]</code></pre>
+<pre><code>## Note: Using an external vector in selections is ambiguous.
+## ℹ Use `all_of(colname)` instead of `colname` to silence this message.
+## ℹ See &lt;https://tidyselect.r-lib.org/reference/faq-external-vector.html&gt;.
+## This message is displayed once per session.</code></pre>
+<pre><code>## select: dropped one variable (reasons_for_exclusion)</code></pre>
+<pre><code>## select: dropped one variable (session)</code></pre>
+<div class="sourceCode" id="cb85"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb85-1"><a href="#cb85-1"></a>exclusion_reasons <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb85-2"><a href="#cb85-2"></a><span class="st">  </span><span class="kw">summarise_all</span>(sum) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">sort</span>() <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb85-3"><a href="#cb85-3"></a><span class="st">  </span><span class="kw">gather</span>(reason, n) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb85-4"><a href="#cb85-4"></a><span class="st">  </span><span class="kw">left_join</span>(all_surveys <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">mutate</span>(<span class="dt">reason =</span> <span class="kw">str_sub</span>(reasons_for_exclusion, <span class="dv">1</span>, <span class="dv">-3</span>)) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">group_by</span>(reason) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">summarise</span>(<span class="dt">unique =</span> <span class="kw">n</span>())) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb85-5"><a href="#cb85-5"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">unique =</span> <span class="kw">if_else</span>(<span class="kw">is.na</span>(unique), 0L, unique)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb85-6"><a href="#cb85-6"></a><span class="st">  </span>knitr<span class="op">::</span><span class="kw">kable</span>()</span></code></pre></div>
+<pre><code>## summarise_all: now one row and 15 columns, ungrouped</code></pre>
+<pre><code>## gather: reorganized (sex_hormones, non_heterosexual_relationship, switched_contraception, pregnant, not_heterosexual_female, …) into (reason, n) [was 1x15, now 15x2]</code></pre>
+<pre><code>## mutate: new variable &#39;reason&#39; with 57 unique values and 0% NA</code></pre>
+<pre><code>## group_by: one grouping variable (reason)</code></pre>
+<pre><code>## summarise: now 57 rows and 2 columns, ungrouped</code></pre>
+<pre><code>## Joining, by = &quot;reason&quot;</code></pre>
+<pre><code>## left_join: added one column (unique)</code></pre>
+<pre><code>##            &gt; rows only in x    3</code></pre>
+<pre><code>##            &gt; rows only in y  (45)</code></pre>
+<pre><code>##            &gt; matched rows     12</code></pre>
+<pre><code>##            &gt;                 ====</code></pre>
+<pre><code>##            &gt; rows total       15</code></pre>
+<pre><code>## mutate: changed 3 values (20%) of &#39;unique&#39; (3 fewer NA)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">reason</th>
+<th align="right">n</th>
+<th align="right">unique</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">sex_hormones</td>
+<td align="right">7</td>
+<td align="right">4</td>
+</tr>
+<tr class="even">
+<td align="left">non_heterosexual_relationship</td>
+<td align="right">9</td>
+<td align="right">4</td>
+</tr>
+<tr class="odd">
+<td align="left">switched_contraception</td>
+<td align="right">18</td>
+<td align="right">15</td>
+</tr>
+<tr class="even">
+<td align="left">pregnant</td>
+<td align="right">23</td>
+<td align="right">2</td>
+</tr>
+<tr class="odd">
+<td align="left">not_heterosexual_female</td>
+<td align="right">26</td>
+<td align="right">10</td>
+</tr>
+<tr class="even">
+<td align="left">breast_feeding</td>
+<td align="right">28</td>
+<td align="right">6</td>
+</tr>
+<tr class="odd">
+<td align="left">older_than_50</td>
+<td align="right">35</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">menopausal</td>
+<td align="right">41</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">diary_days_not_usable</td>
+<td align="right">45</td>
+<td align="right">43</td>
+</tr>
+<tr class="even">
+<td align="left">didnt_finish_demographics</td>
+<td align="right">53</td>
+<td align="right">45</td>
+</tr>
+<tr class="odd">
+<td align="left">didnt_do_diary</td>
+<td align="right">66</td>
+<td align="right">51</td>
+</tr>
+<tr class="even">
+<td align="left">fertility_never_estimable</td>
+<td align="right">143</td>
+<td align="right">134</td>
+</tr>
+<tr class="odd">
+<td align="left">didnt_finish_personality</td>
+<td align="right">196</td>
+<td align="right">141</td>
+</tr>
+<tr class="even">
+<td align="left">no_regular_menstruation</td>
+<td align="right">302</td>
+<td align="right">178</td>
+</tr>
+<tr class="odd">
+<td align="left">included</td>
+<td align="right">872</td>
+<td align="right">0</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode" id="cb99"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb99-1"><a href="#cb99-1"></a>exclusion_reasons <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb99-2"><a href="#cb99-2"></a><span class="st">  </span><span class="kw">filter</span>(included <span class="op">==</span><span class="st"> </span><span class="dv">0</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb99-3"><a href="#cb99-3"></a><span class="st">  </span><span class="kw">select</span>(<span class="op">-</span>included) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb99-4"><a href="#cb99-4"></a><span class="st">  </span><span class="kw">as.data.frame</span>() <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb99-5"><a href="#cb99-5"></a><span class="st">  </span>{</span>
+<span id="cb99-6"><a href="#cb99-6"></a>  <span class="kw">upset</span>(., <span class="kw">ncol</span>(.), <span class="dv">20</span>, <span class="dt">show.numbers =</span> <span class="ot">TRUE</span>, <span class="dt">order.by =</span> <span class="st">&quot;freq&quot;</span>,</span>
+<span id="cb99-7"><a href="#cb99-7"></a>      <span class="dt">main.bar.color =</span> <span class="st">&quot;#6E8691&quot;</span>,</span>
+<span id="cb99-8"><a href="#cb99-8"></a>      <span class="dt">matrix.color =</span> <span class="st">&quot;#6E8691&quot;</span>,</span>
+<span id="cb99-9"><a href="#cb99-9"></a>      <span class="dt">sets.bar.color =</span> <span class="st">&quot;#53AC9B&quot;</span>)</span>
+<span id="cb99-10"><a href="#cb99-10"></a>  }</span></code></pre></div>
+<pre><code>## filter: removed 872 rows (53%), 788 rows remaining</code></pre>
+<pre><code>## select: dropped one variable (included)</code></pre>
+<p><img src="1_exclusion_files/figure-html/unnamed-chunk-26-1.png" width="864" /></p>
+<div id="by-contraception" class="section level3">
+<h3>By contraception</h3>
+<div class="sourceCode" id="cb102"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb102-1"><a href="#cb102-1"></a><span class="kw">library</span>(UpSetR)</span>
+<span id="cb102-2"><a href="#cb102-2"></a>exclusion_reasons_hc &lt;-<span class="st"> </span>all_surveys <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb102-3"><a href="#cb102-3"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">reasons_for_exclusion =</span> <span class="kw">str_sub</span>(reasons_for_exclusion, <span class="dv">1</span>, <span class="dv">-3</span>)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb102-4"><a href="#cb102-4"></a><span class="st">  </span><span class="kw">select</span>(session, hormonal_contraception, reasons_for_exclusion) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb102-5"><a href="#cb102-5"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">hormonal_contraception =</span> <span class="kw">if_else</span>(hormonal_contraception, <span class="dv">1</span>, <span class="dv">0</span>)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb102-6"><a href="#cb102-6"></a><span class="st">  </span><span class="kw">comma_separated_to_columns</span>(reasons_for_exclusion) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb102-7"><a href="#cb102-7"></a><span class="st">  </span><span class="co"># filter(included == 0) %&gt;%</span></span>
+<span id="cb102-8"><a href="#cb102-8"></a><span class="st">  </span><span class="kw">select</span>(<span class="op">-</span>session)</span></code></pre></div>
+<pre><code>## mutate: changed 788 values (47%) of &#39;reasons_for_exclusion&#39; (0 new NA)</code></pre>
+<pre><code>## select: dropped 366 variables (created_demo, modified_demo, ended_demo, expired_demo, info_study, …)</code></pre>
+<pre><code>## mutate: converted &#39;hormonal_contraception&#39; from logical to double (0 new NA)</code></pre>
+<pre><code>## mutate: changed 872 values (47%) of &#39;splitcol&#39; (0 new NA)</code></pre>
+<pre><code>## mutate: new variable &#39;value&#39; with one unique value and 0% NA</code></pre>
+<pre><code>## spread: reorganized (splitcol, value) into (breast_feeding, diary_days_not_usable, didnt_do_diary, didnt_finish_demographics, didnt_finish_personality, …) [was 1864x5, now 1660x18]</code></pre>
+<pre><code>## select: dropped one variable (reasons_for_exclusion)</code></pre>
+<pre><code>## select: dropped one variable (session)</code></pre>
+<div class="sourceCode" id="cb111"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb111-1"><a href="#cb111-1"></a>exclusion_reasons_hc <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">group_by</span>(hormonal_contraception) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb111-2"><a href="#cb111-2"></a><span class="st">  </span><span class="kw">summarise_all</span>(sum) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">gather</span>(reason, n, <span class="op">-</span>hormonal_contraception) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb111-3"><a href="#cb111-3"></a><span class="st">  </span><span class="kw">spread</span>(hormonal_contraception, n) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb111-4"><a href="#cb111-4"></a><span class="st">  </span><span class="kw">arrange</span>(<span class="st">`</span><span class="dt">0</span><span class="st">`</span>) <span class="op">%&gt;%</span><span class="st"> </span>knitr<span class="op">::</span><span class="kw">kable</span>()</span></code></pre></div>
+<pre><code>## group_by: one grouping variable (hormonal_contraception)</code></pre>
+<pre><code>## summarise_all: now 2 rows and 16 columns, ungrouped</code></pre>
+<pre><code>## gather: reorganized (breast_feeding, diary_days_not_usable, didnt_do_diary, didnt_finish_demographics, didnt_finish_personality, …) into (reason, n) [was 2x16, now 30x3]</code></pre>
+<pre><code>## spread: reorganized (hormonal_contraception, n) into (0, 1) [was 30x3, now 15x3]</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">reason</th>
+<th align="right">0</th>
+<th align="right">1</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">non_heterosexual_relationship</td>
+<td align="right">5</td>
+<td align="right">4</td>
+</tr>
+<tr class="even">
+<td align="left">sex_hormones</td>
+<td align="right">6</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="left">switched_contraception</td>
+<td align="right">8</td>
+<td align="right">10</td>
+</tr>
+<tr class="even">
+<td align="left">not_heterosexual_female</td>
+<td align="right">19</td>
+<td align="right">7</td>
+</tr>
+<tr class="odd">
+<td align="left">diary_days_not_usable</td>
+<td align="right">20</td>
+<td align="right">25</td>
+</tr>
+<tr class="even">
+<td align="left">pregnant</td>
+<td align="right">23</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">breast_feeding</td>
+<td align="right">27</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="left">older_than_50</td>
+<td align="right">34</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="left">didnt_do_diary</td>
+<td align="right">38</td>
+<td align="right">28</td>
+</tr>
+<tr class="even">
+<td align="left">menopausal</td>
+<td align="right">40</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="left">didnt_finish_demographics</td>
+<td align="right">47</td>
+<td align="right">6</td>
+</tr>
+<tr class="even">
+<td align="left">didnt_finish_personality</td>
+<td align="right">66</td>
+<td align="right">130</td>
+</tr>
+<tr class="odd">
+<td align="left">fertility_never_estimable</td>
+<td align="right">67</td>
+<td align="right">76</td>
+</tr>
+<tr class="even">
+<td align="left">no_regular_menstruation</td>
+<td align="right">162</td>
+<td align="right">140</td>
+</tr>
+<tr class="odd">
+<td align="left">included</td>
+<td align="right">580</td>
+<td align="right">292</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode" id="cb116"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb116-1"><a href="#cb116-1"></a>exclusion_reasons_hc <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb116-2"><a href="#cb116-2"></a><span class="st">  </span><span class="kw">as.data.frame</span>() <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb116-3"><a href="#cb116-3"></a><span class="st">  </span>{</span>
+<span id="cb116-4"><a href="#cb116-4"></a>  <span class="kw">upset</span>(., <span class="kw">ncol</span>(.), <span class="dv">20</span>, <span class="dt">show.numbers =</span> <span class="ot">TRUE</span>, <span class="dt">order.by =</span> <span class="st">&quot;freq&quot;</span>,</span>
+<span id="cb116-5"><a href="#cb116-5"></a>      <span class="dt">main.bar.color =</span> <span class="st">&quot;#6E8691&quot;</span>,</span>
+<span id="cb116-6"><a href="#cb116-6"></a>      <span class="dt">matrix.color =</span> <span class="st">&quot;#6E8691&quot;</span>,</span>
+<span id="cb116-7"><a href="#cb116-7"></a>      <span class="dt">sets.bar.color =</span> <span class="st">&quot;#53AC9B&quot;</span>)</span>
+<span id="cb116-8"><a href="#cb116-8"></a>  }</span></code></pre></div>
+<p><img src="1_exclusion_files/figure-html/unnamed-chunk-27-1.png" width="864" /></p>
+</div>
+</div>
+<div id="in-the-diary" class="section level2">
+<h2>In the diary</h2>
+<div class="sourceCode" id="cb117"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb117-1"><a href="#cb117-1"></a>diary &lt;-<span class="st"> </span>diary <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">left_join</span>(all_surveys <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">select</span>(session, reasons_for_exclusion), <span class="dt">by =</span> <span class="st">&#39;session&#39;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb117-2"><a href="#cb117-2"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">reasons_for_exclusion =</span> <span class="kw">str_c</span>(reasons_for_exclusion, reasons_for_exclusion_diary))</span></code></pre></div>
+<pre><code>## select: dropped 367 variables (created_demo, modified_demo, ended_demo, expired_demo, info_study, …)</code></pre>
+<pre><code>## left_join: added one column (reasons_for_exclusion)</code></pre>
+<pre><code>##            &gt; rows only in x        0</code></pre>
+<pre><code>##            &gt; rows only in y  (   287)</code></pre>
+<pre><code>##            &gt; matched rows     77,364</code></pre>
+<pre><code>##            &gt;                 ========</code></pre>
+<pre><code>##            &gt; rows total       77,364</code></pre>
+<pre><code>## mutate: changed 27,531 values (36%) of &#39;reasons_for_exclusion&#39; (0 new NA)</code></pre>
+<div class="sourceCode" id="cb126"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb126-1"><a href="#cb126-1"></a><span class="kw">library</span>(UpSetR)</span>
+<span id="cb126-2"><a href="#cb126-2"></a>exclusion_reasons_diary &lt;-<span class="st"> </span>diary <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb126-3"><a href="#cb126-3"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">reasons_for_exclusion =</span> <span class="kw">str_sub</span>(reasons_for_exclusion, <span class="dv">1</span>, <span class="dv">-3</span>)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb126-4"><a href="#cb126-4"></a><span class="st">  </span><span class="kw">select</span>(session, created_date, reasons_for_exclusion) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb126-5"><a href="#cb126-5"></a><span class="st">  </span><span class="kw">drop_na</span>(session, created_date) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb126-6"><a href="#cb126-6"></a><span class="st">  </span><span class="kw">comma_separated_to_columns</span>(reasons_for_exclusion) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb126-7"><a href="#cb126-7"></a><span class="st">  </span><span class="kw">select</span>( <span class="op">-</span>created_date)</span></code></pre></div>
+<pre><code>## mutate: changed 39,110 values (51%) of &#39;reasons_for_exclusion&#39; (0 new NA)</code></pre>
+<pre><code>## select: dropped 787 variables (person, short, created_diary, modified_diary, ended_diary, …)</code></pre>
+<pre><code>## drop_na: no rows removed</code></pre>
+<pre><code>## mutate: changed 38,254 values (39%) of &#39;splitcol&#39; (0 new NA)</code></pre>
+<pre><code>## mutate: new variable &#39;value&#39; with one unique value and 0% NA</code></pre>
+<pre><code>## spread: reorganized (splitcol, value) into (breast_feeding, cycle_longer_than_40, cycle_shorter_than_20, diary_days_not_usable, did_not_finish_entry, …) [was 97954x5, now 77364x22]</code></pre>
+<pre><code>## select: dropped one variable (reasons_for_exclusion)</code></pre>
+<pre><code>## select: dropped one variable (created_date)</code></pre>
+<div class="sourceCode" id="cb135"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb135-1"><a href="#cb135-1"></a>exclusion_reasons_diary <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb135-2"><a href="#cb135-2"></a><span class="st">  </span><span class="kw">select</span>(<span class="op">-</span>session) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb135-3"><a href="#cb135-3"></a><span class="st">  </span><span class="kw">summarise_all</span>(sum) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb135-4"><a href="#cb135-4"></a><span class="st">  </span><span class="kw">sort</span>() <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb135-5"><a href="#cb135-5"></a><span class="st">  </span><span class="kw">gather</span>(reason, n) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb135-6"><a href="#cb135-6"></a><span class="st">  </span><span class="kw">left_join</span>(diary <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">mutate</span>(<span class="dt">reason =</span> <span class="kw">str_sub</span>(reasons_for_exclusion, <span class="dv">1</span>, <span class="dv">-3</span>)) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">group_by</span>(reason) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">summarise</span>(<span class="dt">unique =</span> <span class="kw">n</span>())) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb135-7"><a href="#cb135-7"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">unique =</span> <span class="kw">if_else</span>(<span class="kw">is.na</span>(unique), 0L, unique)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb135-8"><a href="#cb135-8"></a><span class="st">  </span><span class="kw">left_join</span>(exclusion_reasons_diary <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb135-9"><a href="#cb135-9"></a><span class="st">  </span><span class="kw">gather</span>(reason, n, <span class="op">-</span>session) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb135-10"><a href="#cb135-10"></a><span class="st">  </span><span class="kw">filter</span>(n <span class="op">&gt;</span><span class="st"> </span><span class="dv">0</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb135-11"><a href="#cb135-11"></a><span class="st">  </span><span class="kw">distinct</span>(session, reason, n) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb135-12"><a href="#cb135-12"></a><span class="st">  </span><span class="kw">group_by</span>(reason) <span class="op">%&gt;%</span></span>
+<span id="cb135-13"><a href="#cb135-13"></a><span class="st">  </span><span class="kw">summarise</span>(<span class="dt">n_women =</span> <span class="kw">sum</span>(n))) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb135-14"><a href="#cb135-14"></a><span class="st">  </span>knitr<span class="op">::</span><span class="kw">kable</span>()</span></code></pre></div>
+<pre><code>## select: dropped one variable (session)</code></pre>
+<pre><code>## summarise_all: now one row and 19 columns, ungrouped</code></pre>
+<pre><code>## gather: reorganized (dishonest_answer, didnt_do_diary, non_heterosexual_relationship, sex_hormones, did_not_finish_entry, …) into (reason, n) [was 1x19, now 19x2]</code></pre>
+<pre><code>## mutate: new variable &#39;reason&#39; with 181 unique values and 0% NA</code></pre>
+<pre><code>## group_by: one grouping variable (reason)</code></pre>
+<pre><code>## summarise: now 181 rows and 2 columns, ungrouped</code></pre>
+<pre><code>## Joining, by = &quot;reason&quot;</code></pre>
+<pre><code>## left_join: added one column (unique)</code></pre>
+<pre><code>##            &gt; rows only in x     6</code></pre>
+<pre><code>##            &gt; rows only in y  (168)</code></pre>
+<pre><code>##            &gt; matched rows      13</code></pre>
+<pre><code>##            &gt;                 =====</code></pre>
+<pre><code>##            &gt; rows total        19</code></pre>
+<pre><code>## mutate: changed 6 values (32%) of &#39;unique&#39; (6 fewer NA)</code></pre>
+<pre><code>## gather: reorganized (breast_feeding, cycle_longer_than_40, cycle_shorter_than_20, diary_days_not_usable, did_not_finish_entry, …) into (reason, n) [was 77364x20, now 1469916x3]</code></pre>
+<pre><code>## filter: removed 1,371,962 rows (93%), 97,954 rows remaining</code></pre>
+<pre><code>## distinct: removed 93,686 rows (96%), 4,268 rows remaining</code></pre>
+<pre><code>## group_by: one grouping variable (reason)</code></pre>
+<pre><code>## summarise: now 19 rows and 2 columns, ungrouped</code></pre>
+<pre><code>## Joining, by = &quot;reason&quot;</code></pre>
+<pre><code>## left_join: added one column (n_women)</code></pre>
+<pre><code>##            &gt; rows only in x    0</code></pre>
+<pre><code>##            &gt; rows only in y  ( 0)</code></pre>
+<pre><code>##            &gt; matched rows     19</code></pre>
+<pre><code>##            &gt;                 ====</code></pre>
+<pre><code>##            &gt; rows total       19</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">reason</th>
+<th align="right">n</th>
+<th align="right">unique</th>
+<th align="right">n_women</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">dishonest_answer</td>
+<td align="right">150</td>
+<td align="right">120</td>
+<td align="right">86</td>
+</tr>
+<tr class="even">
+<td align="left">didnt_do_diary</td>
+<td align="right">187</td>
+<td align="right">0</td>
+<td align="right">28</td>
+</tr>
+<tr class="odd">
+<td align="left">non_heterosexual_relationship</td>
+<td align="right">338</td>
+<td align="right">135</td>
+<td align="right">8</td>
+</tr>
+<tr class="even">
+<td align="left">sex_hormones</td>
+<td align="right">442</td>
+<td align="right">181</td>
+<td align="right">7</td>
+</tr>
+<tr class="odd">
+<td align="left">did_not_finish_entry</td>
+<td align="right">856</td>
+<td align="right">392</td>
+<td align="right">542</td>
+</tr>
+<tr class="even">
+<td align="left">not_heterosexual_female</td>
+<td align="right">896</td>
+<td align="right">362</td>
+<td align="right">16</td>
+</tr>
+<tr class="odd">
+<td align="left">pregnant</td>
+<td align="right">1047</td>
+<td align="right">89</td>
+<td align="right">19</td>
+</tr>
+<tr class="even">
+<td align="left">breast_feeding</td>
+<td align="right">1137</td>
+<td align="right">267</td>
+<td align="right">22</td>
+</tr>
+<tr class="odd">
+<td align="left">switched_contraception</td>
+<td align="right">1178</td>
+<td align="right">540</td>
+<td align="right">18</td>
+</tr>
+<tr class="even">
+<td align="left">older_than_50</td>
+<td align="right">1560</td>
+<td align="right">0</td>
+<td align="right">28</td>
+</tr>
+<tr class="odd">
+<td align="left">menopausal</td>
+<td align="right">2166</td>
+<td align="right">0</td>
+<td align="right">39</td>
+</tr>
+<tr class="even">
+<td align="left">diary_days_not_usable</td>
+<td align="right">2361</td>
+<td align="right">0</td>
+<td align="right">45</td>
+</tr>
+<tr class="odd">
+<td align="left">fertility_never_estimable</td>
+<td align="right">2527</td>
+<td align="right">0</td>
+<td align="right">143</td>
+</tr>
+<tr class="even">
+<td align="left">next_menstrual_onset_unobserved</td>
+<td align="right">4100</td>
+<td align="right">2065</td>
+<td align="right">207</td>
+</tr>
+<tr class="odd">
+<td align="left">cycle_shorter_than_20</td>
+<td align="right">4736</td>
+<td align="right">3162</td>
+<td align="right">476</td>
+</tr>
+<tr class="even">
+<td align="left">cycle_longer_than_40</td>
+<td align="right">7461</td>
+<td align="right">2704</td>
+<td align="right">222</td>
+</tr>
+<tr class="odd">
+<td align="left">no_regular_menstruation</td>
+<td align="right">13237</td>
+<td align="right">6893</td>
+<td align="right">245</td>
+</tr>
+<tr class="even">
+<td align="left">skipped_diary_entry</td>
+<td align="right">15321</td>
+<td align="right">6823</td>
+<td align="right">1245</td>
+</tr>
+<tr class="odd">
+<td align="left">included</td>
+<td align="right">38254</td>
+<td align="right">0</td>
+<td align="right">872</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode" id="cb162"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb162-1"><a href="#cb162-1"></a>exclusion_reasons_diary <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb162-2"><a href="#cb162-2"></a><span class="st">  </span><span class="kw">filter</span>(included <span class="op">==</span><span class="st"> </span><span class="dv">0</span>) <span class="op">%&gt;%</span></span>
+<span id="cb162-3"><a href="#cb162-3"></a><span class="st">  </span><span class="kw">select</span>(<span class="op">-</span>session, <span class="op">-</span>included, <span class="op">-</span>didnt_do_diary) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb162-4"><a href="#cb162-4"></a><span class="st">  </span><span class="kw">as.data.frame</span>() <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb162-5"><a href="#cb162-5"></a><span class="st">  </span>{</span>
+<span id="cb162-6"><a href="#cb162-6"></a>  <span class="kw">upset</span>(., <span class="kw">ncol</span>(.), <span class="dv">20</span>, <span class="dt">show.numbers =</span> <span class="ot">TRUE</span>, <span class="dt">order.by =</span> <span class="st">&quot;freq&quot;</span>,</span>
+<span id="cb162-7"><a href="#cb162-7"></a>      <span class="dt">main.bar.color =</span> <span class="st">&quot;#6E8691&quot;</span>,</span>
+<span id="cb162-8"><a href="#cb162-8"></a>      <span class="dt">matrix.color =</span> <span class="st">&quot;#6E8691&quot;</span>,</span>
+<span id="cb162-9"><a href="#cb162-9"></a>      <span class="dt">sets.bar.color =</span> <span class="st">&quot;#53AC9B&quot;</span>)</span>
+<span id="cb162-10"><a href="#cb162-10"></a>  }</span></code></pre></div>
+<pre><code>## filter: removed 38,254 rows (49%), 39,110 rows remaining</code></pre>
+<pre><code>## select: dropped 3 variables (session, didnt_do_diary, included)</code></pre>
+<p><img src="1_exclusion_files/figure-html/unnamed-chunk-29-1.png" width="864" /></p>
+<div class="sourceCode" id="cb165"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb165-1"><a href="#cb165-1"></a>included &lt;-<span class="st"> </span>diary <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">filter</span>(reasons_for_exclusion <span class="op">==</span><span class="st"> &quot;&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">distinct</span>(session)</span></code></pre></div>
+<pre><code>## filter: removed 39,110 rows (51%), 38,254 rows remaining</code></pre>
+<pre><code>## distinct: removed 37,382 rows (98%), 872 rows remaining</code></pre>
+<div class="sourceCode" id="cb168"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb168-1"><a href="#cb168-1"></a>testthat<span class="op">::</span><span class="kw">expect_equal</span>(</span>
+<span id="cb168-2"><a href="#cb168-2"></a>  all_surveys <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">filter</span>(reasons_for_exclusion <span class="op">==</span><span class="st"> &quot;&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">nrow</span>(), </span>
+<span id="cb168-3"><a href="#cb168-3"></a>  <span class="kw">nrow</span>(included)</span>
+<span id="cb168-4"><a href="#cb168-4"></a>)</span></code></pre></div>
+<pre><code>## filter: removed 788 rows (47%), 872 rows remaining</code></pre>
+</div>
+</div>
+<div id="sanity-checks" class="section level1">
+<h1>Sanity Checks</h1>
+<div class="sourceCode" id="cb170"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb170-1"><a href="#cb170-1"></a><span class="kw">library</span>(testthat)</span>
+<span id="cb170-2"><a href="#cb170-2"></a><span class="kw">expect_equal</span>(<span class="kw">nrow</span>(diary), diary_length)</span>
+<span id="cb170-3"><a href="#cb170-3"></a><span class="kw">expect_equal</span>(<span class="kw">nrow</span>(all_surveys), all_survey_length)</span>
+<span id="cb170-4"><a href="#cb170-4"></a><span class="kw">expect_equal</span>(<span class="kw">nrow</span>(diary_social), diary_social_length)</span>
+<span id="cb170-5"><a href="#cb170-5"></a><span class="kw">expect_false</span>(<span class="kw">any</span>(<span class="kw">names</span>(diary) <span class="op">%contains%</span><span class="st"> &quot;.x&quot;</span>))</span>
+<span id="cb170-6"><a href="#cb170-6"></a><span class="kw">expect_false</span>(<span class="kw">any</span>(<span class="kw">names</span>(diary) <span class="op">%contains%</span><span class="st"> &quot;.y&quot;</span>))</span>
+<span id="cb170-7"><a href="#cb170-7"></a><span class="kw">expect_false</span>(<span class="kw">any</span>(<span class="kw">names</span>(all_surveys) <span class="op">%contains%</span><span class="st"> &quot;.y&quot;</span>))</span>
+<span id="cb170-8"><a href="#cb170-8"></a><span class="kw">expect_equal</span>(<span class="kw">groups</span>(s3_daily), <span class="kw">list</span>())</span>
+<span id="cb170-9"><a href="#cb170-9"></a><span class="kw">expect_equal</span>(<span class="kw">groups</span>(diary), <span class="kw">list</span>())</span>
+<span id="cb170-10"><a href="#cb170-10"></a><span class="kw">expect_equal</span>(<span class="kw">groups</span>(all_surveys), <span class="kw">list</span>())</span>
+<span id="cb170-11"><a href="#cb170-11"></a><span class="kw">expect_equal</span>(<span class="kw">sum</span>(<span class="kw">duplicated</span>(all_surveys<span class="op">$</span>session)), <span class="dv">0</span>)</span>
+<span id="cb170-12"><a href="#cb170-12"></a><span class="kw">expect_equal</span>(<span class="kw">sum</span>(<span class="kw">duplicated</span>(s1_demo<span class="op">$</span>session)), <span class="dv">0</span>)</span>
+<span id="cb170-13"><a href="#cb170-13"></a><span class="kw">expect_equal</span>(diary <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">drop_na</span>(session, day_number) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb170-14"><a href="#cb170-14"></a><span class="st">               </span><span class="kw">group_by</span>(short, day_number) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">filter</span>(<span class="kw">n</span>() <span class="op">&gt;</span><span class="st"> </span><span class="dv">1</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">nrow</span>(), <span class="dv">0</span>)</span></code></pre></div>
+<pre><code>## drop_na: no rows removed</code></pre>
+<pre><code>## group_by: 2 grouping variables (short, day_number)</code></pre>
+<pre><code>## filter (grouped): removed all rows (100%)</code></pre>
+<div class="sourceCode" id="cb174"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb174-1"><a href="#cb174-1"></a><span class="kw">expect_equal</span>(diary <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">drop_na</span>(session, created_diary) <span class="op">%&gt;%</span><span class="st">  </span></span>
+<span id="cb174-2"><a href="#cb174-2"></a><span class="st">            </span><span class="kw">group_by</span>(session, created_diary) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">filter</span>(<span class="kw">n</span>()<span class="op">&gt;</span><span class="dv">1</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">nrow</span>(), <span class="dv">0</span>)</span></code></pre></div>
+<pre><code>## drop_na: removed 14,698 rows (19%), 62,666 rows remaining</code></pre>
+<pre><code>## group_by: 2 grouping variables (session, created_diary)</code></pre>
+<pre><code>## filter (grouped): removed all rows (100%)</code></pre>
+<div class="sourceCode" id="cb178"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb178-1"><a href="#cb178-1"></a><span class="kw">expect_equal</span>(s3_daily <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">drop_na</span>(session, created_date) <span class="op">%&gt;%</span><span class="st">  </span></span>
+<span id="cb178-2"><a href="#cb178-2"></a><span class="st">            </span><span class="kw">group_by</span>(session, created_date) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">filter</span>(<span class="kw">n</span>()<span class="op">&gt;</span><span class="dv">1</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">nrow</span>(), <span class="dv">0</span>)</span></code></pre></div>
+<pre><code>## drop_na: no rows removed</code></pre>
+<pre><code>## group_by: 2 grouping variables (session, created_date)</code></pre>
+<pre><code>## filter (grouped): removed all rows (100%)</code></pre>
+<div class="sourceCode" id="cb182"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb182-1"><a href="#cb182-1"></a><span class="kw">expect_equal</span>(diary <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">drop_na</span>(session, created_date) <span class="op">%&gt;%</span><span class="st">  </span></span>
+<span id="cb182-2"><a href="#cb182-2"></a><span class="st">            </span><span class="kw">group_by</span>(session, created_date) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">filter</span>(<span class="kw">n</span>()<span class="op">&gt;</span><span class="dv">1</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">nrow</span>(), <span class="dv">0</span>)</span></code></pre></div>
+<pre><code>## drop_na: no rows removed</code></pre>
+<pre><code>## group_by: 2 grouping variables (session, created_date)</code></pre>
+<pre><code>## filter (grouped): removed all rows (100%)</code></pre>
+<div class="sourceCode" id="cb186"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb186-1"><a href="#cb186-1"></a><span class="kw">expect_equal</span>(diary_social <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">drop_na</span>(session, created_diary, person) <span class="op">%&gt;%</span><span class="st">  </span></span>
+<span id="cb186-2"><a href="#cb186-2"></a><span class="st">            </span><span class="kw">group_by</span>(session, created_diary, person) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">filter</span>(<span class="kw">n</span>() <span class="op">&gt;</span><span class="st"> </span><span class="dv">1</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">nrow</span>(), <span class="dv">0</span>)</span></code></pre></div>
+<pre><code>## drop_na: removed 47,466 rows (48%), 50,666 rows remaining</code></pre>
+<pre><code>## group_by: 3 grouping variables (session, created_diary, person)</code></pre>
+<pre><code>## filter (grouped): removed all rows (100%)</code></pre>
+<div class="sourceCode" id="cb190"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb190-1"><a href="#cb190-1"></a><span class="kw">expect_equal</span>(network <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">drop_na</span>(session, person) <span class="op">%&gt;%</span><span class="st">  </span></span>
+<span id="cb190-2"><a href="#cb190-2"></a><span class="st">            </span><span class="kw">group_by</span>(session, person) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">filter</span>(<span class="kw">n</span>()<span class="op">&gt;</span><span class="dv">1</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">nrow</span>(), <span class="dv">0</span>)</span></code></pre></div>
+<pre><code>## drop_na: no rows removed</code></pre>
+<pre><code>## group_by: 2 grouping variables (session, person)</code></pre>
+<pre><code>## filter (grouped): removed all rows (100%)</code></pre>
+</div>
+<div id="save" class="section level1">
+<h1>Save</h1>
+<div class="sourceCode" id="cb194"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb194-1"><a href="#cb194-1"></a><span class="kw">save</span>(diary_social, diary, sex_long, network_nominations, network, s1_demo, s1_filter, s2_initial, s3_daily, s4_followup, s4_timespent, withfollowup, all_surveys, <span class="dt">file =</span> <span class="st">&quot;data/cleaned_selected.rdata&quot;</span>)</span></code></pre></div>
+</div>
+
+<div id="rmd-source-code">IyBSZWFzb25zIGZvciBFeGNsdXNpb24gCgpgYGB7cn0Kc291cmNlKCIwX2hlbHBlcnMuUiIpCmxpYnJhcnkodGlkeWxvZykKbG9hZCgiZGF0YS9jbGVhbmVkLnJkYXRhIikKCmxpYnJhcnkoa25pdHIpCm9wdHNfY2h1bmskc2V0KGZpZy53aWR0aCA9IDksIGZpZy5oZWlnaHQgPSA3LCBjYWNoZSA9IFQsIHdhcm5pbmcgPSBULCBtZXNzYWdlID0gVCwgY2FjaGUgPSBGLCBlcnJvciA9IEZBTFNFKQoKY29tbWFfc2VwYXJhdGVkX3RvX2NvbHVtbnMgPC0gZnVuY3Rpb24oZGYsIGNvbCkgewogIGNvbG5hbWUgPC0gZGVwYXJzZShzdWJzdGl0dXRlKGNvbCkpCiAgZGYkc3BsaXRjb2wgPC0gZGYgJT4lIHB1bGwoY29sbmFtZSkKICBzZXBhcmF0ZV9yb3dzKGRmLCBzcGxpdGNvbCwgY29udmVydCA9IFRSVUUsIHNlcCA9ICIsICIpICU+JSAKICAgIG11dGF0ZShzcGxpdGNvbCA9IGlmX2Vsc2UoaXMubmEoc3BsaXRjb2wpLCAibm8iLCAKICAgICAgICAgICAgICAgICAgICAgICAgaWZfZWxzZShzcGxpdGNvbCA9PSAiIiB8IAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgc3BsaXRjb2wgJWluJSBjKCksICJpbmNsdWRlZCIsIGFzLmNoYXJhY3RlcihzcGxpdGNvbCkpKSkgJT4lIAogICAgbXV0YXRlKCNzcGxpdGNvbCA9IHN0cmluZ3I6OnN0cl9jKGNvbG5hbWUsICJfIiwgc3BsaXRjb2wpLCAKICAgICAgICAgICB2YWx1ZSA9IDEpICU+JSAKICAgIHNwcmVhZChzcGxpdGNvbCwgdmFsdWUsIGZpbGwgPSAwKSAlPiUgCiAgICBzZWxlY3QoLWNvbG5hbWUpCn0KCmFsbF9zdXJ2ZXlfbGVuZ3RoIDwtIG5yb3coYWxsX3N1cnZleXMpCmRpYXJ5X2xlbmd0aCA8LSBucm93KGRpYXJ5KQpkaWFyeV9zb2NpYWxfbGVuZ3RoIDwtIG5yb3coZGlhcnlfc29jaWFsKQpgYGAKCmBgYHtyfQpkaWFyeSRyZWFzb25zX2Zvcl9leGNsdXNpb25fZGlhcnkgPC0gIiIKYGBgCgoKTGFiIHBhcnRpY2lwYW50cyB0aGF0IGRpZCBub3QgZG8gdGhlIG9ubGluZSBkaWFyeSAobm90IG1lcmdlZCkKCmBgYHtyfQpkaWFyeSA8LSBkaWFyeSAlPiUgCiAgbXV0YXRlKHJlYXNvbnNfZm9yX2V4Y2x1c2lvbl9kaWFyeSA9IHN0cl9jKHJlYXNvbnNfZm9yX2V4Y2x1c2lvbl9kaWFyeSwKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBpZl9lbHNlKGlzLm5hKHNlc3Npb24pLCAibGFiX29ubHksICIsICIiLCAiIikKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgKQogICkKYGBgCgpEaXNjbG9zZWQgdGhhdCB0aGV5IHJlc3BvbmRlZCBkaXNob25lc3RseSBvbiB0aGF0IGRheS4KCmBgYHtyfQpkaWFyeSA8LSBkaWFyeSAlPiUgCiAgbXV0YXRlKHJlYXNvbnNfZm9yX2V4Y2x1c2lvbl9kaWFyeSA9IHN0cl9jKHJlYXNvbnNfZm9yX2V4Y2x1c2lvbl9kaWFyeSwKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBpZl9lbHNlKGRpc2hvbmVzdF9kaXNjYXJkID09IDEsICJkaXNob25lc3RfYW5zd2VyLCAiLCAiIiwgIiIpCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICkKICApCmBgYAoKRGlkIG5vdCBmaW5pc2ggZGlhcnkgZW50cnkuCgpgYGB7cn0KZGlhcnkgPC0gZGlhcnkgJT4lIAogIG11dGF0ZShyZWFzb25zX2Zvcl9leGNsdXNpb25fZGlhcnkgPSBzdHJfYyhyZWFzb25zX2Zvcl9leGNsdXNpb25fZGlhcnksCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgaWZfZWxzZShpcy5uYShlbmRlZF9kaWFyeSkgJiAhaXMubmEobW9kaWZpZWRfZGlhcnkpLCAiZGlkX25vdF9maW5pc2hfZW50cnksICIsICIiLCAiIikKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgKQogICkKYGBgCgoKQ3ljbGUgc2hvcnRlciB0aGFuIDIwIGRheXMuCmBgYHtyfQpkaWFyeSA8LSBkaWFyeSAlPiUgCiAgbXV0YXRlKHJlYXNvbnNfZm9yX2V4Y2x1c2lvbl9kaWFyeSA9IHN0cl9jKHJlYXNvbnNfZm9yX2V4Y2x1c2lvbl9kaWFyeSwKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBpZl9lbHNlKGNvYWxlc2NlKG1pbmltdW1fY3ljbGVfbGVuZ3RoX2RpYXJ5LCBhcy5udW1lcmljKG1lbnN0cnVhdGlvbl9sZW5ndGgpKSA8IDIwLCAiY3ljbGVfc2hvcnRlcl90aGFuXzIwLCAiLCAiIiwgIiIpCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICkKICApCmBgYAoKQ3ljbGUgbG9uZ2VyIHRoYW4gNDAgZGF5cy4KYGBge3J9CmRpYXJ5IDwtIGRpYXJ5ICU+JSAKICBtdXRhdGUocmVhc29uc19mb3JfZXhjbHVzaW9uX2RpYXJ5ID0gc3RyX2MocmVhc29uc19mb3JfZXhjbHVzaW9uX2RpYXJ5LAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGlmX2Vsc2UoY29hbGVzY2UobWluaW11bV9jeWNsZV9sZW5ndGhfZGlhcnksIGFzLm51bWVyaWMobWVuc3RydWF0aW9uX2xlbmd0aCkpID4gNDAsICJjeWNsZV9sb25nZXJfdGhhbl80MCwgIiwgIiIsICIiKQogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICApCiAgKQpgYGAKCk5leHQgbWVuc3RydWFsIG9uc2V0IG5vdCBvYnNlcnZlZAoKYGBge3J9CmRpYXJ5IDwtIGRpYXJ5ICU+JSAKICBtdXRhdGUocmVhc29uc19mb3JfZXhjbHVzaW9uX2RpYXJ5ID0gc3RyX2MocmVhc29uc19mb3JfZXhjbHVzaW9uX2RpYXJ5LAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGlmX2Vsc2UoCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBtZW5zdHJ1YXRpb25fcmVndWxhciA9PSAxICYKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGNvYWxlc2NlKG1pbmltdW1fY3ljbGVfbGVuZ3RoX2RpYXJ5LCBhcy5udW1lcmljKG1lbnN0cnVhdGlvbl9sZW5ndGgpKSA8PSA0MCAmCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBjb2FsZXNjZShtaW5pbXVtX2N5Y2xlX2xlbmd0aF9kaWFyeSwgYXMubnVtZXJpYyhtZW5zdHJ1YXRpb25fbGVuZ3RoKSkgPj0gMjAgJgogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgaXMubmEoZmVydGlsZV9mYWIpLCAibmV4dF9tZW5zdHJ1YWxfb25zZXRfdW5vYnNlcnZlZCwgIiwgIiIsICIiKQogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICApCiAgKQpgYGAKCgpTa2lwcGVkIHRoaXMgZGlhcnkgZGF5IChkYXlzIGFmdGVyIGRyb3BwaW5nIG91dCBub3QgaW5jbHVkZWQpCmBgYHtyfQpkaWFyeSA8LSBkaWFyeSAlPiUgCiAgbXV0YXRlKHJlYXNvbnNfZm9yX2V4Y2x1c2lvbl9kaWFyeSA9IHN0cl9jKHJlYXNvbnNfZm9yX2V4Y2x1c2lvbl9kaWFyeSwKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBpZl9lbHNlKGlzLm5hKGVuZGVkX2RpYXJ5KSAmIGlzLm5hKG1vZGlmaWVkX2RpYXJ5KSwgInNraXBwZWRfZGlhcnlfZW50cnksICIsICIiKQogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICApCiAgKQpgYGAKCmBgYHtyfQp1c2FibGVfZGlhcnlfZGF5cyA8LSBkaWFyeSAlPiUgZ3JvdXBfYnkoc2Vzc2lvbikgJT4lIAogIHN1bW1hcmlzZSh1c2FibGVfZGlhcnlfZGF5cyA9IGFueShyZWFzb25zX2Zvcl9leGNsdXNpb25fZGlhcnkgPT0gIiIpKQpgYGAKCgoKIyMgV2hvIGNvbXBsZXRlZCB3aGF0PwoKV2UgY3JlYXRlIGEgY2hhcmFjdGVyIHZhcmlhYmxlIGByZWFzb25zX2Zvcl9leGNsdXNpb25gLiBXZSB3aWxsIGNvbmNhdGVuYXRlIChhYmJyZXZpYXRlZCkKcmVhc29ucyBmb3IgZXhjbHVzaW9uIGluIHRoaXMgdmFyaWFibGUuCgpgYGB7cn0KYWxsX3N1cnZleXMkcmVhc29uc19mb3JfZXhjbHVzaW9uIDwtICIiCmBgYAoKCkRpZCBub3QgZmluaXNoIGRlbW9ncmFwaGljcyBzdXJ2ZXkKYGBge3J9CmFsbF9zdXJ2ZXlzIDwtIGFsbF9zdXJ2ZXlzICU+JSAKICBtdXRhdGUocmVhc29uc19mb3JfZXhjbHVzaW9uID0gc3RyX2MocmVhc29uc19mb3JfZXhjbHVzaW9uLAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGlmX2Vsc2UoaXMubmEoZW5kZWRfZGVtbyksICJkaWRudF9maW5pc2hfZGVtb2dyYXBoaWNzLCAiLCAiIikKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgKQogICkKYGBgCgoKUmVwb3J0ZWQgbm8gcmVndWxhciBtZW5zdHJ1YXRpb24KYGBge3J9CmFsbF9zdXJ2ZXlzIDwtIGFsbF9zdXJ2ZXlzICU+JSAKICBtdXRhdGUocmVhc29uc19mb3JfZXhjbHVzaW9uID0gc3RyX2MocmVhc29uc19mb3JfZXhjbHVzaW9uLAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGlmX2Vsc2UobWVuc3RydWF0aW9uX3JlZ3VsYXIgPT0gMCwgIm5vX3JlZ3VsYXJfbWVuc3RydWF0aW9uLCAiLCAiIiwgIiIpCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICkKICApCmBgYAoKCk1lbm9wYXVzYWwgb3IgaW4gY2xpbWFjdGVyaWMgcGVyaW9kCmBgYHtyfQphbGxfc3VydmV5cyA8LSBhbGxfc3VydmV5cyAlPiUgCiAgbXV0YXRlKHJlYXNvbnNfZm9yX2V4Y2x1c2lvbiA9IHN0cl9jKHJlYXNvbnNfZm9yX2V4Y2x1c2lvbiwKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBpZl9lbHNlKG1lbm9wYXVzZV95ZXMgPT0gMSB8IG1lbm9wYXVzZV95ZXMgPT0gMiwgIm1lbm9wYXVzYWwsICIsICIiLCAiIikKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgKQogICkKYGBgCgpPbGRlciB0aGFuIDUwCmBgYHtyfQphbGxfc3VydmV5cyA8LSBhbGxfc3VydmV5cyAlPiUgCiAgbXV0YXRlKHJlYXNvbnNfZm9yX2V4Y2x1c2lvbiA9IHN0cl9jKHJlYXNvbnNfZm9yX2V4Y2x1c2lvbiwKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBpZl9lbHNlKGFnZSA+PSA1MCwgIm9sZGVyX3RoYW5fNTAsICIsICIiLCAiIikKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgKQogICkKYGBgCgpQcmVnbmFudApgYGB7cn0KYWxsX3N1cnZleXMgPC0gYWxsX3N1cnZleXMgJT4lIAogIG11dGF0ZShyZWFzb25zX2Zvcl9leGNsdXNpb24gPSBzdHJfYyhyZWFzb25zX2Zvcl9leGNsdXNpb24sCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgaWZfZWxzZShwcmVnbmFudCA9PSAxLCAicHJlZ25hbnQsICIsICIiLCAiIikKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgKQogICkKYGBgCgpCcmVhc3QtZmVlZGluZwpgYGB7cn0KYWxsX3N1cnZleXMgPC0gYWxsX3N1cnZleXMgJT4lIAogIG11dGF0ZShyZWFzb25zX2Zvcl9leGNsdXNpb24gPSBzdHJfYyhyZWFzb25zX2Zvcl9leGNsdXNpb24sCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgaWZfZWxzZShicmVhc3RfZmVlZGluZyA9PSAxLCAiYnJlYXN0X2ZlZWRpbmcsICIsICIiLCAiIikKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgKQogICkKYGBgCgoKTm90IHByaW1hcmlseSBoZXRlcm9zZXh1YWwuIFRoaXMgZXhjbHVkZXMgd29tZW4gd2hvIHJlcG9ydGVkIGJlaW5nIGVxdWFsbHkgaW50ZXJlc3RlZCBpbiBtZW4gYW5kIHdvbWVuLCB3b21lbiB3aG8gcmVwb3J0ZWQgYmVpbmcgYXNleHVhbCBvciBhcm9tYW50aWMsIGFuZCBwYXJ0aWNpcGFudHMgd2hvIGRpZCBub3QgaWRlbnRpZnkgYXMgZmVtYWxlIGdlbmRlci4KYGBge3J9CmFsbF9zdXJ2ZXlzIDwtIGFsbF9zdXJ2ZXlzICU+JSAKICBtdXRhdGUocmVhc29uc19mb3JfZXhjbHVzaW9uID0gc3RyX2MocmVhc29uc19mb3JfZXhjbHVzaW9uLAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGlmX2Vsc2Uoc2V4X29yaWVudGF0aW9uID49IDQgfCBnZW5kZXIgIT0gMSwgIm5vdF9oZXRlcm9zZXh1YWxfZmVtYWxlLCAiLCAiIiwgIiIpCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICkKICApCmBgYAoKRGlkIG5vdCBmaW5pc2ggcGVyc29uYWxpdHkgc3VydmV5CmBgYHtyfQphbGxfc3VydmV5cyA8LSBhbGxfc3VydmV5cyAlPiUgCiAgbXV0YXRlKHJlYXNvbnNfZm9yX2V4Y2x1c2lvbiA9IHN0cl9jKHJlYXNvbnNfZm9yX2V4Y2x1c2lvbiwKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBpZl9lbHNlKCFpcy5uYShlbmRlZF9kZW1vKSAmIGlzLm5hKGVuZGVkX2luaXRpYWwpLCAiZGlkbnRfZmluaXNoX3BlcnNvbmFsaXR5LCAiLCAiIikKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgKQogICkKYGBgCgpDaGFuZ2VkIGNvbnRyYWNlcHRpb24KYGBge3J9CmFsbF9zdXJ2ZXlzIDwtIGFsbF9zdXJ2ZXlzICU+JSAKICBtdXRhdGUocmVhc29uc19mb3JfZXhjbHVzaW9uID0gc3RyX2MocmVhc29uc19mb3JfZXhjbHVzaW9uLAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGlmX2Vsc2UoY2hhbmdlX3RvX25vbmhvcm1vbmFsICE9IDAgfCBjaGFuZ2VfdG9faG9ybW9uYWxfY29udHJhY2VwdGlvbiAhPSAwLCAic3dpdGNoZWRfY29udHJhY2VwdGlvbiwgIiwgIiIsICIiKQogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICApCiAgKQoKYGBgCgoKVGFraW5nIHNleCBob3Jtb25lcyAob3RoZXIgdGhhbiB0aGUgcGlsbCkKYGBge3J9CmFsbF9zdXJ2ZXlzIDwtIGFsbF9zdXJ2ZXlzICU+JSAKICBtdXRhdGUocmVhc29uc19mb3JfZXhjbHVzaW9uID0gc3RyX2MocmVhc29uc19mb3JfZXhjbHVzaW9uLAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGlmX2Vsc2UobWVkaWNhdGlvbl9uYW1lICVjb250YWlucyUgIkN5Y2xvcHJvZ25vdmEiIHwKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgbWVkaWNhdGlvbl9uYW1lICVjb250YWlucyUgIkN5cHJvZGVybSIgfAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgbWVkaWNhdGlvbl9uYW1lICVjb250YWlucyUgIkRIRUEiIHwKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIG1lZGljYXRpb25fbmFtZSAlY29udGFpbnMlICJIb3Jtb25lIiB8CiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBtZWRpY2F0aW9uX25hbWUgJWNvbnRhaW5zJSAiQ3ljbG8tUHJvZ3lub3ZhIiB8CiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBtZWRpY2F0aW9uX25hbWUgJWNvbnRhaW5zJSAiRmVtb3N0b24iIHwKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIG1lZGljYXRpb25fbmFtZSAlY29udGFpbnMlICJHeW5va2FkaW4iLCAic2V4X2hvcm1vbmVzLCAiLCAiIiwgIiIpCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICkKICApCgpgYGAKCk5vIGRpYXJ5IGRheXMKYGBge3J9CmFsbF9zdXJ2ZXlzIDwtIGFsbF9zdXJ2ZXlzICU+JSAKICBsZWZ0X2pvaW4oZGlhcnkgJT4lIGdyb3VwX2J5KHNlc3Npb24pICU+JSBzdW1tYXJpc2UoZGlhcnlfZGF5cyA9IG5fbm9ubWlzc2luZyhlbmRlZF9kaWFyeSkpLCBieSA9ICdzZXNzaW9uJykgJT4lIAogIG11dGF0ZShyZWFzb25zX2Zvcl9leGNsdXNpb24gPSBzdHJfYyhyZWFzb25zX2Zvcl9leGNsdXNpb24sCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgaWZfZWxzZSghaXMubmEoZW5kZWRfaW5pdGlhbCkgJiBkaWFyeV9kYXlzID09IDAsICJkaWRudF9kb19kaWFyeSwgIiwgIiIsICJkaWRudF9kb19kaWFyeSwgIikKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgKQogICkKYGBgCgpGZXJ0aWxpdHkgbmV2ZXIgZXN0aW1hYmxlCmBgYHtyfQphbGxfc3VydmV5cyA8LSBhbGxfc3VydmV5cyAlPiUgCiAgbGVmdF9qb2luKGRpYXJ5ICU+JSBncm91cF9ieShzZXNzaW9uKSAlPiUgc3VtbWFyaXNlKGZlcnRpbGl0eV9kYXlzID0gbl9ub25taXNzaW5nKGZlcnRpbGVfZmFiKSksIGJ5ID0gJ3Nlc3Npb24nKSAlPiUgCiAgbXV0YXRlKHJlYXNvbnNfZm9yX2V4Y2x1c2lvbiA9IHN0cl9jKHJlYXNvbnNfZm9yX2V4Y2x1c2lvbiwKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBpZl9lbHNlKG1lbnN0cnVhdGlvbl9yZWd1bGFyICE9IDAgICYgZGlhcnlfZGF5cyA+IDAgJiBmZXJ0aWxpdHlfZGF5cyA9PSAwLCAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICJmZXJ0aWxpdHlfbmV2ZXJfZXN0aW1hYmxlLCAiLCAiIiwgIiIpCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICkKICApCmBgYAoKCmBgYHtyfQphbGxfc3VydmV5cyA8LSBhbGxfc3VydmV5cyAlPiUgbGVmdF9qb2luKHVzYWJsZV9kaWFyeV9kYXlzLCBieSA9ICJzZXNzaW9uIikgJT4lIAogICAgbXV0YXRlKHJlYXNvbnNfZm9yX2V4Y2x1c2lvbiA9IHN0cl9jKHJlYXNvbnNfZm9yX2V4Y2x1c2lvbiwKICAgICAgICAgICAgaWZfZWxzZShtZW5zdHJ1YXRpb25fcmVndWxhciAhPSAwICAmIGRpYXJ5X2RheXMgPiAwICYgZmVydGlsaXR5X2RheXMgPiAwICYgIXVzYWJsZV9kaWFyeV9kYXlzLCAiZGlhcnlfZGF5c19ub3RfdXNhYmxlLCAiLCAiIiwgIiIpCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICkKICApCmBgYAoKV29tZW4gd2hvIGFyZSBpbiBtb25vZ2Ftb3VzIGhldGVyb3NleHVhbCByZWxhdGlvbnNoaXBzCmBgYHtyfQphbGxfc3VydmV5cyA8LSBhbGxfc3VydmV5cyAlPiUgCiAgbXV0YXRlKHJlYXNvbnNfZm9yX2V4Y2x1c2lvbiA9IHN0cl9jKHJlYXNvbnNfZm9yX2V4Y2x1c2lvbiwKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBpZl9lbHNlKGhldGVyb19yZWxhdGlvbnNoaXAgPT0gMCAmIHJlbGF0aW9uc2hpcF9zdGF0dXMgIT0gMSwgIm5vbl9oZXRlcm9zZXh1YWxfcmVsYXRpb25zaGlwLCAiLCAiIiwgIiIpCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICkKICApCmBgYAoKIyMgUmVhc29ucyBmb3IgZXhjbHVzaW9uCgpIb3cgdG8gcmVhZCB0aGlzIHBsb3Q6IFRoZSBob3Jpem9udGFsIGdyZWVuIGJhcnMgc2hvdyBmb3IgaG93IG1hbnkgd29tZW4gdGhpcyByZWFzb24gZm9yCmV4Y2x1c2lvbiBhcHBsaWVzLiBUaGUgYmx1ZSBiYXJzIHNob3cgaG93IG1hbnkgd29tZW4gYXJlIGV4Y2x1ZGVkIGZvciBtdWx0aXBsZSByZWFzb25zIChlLmcuLAp0aGV5J3JlIG1lbm9wYXVzYWwgX2FuZF8gbm90IGhldGVyb3NleHVhbCkuIElmIHJlYXNvbnMgZm9yIGV4Y2x1c2lvbiBuZWNlc3NhcmlseSBkZXBlbmQgb24KYW5vdGhlciAoaS5lLiBwYXJ0aWNpcGFudHMgaGFkIHRvIGZpbmlzaCB0aGUgZmlyc3Qgc3VydmV5IHRvIGdldCB0byB0aGUgc2Vjb25kKSwgd2UgY291bnRlZApvbmx5IHRob3NlIHdobyBoYWQgbm90IHlldCBiZWVuIGV4Y2x1ZGVkIGVhcmxpZXIuIElmIHJlYXNvbnMgZm9yIGV4Y2x1c2lvbiBkZXBlbmRlZCBvbiBlYWNoCm90aGVyIG9ubHkgc3RvY2hhc3RpY2FsbHkgKGUuZy4sIGFnZSBhbmQgbWVub3BhdXNlKSwgd2UgZGlkIG5vdCBkbyB0aGlzLgoKYGBge3J9CnRlc3R0aGF0OjpleHBlY3RfZXF1YWwoYWxsX3N1cnZleXMgJT4lIGdyb3VwX2J5KHNlc3Npb24pICU+JSBmaWx0ZXIobigpID4gMSkgJT4lIG5yb3coKSwKICAgICAgICAgICAgICAgICAgICAgICAwKQp0YWJsZShhbGxfc3VydmV5cyRyZWFzb25zX2Zvcl9leGNsdXNpb24gPT0gIiIsIGV4Y2x1ZGUgPSBOVUxMKQoKbGlicmFyeShVcFNldFIpCmV4Y2x1c2lvbl9yZWFzb25zIDwtIGFsbF9zdXJ2ZXlzICU+JSAKICBtdXRhdGUocmVhc29uc19mb3JfZXhjbHVzaW9uID0gc3RyX3N1YihyZWFzb25zX2Zvcl9leGNsdXNpb24sIDEsIC0zKSkgJT4lIAogIHNlbGVjdChzZXNzaW9uLCByZWFzb25zX2Zvcl9leGNsdXNpb24pICU+JSAKICBjb21tYV9zZXBhcmF0ZWRfdG9fY29sdW1ucyhyZWFzb25zX2Zvcl9leGNsdXNpb24pICU+JSAKICBzZWxlY3QoLXNlc3Npb24pCgpleGNsdXNpb25fcmVhc29ucyAlPiUgCiAgc3VtbWFyaXNlX2FsbChzdW0pICU+JSBzb3J0KCkgJT4lIAogIGdhdGhlcihyZWFzb24sIG4pICU+JSAKICBsZWZ0X2pvaW4oYWxsX3N1cnZleXMgJT4lIG11dGF0ZShyZWFzb24gPSBzdHJfc3ViKHJlYXNvbnNfZm9yX2V4Y2x1c2lvbiwgMSwgLTMpKSAlPiUgZ3JvdXBfYnkocmVhc29uKSAlPiUgc3VtbWFyaXNlKHVuaXF1ZSA9IG4oKSkpICU+JSAKICBtdXRhdGUodW5pcXVlID0gaWZfZWxzZShpcy5uYSh1bmlxdWUpLCAwTCwgdW5pcXVlKSkgJT4lIAogIGtuaXRyOjprYWJsZSgpCgpleGNsdXNpb25fcmVhc29ucyAlPiUgCiAgZmlsdGVyKGluY2x1ZGVkID09IDApICU+JSAKICBzZWxlY3QoLWluY2x1ZGVkKSAlPiUgCiAgYXMuZGF0YS5mcmFtZSgpICU+JSAKICB7CiAgdXBzZXQoLiwgbmNvbCguKSwgMjAsIHNob3cubnVtYmVycyA9IFRSVUUsIG9yZGVyLmJ5ID0gImZyZXEiLAogICAgICBtYWluLmJhci5jb2xvciA9ICIjNkU4NjkxIiwKICAgICAgbWF0cml4LmNvbG9yID0gIiM2RTg2OTEiLAogICAgICBzZXRzLmJhci5jb2xvciA9ICIjNTNBQzlCIikKICB9CmBgYAoKIyMjIEJ5IGNvbnRyYWNlcHRpb24KYGBge3J9CmxpYnJhcnkoVXBTZXRSKQpleGNsdXNpb25fcmVhc29uc19oYyA8LSBhbGxfc3VydmV5cyAlPiUgCiAgbXV0YXRlKHJlYXNvbnNfZm9yX2V4Y2x1c2lvbiA9IHN0cl9zdWIocmVhc29uc19mb3JfZXhjbHVzaW9uLCAxLCAtMykpICU+JSAKICBzZWxlY3Qoc2Vzc2lvbiwgaG9ybW9uYWxfY29udHJhY2VwdGlvbiwgcmVhc29uc19mb3JfZXhjbHVzaW9uKSAlPiUgCiAgbXV0YXRlKGhvcm1vbmFsX2NvbnRyYWNlcHRpb24gPSBpZl9lbHNlKGhvcm1vbmFsX2NvbnRyYWNlcHRpb24sIDEsIDApKSAlPiUgCiAgY29tbWFfc2VwYXJhdGVkX3RvX2NvbHVtbnMocmVhc29uc19mb3JfZXhjbHVzaW9uKSAlPiUgCiAgIyBmaWx0ZXIoaW5jbHVkZWQgPT0gMCkgJT4lCiAgc2VsZWN0KC1zZXNzaW9uKQoKZXhjbHVzaW9uX3JlYXNvbnNfaGMgJT4lIGdyb3VwX2J5KGhvcm1vbmFsX2NvbnRyYWNlcHRpb24pICU+JSAKICBzdW1tYXJpc2VfYWxsKHN1bSkgJT4lIGdhdGhlcihyZWFzb24sIG4sIC1ob3Jtb25hbF9jb250cmFjZXB0aW9uKSAlPiUgCiAgc3ByZWFkKGhvcm1vbmFsX2NvbnRyYWNlcHRpb24sIG4pICU+JSAKICBhcnJhbmdlKGAwYCkgJT4lIGtuaXRyOjprYWJsZSgpCgpleGNsdXNpb25fcmVhc29uc19oYyAlPiUgCiAgYXMuZGF0YS5mcmFtZSgpICU+JSAKICB7CiAgdXBzZXQoLiwgbmNvbCguKSwgMjAsIHNob3cubnVtYmVycyA9IFRSVUUsIG9yZGVyLmJ5ID0gImZyZXEiLAogICAgICBtYWluLmJhci5jb2xvciA9ICIjNkU4NjkxIiwKICAgICAgbWF0cml4LmNvbG9yID0gIiM2RTg2OTEiLAogICAgICBzZXRzLmJhci5jb2xvciA9ICIjNTNBQzlCIikKICB9CmBgYAoKCiMjIEluIHRoZSBkaWFyeQpgYGB7cn0KZGlhcnkgPC0gZGlhcnkgJT4lIGxlZnRfam9pbihhbGxfc3VydmV5cyAlPiUgc2VsZWN0KHNlc3Npb24sIHJlYXNvbnNfZm9yX2V4Y2x1c2lvbiksIGJ5ID0gJ3Nlc3Npb24nKSAlPiUgCiAgbXV0YXRlKHJlYXNvbnNfZm9yX2V4Y2x1c2lvbiA9IHN0cl9jKHJlYXNvbnNfZm9yX2V4Y2x1c2lvbiwgcmVhc29uc19mb3JfZXhjbHVzaW9uX2RpYXJ5KSkKYGBgCgpgYGB7cn0KbGlicmFyeShVcFNldFIpCmV4Y2x1c2lvbl9yZWFzb25zX2RpYXJ5IDwtIGRpYXJ5ICU+JSAKICBtdXRhdGUocmVhc29uc19mb3JfZXhjbHVzaW9uID0gc3RyX3N1YihyZWFzb25zX2Zvcl9leGNsdXNpb24sIDEsIC0zKSkgJT4lIAogIHNlbGVjdChzZXNzaW9uLCBjcmVhdGVkX2RhdGUsIHJlYXNvbnNfZm9yX2V4Y2x1c2lvbikgJT4lIAogIGRyb3BfbmEoc2Vzc2lvbiwgY3JlYXRlZF9kYXRlKSAlPiUgCiAgY29tbWFfc2VwYXJhdGVkX3RvX2NvbHVtbnMocmVhc29uc19mb3JfZXhjbHVzaW9uKSAlPiUgCiAgc2VsZWN0KCAtY3JlYXRlZF9kYXRlKQoKZXhjbHVzaW9uX3JlYXNvbnNfZGlhcnkgJT4lIAogIHNlbGVjdCgtc2Vzc2lvbikgJT4lIAogIHN1bW1hcmlzZV9hbGwoc3VtKSAlPiUgCiAgc29ydCgpICU+JSAKICBnYXRoZXIocmVhc29uLCBuKSAlPiUgCiAgbGVmdF9qb2luKGRpYXJ5ICU+JSBtdXRhdGUocmVhc29uID0gc3RyX3N1YihyZWFzb25zX2Zvcl9leGNsdXNpb24sIDEsIC0zKSkgJT4lIGdyb3VwX2J5KHJlYXNvbikgJT4lIHN1bW1hcmlzZSh1bmlxdWUgPSBuKCkpKSAlPiUgCiAgbXV0YXRlKHVuaXF1ZSA9IGlmX2Vsc2UoaXMubmEodW5pcXVlKSwgMEwsIHVuaXF1ZSkpICU+JSAKICBsZWZ0X2pvaW4oZXhjbHVzaW9uX3JlYXNvbnNfZGlhcnkgJT4lIAogIGdhdGhlcihyZWFzb24sIG4sIC1zZXNzaW9uKSAlPiUgCiAgZmlsdGVyKG4gPiAwKSAlPiUgCiAgZGlzdGluY3Qoc2Vzc2lvbiwgcmVhc29uLCBuKSAlPiUgCiAgZ3JvdXBfYnkocmVhc29uKSAlPiUKICBzdW1tYXJpc2Uobl93b21lbiA9IHN1bShuKSkpICU+JSAKICBrbml0cjo6a2FibGUoKQoKCmV4Y2x1c2lvbl9yZWFzb25zX2RpYXJ5ICU+JSAKICBmaWx0ZXIoaW5jbHVkZWQgPT0gMCkgJT4lCiAgc2VsZWN0KC1zZXNzaW9uLCAtaW5jbHVkZWQsIC1kaWRudF9kb19kaWFyeSkgJT4lIAogIGFzLmRhdGEuZnJhbWUoKSAlPiUgCiAgewogIHVwc2V0KC4sIG5jb2woLiksIDIwLCBzaG93Lm51bWJlcnMgPSBUUlVFLCBvcmRlci5ieSA9ICJmcmVxIiwKICAgICAgbWFpbi5iYXIuY29sb3IgPSAiIzZFODY5MSIsCiAgICAgIG1hdHJpeC5jb2xvciA9ICIjNkU4NjkxIiwKICAgICAgc2V0cy5iYXIuY29sb3IgPSAiIzUzQUM5QiIpCiAgfQoKaW5jbHVkZWQgPC0gZGlhcnkgJT4lIGZpbHRlcihyZWFzb25zX2Zvcl9leGNsdXNpb24gPT0gIiIpICU+JSBkaXN0aW5jdChzZXNzaW9uKQoKdGVzdHRoYXQ6OmV4cGVjdF9lcXVhbCgKICBhbGxfc3VydmV5cyAlPiUgZmlsdGVyKHJlYXNvbnNfZm9yX2V4Y2x1c2lvbiA9PSAiIikgJT4lIG5yb3coKSwgCiAgbnJvdyhpbmNsdWRlZCkKKQpgYGAKCgojIFNhbml0eSBDaGVja3MKYGBge3J9CmxpYnJhcnkodGVzdHRoYXQpCmV4cGVjdF9lcXVhbChucm93KGRpYXJ5KSwgZGlhcnlfbGVuZ3RoKQpleHBlY3RfZXF1YWwobnJvdyhhbGxfc3VydmV5cyksIGFsbF9zdXJ2ZXlfbGVuZ3RoKQpleHBlY3RfZXF1YWwobnJvdyhkaWFyeV9zb2NpYWwpLCBkaWFyeV9zb2NpYWxfbGVuZ3RoKQpleHBlY3RfZmFsc2UoYW55KG5hbWVzKGRpYXJ5KSAlY29udGFpbnMlICIueCIpKQpleHBlY3RfZmFsc2UoYW55KG5hbWVzKGRpYXJ5KSAlY29udGFpbnMlICIueSIpKQpleHBlY3RfZmFsc2UoYW55KG5hbWVzKGFsbF9zdXJ2ZXlzKSAlY29udGFpbnMlICIueSIpKQpleHBlY3RfZXF1YWwoZ3JvdXBzKHMzX2RhaWx5KSwgbGlzdCgpKQpleHBlY3RfZXF1YWwoZ3JvdXBzKGRpYXJ5KSwgbGlzdCgpKQpleHBlY3RfZXF1YWwoZ3JvdXBzKGFsbF9zdXJ2ZXlzKSwgbGlzdCgpKQpleHBlY3RfZXF1YWwoc3VtKGR1cGxpY2F0ZWQoYWxsX3N1cnZleXMkc2Vzc2lvbikpLCAwKQpleHBlY3RfZXF1YWwoc3VtKGR1cGxpY2F0ZWQoczFfZGVtbyRzZXNzaW9uKSksIDApCmV4cGVjdF9lcXVhbChkaWFyeSAlPiUgZHJvcF9uYShzZXNzaW9uLCBkYXlfbnVtYmVyKSAlPiUgCiAgICAgICAgICAgICAgIGdyb3VwX2J5KHNob3J0LCBkYXlfbnVtYmVyKSAlPiUgZmlsdGVyKG4oKSA+IDEpICU+JSBucm93KCksIDApCmV4cGVjdF9lcXVhbChkaWFyeSAlPiUgZHJvcF9uYShzZXNzaW9uLCBjcmVhdGVkX2RpYXJ5KSAlPiUgIAogICAgICAgICAgICBncm91cF9ieShzZXNzaW9uLCBjcmVhdGVkX2RpYXJ5KSAlPiUgZmlsdGVyKG4oKT4xKSAlPiUgbnJvdygpLCAwKQpleHBlY3RfZXF1YWwoczNfZGFpbHkgJT4lIGRyb3BfbmEoc2Vzc2lvbiwgY3JlYXRlZF9kYXRlKSAlPiUgIAogICAgICAgICAgICBncm91cF9ieShzZXNzaW9uLCBjcmVhdGVkX2RhdGUpICU+JSBmaWx0ZXIobigpPjEpICU+JSBucm93KCksIDApCmV4cGVjdF9lcXVhbChkaWFyeSAlPiUgZHJvcF9uYShzZXNzaW9uLCBjcmVhdGVkX2RhdGUpICU+JSAgCiAgICAgICAgICAgIGdyb3VwX2J5KHNlc3Npb24sIGNyZWF0ZWRfZGF0ZSkgJT4lIGZpbHRlcihuKCk+MSkgJT4lIG5yb3coKSwgMCkKZXhwZWN0X2VxdWFsKGRpYXJ5X3NvY2lhbCAlPiUgZHJvcF9uYShzZXNzaW9uLCBjcmVhdGVkX2RpYXJ5LCBwZXJzb24pICU+JSAgCiAgICAgICAgICAgIGdyb3VwX2J5KHNlc3Npb24sIGNyZWF0ZWRfZGlhcnksIHBlcnNvbikgJT4lIGZpbHRlcihuKCkgPiAxKSAlPiUgbnJvdygpLCAwKQpleHBlY3RfZXF1YWwobmV0d29yayAlPiUgZHJvcF9uYShzZXNzaW9uLCBwZXJzb24pICU+JSAgCiAgICAgICAgICAgIGdyb3VwX2J5KHNlc3Npb24sIHBlcnNvbikgJT4lIGZpbHRlcihuKCk+MSkgJT4lIG5yb3coKSwgMCkKYGBgIAoKCiMgU2F2ZQpgYGB7cn0Kc2F2ZShkaWFyeV9zb2NpYWwsIGRpYXJ5LCBzZXhfbG9uZywgbmV0d29ya19ub21pbmF0aW9ucywgbmV0d29yaywgczFfZGVtbywgczFfZmlsdGVyLCBzMl9pbml0aWFsLCBzM19kYWlseSwgczRfZm9sbG93dXAsIHM0X3RpbWVzcGVudCwgd2l0aGZvbGxvd3VwLCBhbGxfc3VydmV5cywgZmlsZSA9ICJkYXRhL2NsZWFuZWRfc2VsZWN0ZWQucmRhdGEiKQpgYGAgCgoK</div>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeSourceEmbed("1_exclusion.Rmd");
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

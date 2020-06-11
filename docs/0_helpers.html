@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>0_helpers.utf8</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/paper.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<script src="site_libs/navigation-1.1/sourceembed.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css" data-origin="pandoc">
+code.sourceCode > span { display: inline-block; line-height: 1.25; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  { color: #cccccc; background-color: #303030; }
+@media screen {
+code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ffcfaf; } /* Alert */
+code span.an { color: #7f9f7f; font-weight: bold; } /* Annotation */
+code span.at { } /* Attribute */
+code span.bn { color: #dca3a3; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #f0dfaf; } /* ControlFlow */
+code span.ch { color: #dca3a3; } /* Char */
+code span.cn { color: #dca3a3; font-weight: bold; } /* Constant */
+code span.co { color: #7f9f7f; } /* Comment */
+code span.cv { color: #7f9f7f; font-weight: bold; } /* CommentVar */
+code span.do { color: #7f9f7f; } /* Documentation */
+code span.dt { color: #dfdfbf; } /* DataType */
+code span.dv { color: #dcdccc; } /* DecVal */
+code span.er { color: #c3bf9f; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #c0bed1; } /* Float */
+code span.fu { color: #efef8f; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #7f9f7f; font-weight: bold; } /* Information */
+code span.kw { color: #f0dfaf; } /* Keyword */
+code span.op { color: #f0efd0; } /* Operator */
+code span.ot { color: #efef8f; } /* Other */
+code span.pp { color: #ffcfaf; font-weight: bold; } /* Preprocessor */
+code span.sc { color: #dca3a3; } /* SpecialChar */
+code span.ss { color: #cc9393; } /* SpecialString */
+code span.st { color: #cc9393; } /* String */
+code span.va { } /* Variable */
+code span.vs { color: #cc9393; } /* VerbatimString */
+code span.wa { color: #7f9f7f; font-weight: bold; } /* Warning */
+
+.sourceCode .row {
+  width: 100%;
+}
+.sourceCode {
+  overflow-x: auto;
+}
+.code-folding-btn {
+  margin-right: -30px;
+}
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+#rmd-source-code {
+  display: none;
+}
+</style>
+
+<link rel="stylesheet" href="styles.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 64px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h2 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h3 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h4 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h5 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.section h6 {
+  padding-top: 69px;
+  margin-top: -69px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">GOCD2</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Overview</a>
+</li>
+<li>
+  <a href="0_import_data.html">Import data</a>
+</li>
+<li>
+  <a href="0_wrangle_data.html">Wrangle data</a>
+</li>
+<li>
+  <a href="1_exclusion.html">Exclusion criteria</a>
+</li>
+<li>
+  <a href="1_descriptives.html">Descriptives</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/rubenarslan/gocd2">
+    <span class="fa fa-github"></span>
+     
+    
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+<div class="btn-group pull-right">
+<button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+<li role="separator" class="divider"></li>
+<li><a id="rmd-download-source" href="#">Download Rmd</a></li>
+</ul>
+</div>
+
+
+
+
+</div>
+
+
+<div id="helper-functions-used-throughout" class="section level1 tabset tabset-sticky">
+<h1>Helper functions used throughout</h1>
+<p>documentation on the functions is interspersed through code comments</p>
+<div id="set-some-options" class="section level2">
+<h2>set some options</h2>
+<p>dont show messages when loading libraries</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a>library =<span class="st"> </span><span class="cf">function</span>(...) <span class="kw">suppressMessages</span>(base<span class="op">::</span><span class="kw">library</span>(...))</span></code></pre></div>
+<p>never set strings as factors automatically (google for reason why)</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="kw">options</span>(<span class="dt">stringsAsFactors =</span> <span class="ot">FALSE</span>)</span></code></pre></div>
+<p>show four significant digits tops</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a><span class="kw">options</span>(<span class="dt">digits =</span> <span class="dv">4</span>)</span></code></pre></div>
+<p>tend not to show scientific notation, because we’re just psychologists</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a><span class="kw">options</span>(<span class="dt">scipen =</span> <span class="dv">7</span>)</span></code></pre></div>
+<p>make output a bit wider</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="kw">options</span>(<span class="dt">width =</span> <span class="dv">110</span>)</span></code></pre></div>
+<p>set a seed to make analyses depending on random number generation reproducible</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a><span class="kw">set.seed</span>(<span class="dv">1710</span>) <span class="co"># if you use your significant other&#39;s birthday make sure you stay together for the sake of reproducibility</span></span></code></pre></div>
+</div>
+<div id="load-packages" class="section level2">
+<h2>Load packages</h2>
+<p>generate the site</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a><span class="kw">library</span>(rmarkdown)</span></code></pre></div>
+<p>set options for chunks</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a><span class="kw">library</span>(knitr)</span></code></pre></div>
+<p>my formr utility package to generate e.g. the bibliography</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a><span class="kw">library</span>(formr)</span></code></pre></div>
+<p>pretty-printed output</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a><span class="kw">library</span>(pander)</span></code></pre></div>
+<p>tidyverse date times</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a><span class="kw">library</span>(lubridate)</span></code></pre></div>
+<p>tidyverse strings</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a><span class="kw">library</span>(stringr)</span></code></pre></div>
+<p>extractor functions for models</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1"></a><span class="kw">library</span>(broom)</span></code></pre></div>
+<p>grammar of graphics plots</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a><span class="kw">library</span>(ggplot2)</span></code></pre></div>
+<p>svg graphs</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1"></a><span class="co"># library(svglite);</span></span>
+<span id="cb15-2"><a href="#cb15-2"></a><span class="kw">library</span>(ggthemes)</span>
+<span id="cb15-3"><a href="#cb15-3"></a><span class="kw">library</span>(codebook)</span></code></pre></div>
+<p>tidyverse: has a lot of naming conflicts, so always load last</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1"></a><span class="kw">library</span>(tidyverse)</span></code></pre></div>
+<p>some packages may be needed without being loaded</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1"></a>fool_packrat =<span class="st"> </span><span class="cf">function</span>() {</span>
+<span id="cb17-2"><a href="#cb17-2"></a>  <span class="co"># needed to install formr package</span></span>
+<span id="cb17-3"><a href="#cb17-3"></a>  <span class="kw">library</span>(devtools)</span>
+<span id="cb17-4"><a href="#cb17-4"></a>  <span class="kw">library</span>(rmarkdown)</span>
+<span id="cb17-5"><a href="#cb17-5"></a>  <span class="co"># needed to actually run rmarkdown in RStudio, but for some reason not in its dependencies</span></span>
+<span id="cb17-6"><a href="#cb17-6"></a>  <span class="kw">library</span>(formatR)</span>
+<span id="cb17-7"><a href="#cb17-7"></a>}</span></code></pre></div>
+</div>
+<div id="output-options" class="section level2">
+<h2>Output options</h2>
+<p>use pander to pretty-print objects (if possible)</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1"></a>opts_chunk<span class="op">$</span><span class="kw">set</span>(</span>
+<span id="cb18-2"><a href="#cb18-2"></a>  <span class="dt">dev =</span> <span class="st">&quot;png&quot;</span></span>
+<span id="cb18-3"><a href="#cb18-3"></a>)</span></code></pre></div>
+<p>don’t split tables, scroll horizontally</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1"></a><span class="kw">panderOptions</span>(<span class="st">&quot;table.split.table&quot;</span>, <span class="ot">Inf</span>)</span></code></pre></div>
+<p>Set plot defaults</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1"></a><span class="kw">theme_set</span>(<span class="kw">theme_tufte</span>(<span class="dt">base_size =</span> <span class="dv">20</span>, <span class="dt">base_family=</span><span class="st">&#39;Helvetica Neue&#39;</span>))</span></code></pre></div>
+</div>
+<div id="spin-r-files" class="section level2">
+<h2>Spin R files</h2>
+<p>R scripts can be documented in markdown using Roxygen comments, as demonstrated here This function turns all R files (that don’t have an Rmd file of the same name and that don’t start with an underscore _) into HTML pages</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1"></a>spin_R_files_to_site_html =<span class="st"> </span><span class="cf">function</span>() {</span>
+<span id="cb21-2"><a href="#cb21-2"></a>  <span class="kw">library</span>(knitr)</span>
+<span id="cb21-3"><a href="#cb21-3"></a>  all_Rs =<span class="st"> </span><span class="kw">c</span>(<span class="kw">list.files</span>(<span class="dt">pattern =</span> <span class="st">&quot;^[^_].+</span><span class="ch">\\</span><span class="st">.R$&quot;</span>), <span class="st">&quot;.Rprofile&quot;</span>)</span>
+<span id="cb21-4"><a href="#cb21-4"></a>  component_Rmds =<span class="st"> </span><span class="kw">list.files</span>(<span class="dt">pattern =</span> <span class="st">&quot;^_.+</span><span class="ch">\\</span><span class="st">.Rmd$&quot;</span>)</span>
+<span id="cb21-5"><a href="#cb21-5"></a>  temporary_Rmds =<span class="st"> </span><span class="kw">c</span>()</span>
+<span id="cb21-6"><a href="#cb21-6"></a>  <span class="cf">for</span> (i <span class="cf">in</span> <span class="kw">seq_along</span>(all_Rs)) {</span>
+<span id="cb21-7"><a href="#cb21-7"></a>    <span class="cf">if</span>(all_Rs[i] <span class="op">==</span><span class="st"> &quot;.Rprofile&quot;</span>) {</span>
+<span id="cb21-8"><a href="#cb21-8"></a>      Rmd_file =<span class="st"> &quot;.Rprofile.Rmd&quot;</span></span>
+<span id="cb21-9"><a href="#cb21-9"></a>    } <span class="cf">else</span> {</span>
+<span id="cb21-10"><a href="#cb21-10"></a>      Rmd_file =<span class="st"> </span><span class="kw">paste0</span>(all_Rs[i], <span class="st">&quot;md&quot;</span>)</span>
+<span id="cb21-11"><a href="#cb21-11"></a>    }</span>
+<span id="cb21-12"><a href="#cb21-12"></a>    <span class="cf">if</span> (<span class="op">!</span><span class="kw">file.exists</span>(Rmd_file)) {</span>
+<span id="cb21-13"><a href="#cb21-13"></a>      next_document =<span class="st"> </span><span class="kw">length</span>(temporary_Rmds) <span class="op">+</span><span class="st"> </span><span class="dv">1</span></span>
+<span id="cb21-14"><a href="#cb21-14"></a>      <span class="cf">if</span>(<span class="kw">file.exists</span>(all_Rs[i])) {</span>
+<span id="cb21-15"><a href="#cb21-15"></a>      temporary_Rmds[next_document] =<span class="st"> </span><span class="kw">spin</span>(all_Rs[i], <span class="dt">knit =</span> <span class="ot">FALSE</span>, <span class="dt">envir =</span> <span class="kw">new.env</span>(), <span class="dt">format =</span> <span class="st">&quot;Rmd&quot;</span>)</span>
+<span id="cb21-16"><a href="#cb21-16"></a>      prepended_yaml =<span class="st"> </span><span class="kw">paste0</span>(<span class="kw">c</span>(<span class="st">&quot;---</span></span>
+<span id="cb21-17"><a href="#cb21-17"></a><span class="st">output:</span></span>
+<span id="cb21-18"><a href="#cb21-18"></a><span class="st">  html_document:</span></span>
+<span id="cb21-19"><a href="#cb21-19"></a><span class="st">    code_folding: &#39;show&#39;</span></span></code></pre></div>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1"></a><span class="st">&quot;, readLines(temporary_Rmds[next_document])), collapse = &quot;</span>\n<span class="st">&quot;)</span></span>
+<span id="cb22-2"><a href="#cb22-2"></a><span class="st">      cat(prepended_yaml, file = temporary_Rmds[next_document])</span></span>
+<span id="cb22-3"><a href="#cb22-3"></a><span class="st">      }</span></span>
+<span id="cb22-4"><a href="#cb22-4"></a><span class="st">    }</span></span>
+<span id="cb22-5"><a href="#cb22-5"></a><span class="st">  }</span></span>
+<span id="cb22-6"><a href="#cb22-6"></a><span class="st">  components_and_scripts = c(temporary_Rmds, component_Rmds)</span></span>
+<span id="cb22-7"><a href="#cb22-7"></a><span class="st">  for (i in seq_along(components_and_scripts)) {</span></span>
+<span id="cb22-8"><a href="#cb22-8"></a><span class="st">    opts_chunk$set(eval = FALSE, cache = FALSE)</span></span>
+<span id="cb22-9"><a href="#cb22-9"></a><span class="st">    # if we call render_site on the .R file directly it adds a header I don&#39;t like</span></span>
+<span id="cb22-10"><a href="#cb22-10"></a><span class="st">    rmarkdown::render_site(components_and_scripts[i], quiet = TRUE)</span></span>
+<span id="cb22-11"><a href="#cb22-11"></a><span class="st">  }</span></span>
+<span id="cb22-12"><a href="#cb22-12"></a><span class="st">  opts_chunk$set(eval = TRUE, cache = TRUE)</span></span>
+<span id="cb22-13"><a href="#cb22-13"></a><span class="st">  unlink(temporary_Rmds)</span></span>
+<span id="cb22-14"><a href="#cb22-14"></a><span class="st">}</span></span></code></pre></div>
+<div id="we-use-this-function-to-automatically-get-nice-tables" class="section level5">
+<h5>we use this function to automatically get nice tables</h5>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1"></a>pander_handler =<span class="st"> </span><span class="cf">function</span>(x, ...) {</span>
+<span id="cb23-2"><a href="#cb23-2"></a>  anyS3method =<span class="st"> </span><span class="cf">function</span>(x) {</span>
+<span id="cb23-3"><a href="#cb23-3"></a>    classes =<span class="st"> </span><span class="kw">class</span>(x)</span>
+<span id="cb23-4"><a href="#cb23-4"></a>    <span class="kw">any</span>(<span class="kw">sapply</span>(classes, <span class="dt">FUN =</span> <span class="cf">function</span>(classes) { <span class="op">!</span><span class="kw">is.null</span>(<span class="kw">getS3method</span>(<span class="st">&#39;pander&#39;</span>,classes,<span class="ot">TRUE</span>)) } ))</span>
+<span id="cb23-5"><a href="#cb23-5"></a>  }</span>
+<span id="cb23-6"><a href="#cb23-6"></a>  <span class="cf">if</span> (<span class="st">&quot;knit_asis&quot;</span> <span class="op">%in%</span><span class="st"> </span><span class="kw">class</span>(x)) {</span>
+<span id="cb23-7"><a href="#cb23-7"></a>    x <span class="co"># obj is knit_asis already, don&#39;t touch it</span></span>
+<span id="cb23-8"><a href="#cb23-8"></a>    <span class="co"># (useful if e.g. pander is called with options in the doc)</span></span>
+<span id="cb23-9"><a href="#cb23-9"></a>  } <span class="cf">else</span> <span class="cf">if</span> (<span class="kw">anyS3method</span>(x)) {</span>
+<span id="cb23-10"><a href="#cb23-10"></a>    <span class="kw">pander</span>(x, <span class="dt">row.names =</span> F, ...) <span class="co"># if method available, pander</span></span>
+<span id="cb23-11"><a href="#cb23-11"></a>  } <span class="cf">else</span> <span class="cf">if</span> (<span class="kw">isS4</span>(x)) {</span>
+<span id="cb23-12"><a href="#cb23-12"></a>    <span class="kw">show</span>(x)</span>
+<span id="cb23-13"><a href="#cb23-13"></a>  } <span class="cf">else</span> {</span>
+<span id="cb23-14"><a href="#cb23-14"></a>    <span class="kw">print</span>(x)</span>
+<span id="cb23-15"><a href="#cb23-15"></a>  }</span>
+<span id="cb23-16"><a href="#cb23-16"></a>}</span>
+<span id="cb23-17"><a href="#cb23-17"></a></span>
+<span id="cb23-18"><a href="#cb23-18"></a></span>
+<span id="cb23-19"><a href="#cb23-19"></a></span>
+<span id="cb23-20"><a href="#cb23-20"></a></span>
+<span id="cb23-21"><a href="#cb23-21"></a></span>
+<span id="cb23-22"><a href="#cb23-22"></a><span class="co">##### counting excluded participants</span></span>
+<span id="cb23-23"><a href="#cb23-23"></a></span>
+<span id="cb23-24"><a href="#cb23-24"></a>n_excluded =<span class="st"> </span><span class="cf">function</span>(x) {</span>
+<span id="cb23-25"><a href="#cb23-25"></a>  excluded_new =<span class="st"> </span><span class="kw">sum</span>(<span class="kw">is.na</span>(x) <span class="op">|</span><span class="st"> </span>x <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span>,<span class="dt">na.rm =</span> T)</span>
+<span id="cb23-26"><a href="#cb23-26"></a>  <span class="cf">if</span> (<span class="kw">is.null</span>(excluded_old)) {</span>
+<span id="cb23-27"><a href="#cb23-27"></a>    excluded =<span class="st"> </span>excluded_new</span>
+<span id="cb23-28"><a href="#cb23-28"></a>  } <span class="cf">else</span> {</span>
+<span id="cb23-29"><a href="#cb23-29"></a>    excluded =<span class="st"> </span>excluded_new <span class="op">-</span><span class="st"> </span>excluded_old</span>
+<span id="cb23-30"><a href="#cb23-30"></a>  }</span>
+<span id="cb23-31"><a href="#cb23-31"></a>  <span class="kw">cat</span>(excluded, <span class="st">&quot;excluded</span><span class="ch">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb23-32"><a href="#cb23-32"></a>  excluded_old &lt;&lt;-<span class="st"> </span>excluded_new</span>
+<span id="cb23-33"><a href="#cb23-33"></a>  excluded</span>
+<span id="cb23-34"><a href="#cb23-34"></a>}</span>
+<span id="cb23-35"><a href="#cb23-35"></a></span>
+<span id="cb23-36"><a href="#cb23-36"></a><span class="co">### counting excluded days</span></span>
+<span id="cb23-37"><a href="#cb23-37"></a></span>
+<span id="cb23-38"><a href="#cb23-38"></a>n_excluded_days =<span class="st"> </span><span class="cf">function</span>(x) {</span>
+<span id="cb23-39"><a href="#cb23-39"></a>  excluded_new_days =<span class="st"> </span><span class="kw">sum</span>(<span class="kw">is.na</span>(x) <span class="op">|</span><span class="st"> </span>x <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span>,<span class="dt">na.rm =</span> T)</span>
+<span id="cb23-40"><a href="#cb23-40"></a>  <span class="cf">if</span> (<span class="kw">is.null</span>(excluded_old_days)) {</span>
+<span id="cb23-41"><a href="#cb23-41"></a>    excluded =<span class="st"> </span>excluded_new_days</span>
+<span id="cb23-42"><a href="#cb23-42"></a>  } <span class="cf">else</span> {</span>
+<span id="cb23-43"><a href="#cb23-43"></a>    excluded =<span class="st"> </span>excluded_new_days <span class="op">-</span><span class="st"> </span>excluded_old_days</span>
+<span id="cb23-44"><a href="#cb23-44"></a>  }</span>
+<span id="cb23-45"><a href="#cb23-45"></a>  <span class="kw">cat</span>(excluded, <span class="st">&quot;excluded</span><span class="ch">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb23-46"><a href="#cb23-46"></a>  excluded_old_days &lt;&lt;-<span class="st"> </span>excluded_new_days</span>
+<span id="cb23-47"><a href="#cb23-47"></a>  excluded</span>
+<span id="cb23-48"><a href="#cb23-48"></a>}</span>
+<span id="cb23-49"><a href="#cb23-49"></a></span>
+<span id="cb23-50"><a href="#cb23-50"></a><span class="co">### counting excluded days in social diary</span></span>
+<span id="cb23-51"><a href="#cb23-51"></a></span>
+<span id="cb23-52"><a href="#cb23-52"></a>n_excluded_social =<span class="st"> </span><span class="cf">function</span>(x) {</span>
+<span id="cb23-53"><a href="#cb23-53"></a>  excluded_new_social =<span class="st"> </span><span class="kw">sum</span>(<span class="kw">is.na</span>(x) <span class="op">|</span><span class="st"> </span>x <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span>,<span class="dt">na.rm =</span> T)</span>
+<span id="cb23-54"><a href="#cb23-54"></a>  <span class="cf">if</span> (<span class="kw">is.null</span>(excluded_old_social)) {</span>
+<span id="cb23-55"><a href="#cb23-55"></a>    excluded =<span class="st"> </span>excluded_new_social</span>
+<span id="cb23-56"><a href="#cb23-56"></a>  } <span class="cf">else</span> {</span>
+<span id="cb23-57"><a href="#cb23-57"></a>    excluded =<span class="st"> </span>excluded_new_social <span class="op">-</span><span class="st"> </span>excluded_old_social</span>
+<span id="cb23-58"><a href="#cb23-58"></a>  }</span>
+<span id="cb23-59"><a href="#cb23-59"></a>  <span class="kw">cat</span>(excluded, <span class="st">&quot;excluded</span><span class="ch">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb23-60"><a href="#cb23-60"></a>  excluded_old_social &lt;&lt;-<span class="st"> </span>excluded_new_social</span>
+<span id="cb23-61"><a href="#cb23-61"></a>  excluded</span>
+<span id="cb23-62"><a href="#cb23-62"></a>}</span>
+<span id="cb23-63"><a href="#cb23-63"></a></span>
+<span id="cb23-64"><a href="#cb23-64"></a><span class="co">### counting excluded participants in social network</span></span>
+<span id="cb23-65"><a href="#cb23-65"></a></span>
+<span id="cb23-66"><a href="#cb23-66"></a>n_excluded_network =<span class="st"> </span><span class="cf">function</span>(x) {</span>
+<span id="cb23-67"><a href="#cb23-67"></a>  excluded_new_network =<span class="st"> </span><span class="kw">sum</span>(<span class="kw">is.na</span>(x) <span class="op">|</span><span class="st"> </span>x <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span>,<span class="dt">na.rm =</span> T)</span>
+<span id="cb23-68"><a href="#cb23-68"></a>  <span class="cf">if</span> (<span class="kw">is.null</span>(excluded_old_network)) {</span>
+<span id="cb23-69"><a href="#cb23-69"></a>    excluded =<span class="st"> </span>excluded_new_network</span>
+<span id="cb23-70"><a href="#cb23-70"></a>  } <span class="cf">else</span> {</span>
+<span id="cb23-71"><a href="#cb23-71"></a>    excluded =<span class="st"> </span>excluded_new_network <span class="op">-</span><span class="st"> </span>excluded_old_network</span>
+<span id="cb23-72"><a href="#cb23-72"></a>  }</span>
+<span id="cb23-73"><a href="#cb23-73"></a>  <span class="kw">cat</span>(excluded, <span class="st">&quot;excluded</span><span class="ch">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb23-74"><a href="#cb23-74"></a>  excluded_old_network &lt;&lt;-<span class="st"> </span>excluded_new_network</span>
+<span id="cb23-75"><a href="#cb23-75"></a>  excluded</span>
+<span id="cb23-76"><a href="#cb23-76"></a>}</span>
+<span id="cb23-77"><a href="#cb23-77"></a></span>
+<span id="cb23-78"><a href="#cb23-78"></a><span class="co">###### strict exclusion</span></span>
+<span id="cb23-79"><a href="#cb23-79"></a>n_excluded_network_strict =<span class="st"> </span><span class="cf">function</span>(x) {</span>
+<span id="cb23-80"><a href="#cb23-80"></a>  excluded_new_network_strict =<span class="st"> </span><span class="kw">sum</span>(<span class="kw">is.na</span>(x) <span class="op">|</span><span class="st"> </span>x <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span>,<span class="dt">na.rm =</span> T)</span>
+<span id="cb23-81"><a href="#cb23-81"></a>  <span class="cf">if</span> (<span class="kw">is.null</span>(excluded_old_network_strict)) {</span>
+<span id="cb23-82"><a href="#cb23-82"></a>    excluded =<span class="st"> </span>excluded_new_network_strict</span>
+<span id="cb23-83"><a href="#cb23-83"></a>  } <span class="cf">else</span> {</span>
+<span id="cb23-84"><a href="#cb23-84"></a>    excluded =<span class="st"> </span>excluded_new_network_strict <span class="op">-</span><span class="st"> </span>excluded_old_network_strict</span>
+<span id="cb23-85"><a href="#cb23-85"></a>  }</span>
+<span id="cb23-86"><a href="#cb23-86"></a>  <span class="kw">cat</span>(excluded, <span class="st">&quot;excluded</span><span class="ch">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb23-87"><a href="#cb23-87"></a>  excluded_old_network_strict &lt;&lt;-<span class="st"> </span>excluded_new_network_strict</span>
+<span id="cb23-88"><a href="#cb23-88"></a>  excluded</span>
+<span id="cb23-89"><a href="#cb23-89"></a>}</span>
+<span id="cb23-90"><a href="#cb23-90"></a></span>
+<span id="cb23-91"><a href="#cb23-91"></a><span class="co">###### bar plot</span></span>
+<span id="cb23-92"><a href="#cb23-92"></a></span>
+<span id="cb23-93"><a href="#cb23-93"></a>bar_count =<span class="st"> </span><span class="cf">function</span>(data, variable, <span class="dt">na.rm =</span> <span class="ot">FALSE</span>) {</span>
+<span id="cb23-94"><a href="#cb23-94"></a>  varname =<span class="st"> </span><span class="kw">deparse</span>(<span class="kw">substitute</span>(variable))</span>
+<span id="cb23-95"><a href="#cb23-95"></a>  var =<span class="st"> </span>data <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">select_</span>(varname) <span class="op">%&gt;%</span><span class="st"> </span>.[[<span class="dv">1</span>]]</span>
+<span id="cb23-96"><a href="#cb23-96"></a>  <span class="cf">if</span> (na.rm <span class="op">==</span><span class="st"> </span>T) {</span>
+<span id="cb23-97"><a href="#cb23-97"></a>    var =<span class="st"> </span>var <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">na.omit</span>()</span>
+<span id="cb23-98"><a href="#cb23-98"></a>  }</span>
+<span id="cb23-99"><a href="#cb23-99"></a>  var =<span class="st"> </span><span class="kw">factor</span>(var, <span class="dt">exclude =</span> <span class="ot">NULL</span>)</span>
+<span id="cb23-100"><a href="#cb23-100"></a>  data<span class="op">$</span>var =<span class="st"> </span>var</span>
+<span id="cb23-101"><a href="#cb23-101"></a></span>
+<span id="cb23-102"><a href="#cb23-102"></a>  <span class="kw">ggplot</span>(data, <span class="kw">aes</span>(<span class="dt">x =</span> var)) <span class="op">+</span></span>
+<span id="cb23-103"><a href="#cb23-103"></a><span class="st">    </span><span class="kw">geom_bar</span>() <span class="op">+</span></span>
+<span id="cb23-104"><a href="#cb23-104"></a><span class="st">    </span><span class="kw">stat_count</span>(<span class="kw">aes</span>(<span class="dt">label =</span> <span class="kw">paste</span>(..count.., <span class="st">&quot;</span><span class="ch">\n</span><span class="st">&quot;</span>, scales<span class="op">::</span><span class="kw">percent</span>(<span class="kw">round</span>(..count..<span class="op">/</span><span class="kw">sum</span>(count),<span class="dv">2</span>)))), <span class="dt">hjust =</span> <span class="fl">-0.1</span>, <span class="dt">geom =</span> <span class="st">&quot;text&quot;</span>, <span class="dt">position =</span> <span class="st">&quot;identity&quot;</span>, <span class="dt">na.rm =</span> T) <span class="op">+</span></span>
+<span id="cb23-105"><a href="#cb23-105"></a><span class="st">    </span><span class="kw">scale_y_continuous</span>(<span class="dt">expand =</span> <span class="kw">c</span>(<span class="fl">0.1</span>, <span class="dv">0</span>)) <span class="op">+</span></span>
+<span id="cb23-106"><a href="#cb23-106"></a><span class="st">    </span><span class="kw">xlab</span>(varname) <span class="op">+</span></span>
+<span id="cb23-107"><a href="#cb23-107"></a><span class="st">    </span><span class="kw">coord_flip</span>()</span>
+<span id="cb23-108"><a href="#cb23-108"></a>}</span>
+<span id="cb23-109"><a href="#cb23-109"></a></span>
+<span id="cb23-110"><a href="#cb23-110"></a></span>
+<span id="cb23-111"><a href="#cb23-111"></a></span>
+<span id="cb23-112"><a href="#cb23-112"></a>multi_rel =<span class="st"> </span><span class="cf">function</span>(diary, <span class="dt">lme =</span> T, <span class="dt">lmer =</span> T) {</span>
+<span id="cb23-113"><a href="#cb23-113"></a>  mrel =<span class="st"> </span>diary <span class="op">%&gt;%</span></span>
+<span id="cb23-114"><a href="#cb23-114"></a><span class="st">    </span><span class="kw">group_by</span>(short) <span class="op">%&gt;%</span></span>
+<span id="cb23-115"><a href="#cb23-115"></a><span class="st">    </span><span class="kw">filter</span>(<span class="op">!</span><span class="kw">is.na</span>(risk_taking)) <span class="op">%&gt;%</span></span>
+<span id="cb23-116"><a href="#cb23-116"></a><span class="st">    </span><span class="kw">filter</span>(day_number <span class="op">&lt;=</span><span class="st"> </span><span class="dv">70</span>) <span class="op">%&gt;%</span></span>
+<span id="cb23-117"><a href="#cb23-117"></a><span class="st">    </span><span class="kw">gather</span>(variable, value, <span class="op">-</span>short, <span class="op">-</span>day_number) <span class="op">%&gt;%</span></span>
+<span id="cb23-118"><a href="#cb23-118"></a><span class="st">    </span>psych<span class="op">::</span><span class="kw">multilevel.reliability</span>(., <span class="st">&quot;short&quot;</span>, <span class="st">&quot;day_number&quot;</span>, <span class="dt">lme =</span> lme, <span class="dt">lmer =</span> lmer, <span class="dt">items =</span> <span class="st">&quot;variable&quot;</span>, <span class="dt">values =</span> <span class="st">&quot;value&quot;</span>, <span class="dt">long =</span> T, <span class="dt">aov =</span> F)</span>
+<span id="cb23-119"><a href="#cb23-119"></a>  mrel</span>
+<span id="cb23-120"><a href="#cb23-120"></a>}</span>
+<span id="cb23-121"><a href="#cb23-121"></a></span>
+<span id="cb23-122"><a href="#cb23-122"></a></span>
+<span id="cb23-123"><a href="#cb23-123"></a>robust_rowmeans &lt;-<span class="st"> </span><span class="cf">function</span>(x) {</span>
+<span id="cb23-124"><a href="#cb23-124"></a>  y &lt;-<span class="st"> </span><span class="kw">rowMeans</span>(x, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>)</span>
+<span id="cb23-125"><a href="#cb23-125"></a>  y[<span class="kw">is.nan</span>(y)] &lt;-<span class="st"> </span><span class="ot">NA_real_</span></span>
+<span id="cb23-126"><a href="#cb23-126"></a>  y</span>
+<span id="cb23-127"><a href="#cb23-127"></a>}</span>
+<span id="cb23-128"><a href="#cb23-128"></a></span>
+<span id="cb23-129"><a href="#cb23-129"></a></span>
+<span id="cb23-130"><a href="#cb23-130"></a>cortest_stretch &lt;-<span class="st"> </span><span class="cf">function</span>(d) {</span>
+<span id="cb23-131"><a href="#cb23-131"></a>  var_pairs &lt;-<span class="st"> </span><span class="kw">t</span>(<span class="kw">combn</span>(<span class="kw">names</span>(d), <span class="dv">2</span>)) <span class="op">%&gt;%</span></span>
+<span id="cb23-132"><a href="#cb23-132"></a><span class="st">    </span><span class="kw">as_data_frame</span>() <span class="op">%&gt;%</span></span>
+<span id="cb23-133"><a href="#cb23-133"></a><span class="st">    </span><span class="kw">setNames</span>(<span class="kw">c</span>(<span class="st">&quot;x&quot;</span>, <span class="st">&quot;y&quot;</span>))</span>
+<span id="cb23-134"><a href="#cb23-134"></a></span>
+<span id="cb23-135"><a href="#cb23-135"></a>  p_values &lt;-<span class="st"> </span>var_pairs <span class="op">%&gt;%</span></span>
+<span id="cb23-136"><a href="#cb23-136"></a><span class="st">    </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(<span class="dt">r.test =</span> purrr<span class="op">::</span><span class="kw">map2</span>(x, y, <span class="op">~</span><span class="st"> </span>stats<span class="op">::</span><span class="kw">cor.test</span>(d[[.x]], d[[.y]])),</span>
+<span id="cb23-137"><a href="#cb23-137"></a>                  <span class="dt">r.test =</span> purrr<span class="op">::</span><span class="kw">map</span>(r.test, broom<span class="op">::</span>tidy)) <span class="op">%&gt;%</span></span>
+<span id="cb23-138"><a href="#cb23-138"></a><span class="st">    </span>tidyr<span class="op">::</span><span class="kw">unnest</span>(r.test)</span>
+<span id="cb23-139"><a href="#cb23-139"></a>  p_values</span>
+<span id="cb23-140"><a href="#cb23-140"></a>}</span>
+<span id="cb23-141"><a href="#cb23-141"></a></span>
+<span id="cb23-142"><a href="#cb23-142"></a></span>
+<span id="cb23-143"><a href="#cb23-143"></a>cut_common_stem &lt;-<span class="st"> </span><span class="cf">function</span>(x) {</span>
+<span id="cb23-144"><a href="#cb23-144"></a>  i =<span class="st"> </span><span class="dv">1</span></span>
+<span id="cb23-145"><a href="#cb23-145"></a>  <span class="cf">while</span> (i <span class="op">&lt;=</span><span class="st"> </span><span class="kw">max</span>(stringr<span class="op">::</span><span class="kw">str_length</span>(x)) <span class="op">&amp;</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">n_distinct</span>(stringr<span class="op">::</span><span class="kw">str_sub</span>(x, <span class="dv">1</span>, i)) <span class="op">==</span><span class="st"> </span><span class="dv">1</span>) {</span>
+<span id="cb23-146"><a href="#cb23-146"></a>    i =<span class="st"> </span>i <span class="op">+</span><span class="st"> </span><span class="dv">1</span></span>
+<span id="cb23-147"><a href="#cb23-147"></a>  }</span>
+<span id="cb23-148"><a href="#cb23-148"></a>  stringr<span class="op">::</span><span class="kw">str_sub</span>(x, i)</span>
+<span id="cb23-149"><a href="#cb23-149"></a>}</span></code></pre></div>
+</div>
+</div>
+</div>
+
+<div id="rmd-source-code">LS0tCm91dHB1dDoKICBodG1sX2RvY3VtZW50OgogICAgY29kZV9mb2xkaW5nOiAnc2hvdycKLS0tCgoKIyBIZWxwZXIgZnVuY3Rpb25zIHVzZWQgdGhyb3VnaG91dCB7LnRhYnNldCAudGFic2V0LXN0aWNreX0KZG9jdW1lbnRhdGlvbiBvbiB0aGUgZnVuY3Rpb25zIGlzIGludGVyc3BlcnNlZCB0aHJvdWdoIGNvZGUgY29tbWVudHMKCiMjIHNldCBzb21lIG9wdGlvbnMKZG9udCBzaG93IG1lc3NhZ2VzIHdoZW4gbG9hZGluZyBsaWJyYXJpZXMKCmBgYHtyIH0KbGlicmFyeSA9IGZ1bmN0aW9uKC4uLikgc3VwcHJlc3NNZXNzYWdlcyhiYXNlOjpsaWJyYXJ5KC4uLikpCmBgYAoKbmV2ZXIgc2V0IHN0cmluZ3MgYXMgZmFjdG9ycyBhdXRvbWF0aWNhbGx5IChnb29nbGUgZm9yIHJlYXNvbiB3aHkpCgpgYGB7ciB9Cm9wdGlvbnMoc3RyaW5nc0FzRmFjdG9ycyA9IEZBTFNFKQpgYGAKCnNob3cgZm91ciBzaWduaWZpY2FudCBkaWdpdHMgdG9wcwoKYGBge3IgfQpvcHRpb25zKGRpZ2l0cyA9IDQpCmBgYAoKdGVuZCBub3QgdG8gc2hvdyBzY2llbnRpZmljIG5vdGF0aW9uLCBiZWNhdXNlIHdlJ3JlIGp1c3QgcHN5Y2hvbG9naXN0cwoKYGBge3IgfQpvcHRpb25zKHNjaXBlbiA9IDcpCmBgYAoKbWFrZSBvdXRwdXQgYSBiaXQgd2lkZXIKCmBgYHtyIH0Kb3B0aW9ucyh3aWR0aCA9IDExMCkKYGBgCgpzZXQgYSBzZWVkIHRvIG1ha2UgYW5hbHlzZXMgZGVwZW5kaW5nIG9uIHJhbmRvbSBudW1iZXIgZ2VuZXJhdGlvbiByZXByb2R1Y2libGUKCmBgYHtyIH0Kc2V0LnNlZWQoMTcxMCkgIyBpZiB5b3UgdXNlIHlvdXIgc2lnbmlmaWNhbnQgb3RoZXIncyBiaXJ0aGRheSBtYWtlIHN1cmUgeW91IHN0YXkgdG9nZXRoZXIgZm9yIHRoZSBzYWtlIG9mIHJlcHJvZHVjaWJpbGl0eQpgYGAKCiMjIExvYWQgcGFja2FnZXMKZ2VuZXJhdGUgdGhlIHNpdGUKCmBgYHtyIH0KbGlicmFyeShybWFya2Rvd24pCmBgYAoKc2V0IG9wdGlvbnMgZm9yIGNodW5rcwoKYGBge3IgfQpsaWJyYXJ5KGtuaXRyKQpgYGAKCm15IGZvcm1yIHV0aWxpdHkgcGFja2FnZSB0byBnZW5lcmF0ZSBlLmcuIHRoZSBiaWJsaW9ncmFwaHkKCmBgYHtyIH0KbGlicmFyeShmb3JtcikKYGBgCgpwcmV0dHktcHJpbnRlZCBvdXRwdXQKCmBgYHtyIH0KbGlicmFyeShwYW5kZXIpCmBgYAoKdGlkeXZlcnNlIGRhdGUgdGltZXMKCmBgYHtyIH0KbGlicmFyeShsdWJyaWRhdGUpCmBgYAoKdGlkeXZlcnNlIHN0cmluZ3MKCmBgYHtyIH0KbGlicmFyeShzdHJpbmdyKQpgYGAKCmV4dHJhY3RvciBmdW5jdGlvbnMgZm9yIG1vZGVscwoKYGBge3IgfQpsaWJyYXJ5KGJyb29tKQpgYGAKCmdyYW1tYXIgb2YgZ3JhcGhpY3MgcGxvdHMKCmBgYHtyIH0KbGlicmFyeShnZ3Bsb3QyKQpgYGAKCnN2ZyBncmFwaHMKCmBgYHtyIH0KIyBsaWJyYXJ5KHN2Z2xpdGUpOwpsaWJyYXJ5KGdndGhlbWVzKQpsaWJyYXJ5KGNvZGVib29rKQpgYGAKCnRpZHl2ZXJzZTogaGFzIGEgbG90IG9mIG5hbWluZyBjb25mbGljdHMsIHNvIGFsd2F5cyBsb2FkIGxhc3QKCmBgYHtyIH0KbGlicmFyeSh0aWR5dmVyc2UpCmBgYAoKc29tZSBwYWNrYWdlcyBtYXkgYmUgbmVlZGVkIHdpdGhvdXQgYmVpbmcgbG9hZGVkCgpgYGB7ciB9CmZvb2xfcGFja3JhdCA9IGZ1bmN0aW9uKCkgewogICMgbmVlZGVkIHRvIGluc3RhbGwgZm9ybXIgcGFja2FnZQogIGxpYnJhcnkoZGV2dG9vbHMpCiAgbGlicmFyeShybWFya2Rvd24pCiAgIyBuZWVkZWQgdG8gYWN0dWFsbHkgcnVuIHJtYXJrZG93biBpbiBSU3R1ZGlvLCBidXQgZm9yIHNvbWUgcmVhc29uIG5vdCBpbiBpdHMgZGVwZW5kZW5jaWVzCiAgbGlicmFyeShmb3JtYXRSKQp9CmBgYAoKIyMgT3V0cHV0IG9wdGlvbnMKdXNlIHBhbmRlciB0byBwcmV0dHktcHJpbnQgb2JqZWN0cyAoaWYgcG9zc2libGUpCgpgYGB7ciB9Cm9wdHNfY2h1bmskc2V0KAogIGRldiA9ICJwbmciCikKYGBgCgpkb24ndCBzcGxpdCB0YWJsZXMsIHNjcm9sbCBob3Jpem9udGFsbHkKCmBgYHtyIH0KcGFuZGVyT3B0aW9ucygidGFibGUuc3BsaXQudGFibGUiLCBJbmYpCmBgYAoKU2V0IHBsb3QgZGVmYXVsdHMKCmBgYHtyIH0KdGhlbWVfc2V0KHRoZW1lX3R1ZnRlKGJhc2Vfc2l6ZSA9IDIwLCBiYXNlX2ZhbWlseT0nSGVsdmV0aWNhIE5ldWUnKSkKYGBgCgojIyBTcGluIFIgZmlsZXMKUiBzY3JpcHRzIGNhbiBiZSBkb2N1bWVudGVkIGluIG1hcmtkb3duIHVzaW5nIFJveHlnZW4gY29tbWVudHMsIGFzIGRlbW9uc3RyYXRlZCBoZXJlClRoaXMgZnVuY3Rpb24gdHVybnMgYWxsIFIgZmlsZXMgKHRoYXQgZG9uJ3QgaGF2ZSBhbiBSbWQgZmlsZSBvZiB0aGUgc2FtZSBuYW1lIGFuZCB0aGF0IGRvbid0IHN0YXJ0IHdpdGggYW4gdW5kZXJzY29yZSBfKSBpbnRvIEhUTUwgcGFnZXMKCmBgYHtyIH0Kc3Bpbl9SX2ZpbGVzX3RvX3NpdGVfaHRtbCA9IGZ1bmN0aW9uKCkgewogIGxpYnJhcnkoa25pdHIpCiAgYWxsX1JzID0gYyhsaXN0LmZpbGVzKHBhdHRlcm4gPSAiXlteX10uK1xcLlIkIiksICIuUnByb2ZpbGUiKQogIGNvbXBvbmVudF9SbWRzID0gbGlzdC5maWxlcyhwYXR0ZXJuID0gIl5fLitcXC5SbWQkIikKICB0ZW1wb3JhcnlfUm1kcyA9IGMoKQogIGZvciAoaSBpbiBzZXFfYWxvbmcoYWxsX1JzKSkgewogICAgaWYoYWxsX1JzW2ldID09ICIuUnByb2ZpbGUiKSB7CiAgICAgIFJtZF9maWxlID0gIi5ScHJvZmlsZS5SbWQiCiAgICB9IGVsc2UgewogICAgICBSbWRfZmlsZSA9IHBhc3RlMChhbGxfUnNbaV0sICJtZCIpCiAgICB9CiAgICBpZiAoIWZpbGUuZXhpc3RzKFJtZF9maWxlKSkgewogICAgICBuZXh0X2RvY3VtZW50ID0gbGVuZ3RoKHRlbXBvcmFyeV9SbWRzKSArIDEKICAgICAgaWYoZmlsZS5leGlzdHMoYWxsX1JzW2ldKSkgewogICAgICB0ZW1wb3JhcnlfUm1kc1tuZXh0X2RvY3VtZW50XSA9IHNwaW4oYWxsX1JzW2ldLCBrbml0ID0gRkFMU0UsIGVudmlyID0gbmV3LmVudigpLCBmb3JtYXQgPSAiUm1kIikKICAgICAgcHJlcGVuZGVkX3lhbWwgPSBwYXN0ZTAoYygiLS0tCm91dHB1dDoKICBodG1sX2RvY3VtZW50OgogICAgY29kZV9mb2xkaW5nOiAnc2hvdycKYGBgCmBgYHtyIH0KCiIsIHJlYWRMaW5lcyh0ZW1wb3JhcnlfUm1kc1tuZXh0X2RvY3VtZW50XSkpLCBjb2xsYXBzZSA9ICJcbiIpCiAgICAgIGNhdChwcmVwZW5kZWRfeWFtbCwgZmlsZSA9IHRlbXBvcmFyeV9SbWRzW25leHRfZG9jdW1lbnRdKQogICAgICB9CiAgICB9CiAgfQogIGNvbXBvbmVudHNfYW5kX3NjcmlwdHMgPSBjKHRlbXBvcmFyeV9SbWRzLCBjb21wb25lbnRfUm1kcykKICBmb3IgKGkgaW4gc2VxX2Fsb25nKGNvbXBvbmVudHNfYW5kX3NjcmlwdHMpKSB7CiAgICBvcHRzX2NodW5rJHNldChldmFsID0gRkFMU0UsIGNhY2hlID0gRkFMU0UpCiAgICAjIGlmIHdlIGNhbGwgcmVuZGVyX3NpdGUgb24gdGhlIC5SIGZpbGUgZGlyZWN0bHkgaXQgYWRkcyBhIGhlYWRlciBJIGRvbid0IGxpa2UKICAgIHJtYXJrZG93bjo6cmVuZGVyX3NpdGUoY29tcG9uZW50c19hbmRfc2NyaXB0c1tpXSwgcXVpZXQgPSBUUlVFKQogIH0KICBvcHRzX2NodW5rJHNldChldmFsID0gVFJVRSwgY2FjaGUgPSBUUlVFKQogIHVubGluayh0ZW1wb3JhcnlfUm1kcykKfQpgYGAKCiMjIyMjIHdlIHVzZSB0aGlzIGZ1bmN0aW9uIHRvIGF1dG9tYXRpY2FsbHkgZ2V0IG5pY2UgdGFibGVzCgpgYGB7ciB9CnBhbmRlcl9oYW5kbGVyID0gZnVuY3Rpb24oeCwgLi4uKSB7CiAgYW55UzNtZXRob2QgPSBmdW5jdGlvbih4KSB7CiAgICBjbGFzc2VzID0gY2xhc3MoeCkKICAgIGFueShzYXBwbHkoY2xhc3NlcywgRlVOID0gZnVuY3Rpb24oY2xhc3NlcykgeyAhaXMubnVsbChnZXRTM21ldGhvZCgncGFuZGVyJyxjbGFzc2VzLFRSVUUpKSB9ICkpCiAgfQogIGlmICgia25pdF9hc2lzIiAlaW4lIGNsYXNzKHgpKSB7CiAgICB4ICMgb2JqIGlzIGtuaXRfYXNpcyBhbHJlYWR5LCBkb24ndCB0b3VjaCBpdAogICAgIyAodXNlZnVsIGlmIGUuZy4gcGFuZGVyIGlzIGNhbGxlZCB3aXRoIG9wdGlvbnMgaW4gdGhlIGRvYykKICB9IGVsc2UgaWYgKGFueVMzbWV0aG9kKHgpKSB7CiAgICBwYW5kZXIoeCwgcm93Lm5hbWVzID0gRiwgLi4uKSAjIGlmIG1ldGhvZCBhdmFpbGFibGUsIHBhbmRlcgogIH0gZWxzZSBpZiAoaXNTNCh4KSkgewogICAgc2hvdyh4KQogIH0gZWxzZSB7CiAgICBwcmludCh4KQogIH0KfQoKCgoKCiMjIyMjIGNvdW50aW5nIGV4Y2x1ZGVkIHBhcnRpY2lwYW50cwoKbl9leGNsdWRlZCA9IGZ1bmN0aW9uKHgpIHsKICBleGNsdWRlZF9uZXcgPSBzdW0oaXMubmEoeCkgfCB4ID09IEZBTFNFLG5hLnJtID0gVCkKICBpZiAoaXMubnVsbChleGNsdWRlZF9vbGQpKSB7CiAgICBleGNsdWRlZCA9IGV4Y2x1ZGVkX25ldwogIH0gZWxzZSB7CiAgICBleGNsdWRlZCA9IGV4Y2x1ZGVkX25ldyAtIGV4Y2x1ZGVkX29sZAogIH0KICBjYXQoZXhjbHVkZWQsICJleGNsdWRlZFxuIikKICBleGNsdWRlZF9vbGQgPDwtIGV4Y2x1ZGVkX25ldwogIGV4Y2x1ZGVkCn0KCiMjIyBjb3VudGluZyBleGNsdWRlZCBkYXlzCgpuX2V4Y2x1ZGVkX2RheXMgPSBmdW5jdGlvbih4KSB7CiAgZXhjbHVkZWRfbmV3X2RheXMgPSBzdW0oaXMubmEoeCkgfCB4ID09IEZBTFNFLG5hLnJtID0gVCkKICBpZiAoaXMubnVsbChleGNsdWRlZF9vbGRfZGF5cykpIHsKICAgIGV4Y2x1ZGVkID0gZXhjbHVkZWRfbmV3X2RheXMKICB9IGVsc2UgewogICAgZXhjbHVkZWQgPSBleGNsdWRlZF9uZXdfZGF5cyAtIGV4Y2x1ZGVkX29sZF9kYXlzCiAgfQogIGNhdChleGNsdWRlZCwgImV4Y2x1ZGVkXG4iKQogIGV4Y2x1ZGVkX29sZF9kYXlzIDw8LSBleGNsdWRlZF9uZXdfZGF5cwogIGV4Y2x1ZGVkCn0KCiMjIyBjb3VudGluZyBleGNsdWRlZCBkYXlzIGluIHNvY2lhbCBkaWFyeQoKbl9leGNsdWRlZF9zb2NpYWwgPSBmdW5jdGlvbih4KSB7CiAgZXhjbHVkZWRfbmV3X3NvY2lhbCA9IHN1bShpcy5uYSh4KSB8IHggPT0gRkFMU0UsbmEucm0gPSBUKQogIGlmIChpcy5udWxsKGV4Y2x1ZGVkX29sZF9zb2NpYWwpKSB7CiAgICBleGNsdWRlZCA9IGV4Y2x1ZGVkX25ld19zb2NpYWwKICB9IGVsc2UgewogICAgZXhjbHVkZWQgPSBleGNsdWRlZF9uZXdfc29jaWFsIC0gZXhjbHVkZWRfb2xkX3NvY2lhbAogIH0KICBjYXQoZXhjbHVkZWQsICJleGNsdWRlZFxuIikKICBleGNsdWRlZF9vbGRfc29jaWFsIDw8LSBleGNsdWRlZF9uZXdfc29jaWFsCiAgZXhjbHVkZWQKfQoKIyMjIGNvdW50aW5nIGV4Y2x1ZGVkIHBhcnRpY2lwYW50cyBpbiBzb2NpYWwgbmV0d29yawoKbl9leGNsdWRlZF9uZXR3b3JrID0gZnVuY3Rpb24oeCkgewogIGV4Y2x1ZGVkX25ld19uZXR3b3JrID0gc3VtKGlzLm5hKHgpIHwgeCA9PSBGQUxTRSxuYS5ybSA9IFQpCiAgaWYgKGlzLm51bGwoZXhjbHVkZWRfb2xkX25ldHdvcmspKSB7CiAgICBleGNsdWRlZCA9IGV4Y2x1ZGVkX25ld19uZXR3b3JrCiAgfSBlbHNlIHsKICAgIGV4Y2x1ZGVkID0gZXhjbHVkZWRfbmV3X25ldHdvcmsgLSBleGNsdWRlZF9vbGRfbmV0d29yawogIH0KICBjYXQoZXhjbHVkZWQsICJleGNsdWRlZFxuIikKICBleGNsdWRlZF9vbGRfbmV0d29yayA8PC0gZXhjbHVkZWRfbmV3X25ldHdvcmsKICBleGNsdWRlZAp9CgojIyMjIyMgc3RyaWN0IGV4Y2x1c2lvbgpuX2V4Y2x1ZGVkX25ldHdvcmtfc3RyaWN0ID0gZnVuY3Rpb24oeCkgewogIGV4Y2x1ZGVkX25ld19uZXR3b3JrX3N0cmljdCA9IHN1bShpcy5uYSh4KSB8IHggPT0gRkFMU0UsbmEucm0gPSBUKQogIGlmIChpcy5udWxsKGV4Y2x1ZGVkX29sZF9uZXR3b3JrX3N0cmljdCkpIHsKICAgIGV4Y2x1ZGVkID0gZXhjbHVkZWRfbmV3X25ldHdvcmtfc3RyaWN0CiAgfSBlbHNlIHsKICAgIGV4Y2x1ZGVkID0gZXhjbHVkZWRfbmV3X25ldHdvcmtfc3RyaWN0IC0gZXhjbHVkZWRfb2xkX25ldHdvcmtfc3RyaWN0CiAgfQogIGNhdChleGNsdWRlZCwgImV4Y2x1ZGVkXG4iKQogIGV4Y2x1ZGVkX29sZF9uZXR3b3JrX3N0cmljdCA8PC0gZXhjbHVkZWRfbmV3X25ldHdvcmtfc3RyaWN0CiAgZXhjbHVkZWQKfQoKIyMjIyMjIGJhciBwbG90CgpiYXJfY291bnQgPSBmdW5jdGlvbihkYXRhLCB2YXJpYWJsZSwgbmEucm0gPSBGQUxTRSkgewogIHZhcm5hbWUgPSBkZXBhcnNlKHN1YnN0aXR1dGUodmFyaWFibGUpKQogIHZhciA9IGRhdGEgJT4lIHNlbGVjdF8odmFybmFtZSkgJT4lIC5bWzFdXQogIGlmIChuYS5ybSA9PSBUKSB7CiAgICB2YXIgPSB2YXIgJT4lIG5hLm9taXQoKQogIH0KICB2YXIgPSBmYWN0b3IodmFyLCBleGNsdWRlID0gTlVMTCkKICBkYXRhJHZhciA9IHZhcgoKICBnZ3Bsb3QoZGF0YSwgYWVzKHggPSB2YXIpKSArCiAgICBnZW9tX2JhcigpICsKICAgIHN0YXRfY291bnQoYWVzKGxhYmVsID0gcGFzdGUoLi5jb3VudC4uLCAiXG4iLCBzY2FsZXM6OnBlcmNlbnQocm91bmQoLi5jb3VudC4uL3N1bShjb3VudCksMikpKSksIGhqdXN0ID0gLTAuMSwgZ2VvbSA9ICJ0ZXh0IiwgcG9zaXRpb24gPSAiaWRlbnRpdHkiLCBuYS5ybSA9IFQpICsKICAgIHNjYWxlX3lfY29udGludW91cyhleHBhbmQgPSBjKDAuMSwgMCkpICsKICAgIHhsYWIodmFybmFtZSkgKwogICAgY29vcmRfZmxpcCgpCn0KCgoKbXVsdGlfcmVsID0gZnVuY3Rpb24oZGlhcnksIGxtZSA9IFQsIGxtZXIgPSBUKSB7CiAgbXJlbCA9IGRpYXJ5ICU+JQogICAgZ3JvdXBfYnkoc2hvcnQpICU+JQogICAgZmlsdGVyKCFpcy5uYShyaXNrX3Rha2luZykpICU+JQogICAgZmlsdGVyKGRheV9udW1iZXIgPD0gNzApICU+JQogICAgZ2F0aGVyKHZhcmlhYmxlLCB2YWx1ZSwgLXNob3J0LCAtZGF5X251bWJlcikgJT4lCiAgICBwc3ljaDo6bXVsdGlsZXZlbC5yZWxpYWJpbGl0eSguLCAic2hvcnQiLCAiZGF5X251bWJlciIsIGxtZSA9IGxtZSwgbG1lciA9IGxtZXIsIGl0ZW1zID0gInZhcmlhYmxlIiwgdmFsdWVzID0gInZhbHVlIiwgbG9uZyA9IFQsIGFvdiA9IEYpCiAgbXJlbAp9CgoKcm9idXN0X3Jvd21lYW5zIDwtIGZ1bmN0aW9uKHgpIHsKICB5IDwtIHJvd01lYW5zKHgsIG5hLnJtID0gVFJVRSkKICB5W2lzLm5hbih5KV0gPC0gTkFfcmVhbF8KICB5Cn0KCgpjb3J0ZXN0X3N0cmV0Y2ggPC0gZnVuY3Rpb24oZCkgewogIHZhcl9wYWlycyA8LSB0KGNvbWJuKG5hbWVzKGQpLCAyKSkgJT4lCiAgICBhc19kYXRhX2ZyYW1lKCkgJT4lCiAgICBzZXROYW1lcyhjKCJ4IiwgInkiKSkKCiAgcF92YWx1ZXMgPC0gdmFyX3BhaXJzICU+JQogICAgZHBseXI6Om11dGF0ZShyLnRlc3QgPSBwdXJycjo6bWFwMih4LCB5LCB+IHN0YXRzOjpjb3IudGVzdChkW1sueF1dLCBkW1sueV1dKSksCiAgICAgICAgICAgICAgICAgIHIudGVzdCA9IHB1cnJyOjptYXAoci50ZXN0LCBicm9vbTo6dGlkeSkpICU+JQogICAgdGlkeXI6OnVubmVzdChyLnRlc3QpCiAgcF92YWx1ZXMKfQoKCmN1dF9jb21tb25fc3RlbSA8LSBmdW5jdGlvbih4KSB7CiAgaSA9IDEKICB3aGlsZSAoaSA8PSBtYXgoc3RyaW5ncjo6c3RyX2xlbmd0aCh4KSkgJiBkcGx5cjo6bl9kaXN0aW5jdChzdHJpbmdyOjpzdHJfc3ViKHgsIDEsIGkpKSA9PSAxKSB7CiAgICBpID0gaSArIDEKICB9CiAgc3RyaW5ncjo6c3RyX3N1Yih4LCBpKQp9CmBgYAo=</div>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeSourceEmbed("0_helpers.Rmd");
+  window.initializeCodeFolding("show" === "show");
+});
+</script>
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
