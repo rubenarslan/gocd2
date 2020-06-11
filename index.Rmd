@@ -17,7 +17,7 @@ source("0_helpers.R")
 - [Descriptives](1_descriptives.html): Here, we summarise some of the descriptive information on this study on a higher-level than in the codebook.
 - [Data anonymisation](3_anonymise_data.html): Our procedure to generate anonymised datasets (unfinished).
 
-We used these [helper functions](0_helpers.html). These are the [.Rprofile settings](.Rprofile.html).
+We used these [helper functions](0_helpers.html). These are the [.Rprofile settings](Rprofile.html).
 
 ###  Documented elsewhere
 
@@ -62,7 +62,6 @@ sessionInfo()
 ```{r}
 cat(readLines("renv.lock"), sep = "\n")
 ```
-
 </details>
 
 ```{r}
