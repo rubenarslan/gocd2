@@ -47,3 +47,5 @@ exclude:
 - '*_files'
 - 'ras'
 - '*.rds'
+- codings
+

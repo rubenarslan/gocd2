@@ -74,22 +74,24 @@ spin_R_files_to_site_html = function() {
   temporary_Rmds = c()
   for (i in seq_along(all_Rs)) {
     if(all_Rs[i] == ".Rprofile") {
-      Rmd_file = ".Rprofile.Rmd"
+      Rmd_file = "Rprofile.Rmd"
     } else {
       Rmd_file = paste0(all_Rs[i], "md")
     }
     if (!file.exists(Rmd_file)) {
-      next_document = length(temporary_Rmds) + 1
+      temporary_Rmds[i] <- Rmd_file
       if(file.exists(all_Rs[i])) {
-      temporary_Rmds[next_document] = spin(all_Rs[i], knit = FALSE, envir = new.env(), format = "Rmd")
-      prepended_yaml = paste0(c("---
+      temp_knit = spin(all_Rs[i], knit = FALSE, envir = new.env(), format = "Rmd")
+      prepended_yaml = paste0(c(paste0("---
+title: ",all_Rs[i],"
 output:
   html_document:
     code_folding: 'show'
 ---
 
-", readLines(temporary_Rmds[next_document])), collapse = "\n")
-      cat(prepended_yaml, file = temporary_Rmds[next_document])
+"), readLines(temp_knit)), collapse = "\n")
+      unlink(temp_knit)
+      cat(prepended_yaml, file = Rmd_file)
       }
     }
   }
