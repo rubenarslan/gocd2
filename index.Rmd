@@ -33,7 +33,7 @@ See here for the documentation of [GOCD1](https://rubenarslan.github.io/ovulator
 ### Authors & Acknowledgements
 
 #### Authors
-The Leibniz ScienceCampus Primate Cognition Göttingen partially funded the study. The study was planned by Ruben C. Arslan, Julie C. Driebe, Julia J. Stern (née Jünger), Tanja M. Gerlach, Julia Ostner, and Lars Penke. Ruben C. Arslan and Julie C. Driebe collected the online data and did the majority of the data cleaning and management documented here.
+The Leibniz ScienceCampus Primate Cognition Göttingen partially funded the study. The study was planned by Ruben C. Arslan, Julie C. Driebe, Julia Stern (née Jünger), Tanja M. Gerlach, Julia Ostner, and Lars Penke. Ruben C. Arslan and Julie C. Driebe collected the online data and did the majority of the data cleaning and management documented here.
 
 ### Acknowledgements
 Kim Gloystein and Tessa Cappelle helped translating items from German to English.
